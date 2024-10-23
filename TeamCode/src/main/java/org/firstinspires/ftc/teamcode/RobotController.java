@@ -1,64 +1,103 @@
-package main.java.org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import java.util.List;
 import java.util.ArrayList;
-import layer.LayerSetUpInfo;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import java.util.function.Consumer;
-// import task interface and what not
-// Some of the imports above may have different names after translation.
+import org.firstinspires.ftc.teamcode.layer.Layer;
+import org.firstinspires.ftc.teamcode.layer.LayerSetupInfo;
+import org.firstinspires.ftc.teamcode.task.Task;
 
-class RobotController{
+/**
+ * Executes a Layer stack.
+ * This forms the core of the robot
+ */
+public class RobotController {
+    private ArrayList<Consumer<Boolean>> updateListeners;
+    private List<Layer> layers;
 
-    LayerSetUpInfo layerSetupInfo;
-    List<Consumer<Boolean>> updateListeners;
-    List<Object<? extends Layer>> layerObjects; // Added layerObjects as a field
-
-    // Swap robot with what the variable is actually named.
-    RobotController(HardwareMap robot){
-        this.layerSetupInfo = new LayerSetUpInfo(robot);
-        this.updateListeners = new ArrayList<>();
-        this.layerObjects = new ArrayList<>();
+    /**
+     * Constructs a RobotController.
+     */
+    public RobotController() {
+        updateListeners = new ArrayList<>();
     }
 
-    void setup(List<Class<? extends Layer>> capCObjects){
-         for(Class<? extends Layer> items: capCObjects){
-            this.layerObjects.add(items.getConstructor(LayerSetUpInfo.class).newInstance(LayerSetUpInfo));
-         }
-    }
-
-    boolean update(){
-            // Call all update listeners
-        for(Consumer<Boolean> listener: updateListeners){
-            listener(false);
+    /**
+     * Initializes the controller with the given layers.
+     *
+     * @param hardwareMap HardwareMap used to retrieve interfaces for robot hardware.
+     * @param layers the layer stack to use.
+     */
+    public void setup(HardwareMap hardwareMap, List<Layer> layers) {
+        LayerSetupInfo setupInfo = new LayerSetupInfo(hardwareMap);
+        for (Layer layer : layers) {
+            layer.setup(setupInfo);
         }
-            // Do work on layers
-            int i = 0;
-            // Possible way to implement sentinel? could be wrong, and I just realized that task is actually a marker interface now.
-            Object<? extends task> currentTask = null; 
-            for(Object<? extends Layer> layer: this.layerObjects){
-                i++;
-                if(!layer.isTaskDone()){
-                    task = layer.update();
-                    break;
-                }
-            if(currentTask == null){
-                // No tasks left in any layer
-                for(Consumer<Boolean> listener: updateListeners){
-                 listener(true);   
-                }
-                this.updateListeners.clear();
-                return true;
-            }
-            for(int j=i-1; j>-1; j--){
-                this.layerObjects[j].acceptTask(currentTask);
-                currentTask = this.layerObject[j].update();
-            return false;
-            }
-            }
+        this.layers = layers;
     }
 
-    void add_update_listener(Consumer<Boolean> listener){
+    /**
+     * Performs incremental work and returns whether layers have completed all tasks.
+     * Performs incremental work on the bottommost layer of the configured stack, invoking upper
+     * layers as necessary when lower layers complete their current tasks.
+     *
+     * @return whether the topmost layer (and by extension, the whole stack of layers) is exhausted
+     * of tasks. When this happens, update listeners are notified and then unregistered.
+     */
+    public boolean update() {
+        // Call all update listeners
+        for (Consumer<Boolean> listener : updateListeners) {
+            listener.consume(false);
+        }
+
+        // Do work on layers
+        if (layers == null) {
+            return true;
+        }
+        int i = 0;
+        Task currentTask = null;
+        for (Layer layer : layers) {
+            if (!layer.isTaskDone()) {
+                currentTask = layer.update();
+                if (currentTask == null) {
+                    throw new NullPointerException("Layer '" + layer.getClass().getName()
+                        + "' returned null from update.");
+                }
+                break;
+            }
+            i++;
+        }
+        if (currentTask == null) {
+            // No tasks left in any layer
+            for (Consumer<Boolean> listener : updateListeners) {
+                listener.consume(true);
+            }
+            updateListeners.clear();
+            layers = null;
+            return true;
+        }
+        for (int j = i - 1; j > -1; j--) {
+            layers[j].acceptTask(currentTask);
+            currentTask = layers[j].update();
+            if (currentTask = null) {
+                throw new NullPointerException("Layer '" + layers[j].getClass().getName()
+                    + "' returned null from update.");
+            }
+            return false;
+        }
+    }
+
+    /**
+     * Registers a function to be called on every update.
+     * Registers a function to be called on every update of the controller before layer work is
+     * performed. Listeners are executed in registration order and called with a single positional
+     * argument of true. On the first update after the topmost layer runs out of tasks, the
+     * listeners are called again with an argument of false, then unregistered.
+     *
+     * @param listener the function to be registered as an update listener
+     */
+    public void addUpdateListener(Consumer<Boolean> listener) {
         updateListeners.add(listener);
     }
 }
