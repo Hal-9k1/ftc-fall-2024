@@ -10,7 +10,8 @@ import org.firstinspires.ftc.teamcode.task.Task;
 
 /**
  * Executes a Layer stack.
- * This forms the core of the robot
+ * This forms the core of the robot's control logic: layers processing tasks by computing subtasks
+ * and then delegating to subordinates.
  */
 public class RobotController {
     private ArrayList<Consumer<Boolean>> updateListeners;
@@ -69,7 +70,7 @@ public class RobotController {
             i++;
         }
         if (currentTask == null) {
-            // No tasks left in any layer
+            // No tasks left in any layer, inform all listeners of completion
             for (Consumer<Boolean> listener : updateListeners) {
                 listener.consume(true);
             }
