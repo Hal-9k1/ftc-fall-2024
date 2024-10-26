@@ -1,0 +1,28 @@
+from task import UnsupportedTaskError
+
+    public InputGenerator extends Layer
+    {
+        public isTaskDone()
+         {
+          false;
+         }
+         
+         public void acceptTask(self, task);
+         {
+         throw new UnsupportedTaskError(self, task)
+         }
+         
+         
+    }
+
+       
+
+    
+    
+    
+    
+    
+
+        
+
+       

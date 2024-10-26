@@ -1,0 +1,81 @@
+from abc import ABCMeta, abstractmethod
+from task import UnsupportedTaskError
+private class Layer(metaclass=ABCMeta)
+{
+    def is_task_done(self)
+    {
+    raise NotImplemented 
+    }
+
+    def update(self)
+    {
+    raise NotImplemented 
+    }
+
+    def accept_task(self, task)
+    {
+    raise NotImplemented
+    }
+    public class InputGenerator(Layer)
+    {
+         def is_task_done(self)
+         {
+        return False
+         }
+         def accept_task(self, task)
+         {
+        raise UnsupportedTaskError(self, task)
+         }
+
+        public QueuedLayer(Layer)
+        {
+         _no_subtask = object()
+         _consumed_subtask = object()
+        }
+
+        def __init__(self, init_info)
+        {
+        self._next_subtask = _no_subtask
+        self._subtask_iter = iter([])
+        }
+
+        def is_task_done(self)
+        {
+        if self._next_subtask is self._consumed_subtask:
+            self._next_subtask = next(self._subtask_iter, self._no_subtask)
+        return self._next_subtask is self._no_subtask
+        }
+
+        def update(self)
+        # Assumes executor always calls is_task_done to prepare next task before calling update
+        {
+        subtask = self._next_subtask
+        self._next_subtask = self._consumed_subtask
+        return subtask
+        }
+
+        def _submit_subtask_queue(self, queue)
+        {
+        self._subtask_iter = iter(queue)
+        self._next_subtask = _consumed_subtask
+        }
+
+        public class LayerSetupInfo
+        {
+        def __init__(self, robot, robot_controller)
+        {
+        self._robot = robot
+        self._robot_controller = robot_controller   
+        }
+
+         def get_robot(self)
+         {
+         return self._robot
+         }
+
+         def add_update_listener(listener)
+         {
+         self._robot_controller.add_update_listener(listener)
+         }
+
+    }
