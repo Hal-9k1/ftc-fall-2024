@@ -1,8 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import java.util.Dictionary;
-import java.util.Enumeration;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.HashSet;
 import java.util.HashMap;
@@ -12,46 +9,37 @@ import java.util.Map;
 public class Units
 {
     private static double pi = Math.PI;
-    public static void main(String[] args)
-    {
-        Dictionary<String, Double> unitsPerM = new Hashtable<>();
-        unitsPerM.put("mm", 1000);
-        unitsPerM.put("cm", 100);
-        unitsPerM.put("in", (100 / 2.54));
-        unitsPerM.put("ft", (100/2.54/12));
-        unitsPerM.put("m", 1);
+    public static enum Distance {
+      MM(1000),
+      CM(100),
+      IN(100 / 2.54),
+      FT(100 / 2.54 / 12),
+      M(1);
 
-        Dictionary<String, Double> unitsPerRad = new Hashtable<>();
-        unitsPerM.put("deg", (180/pi));
-        unitsPerM.put("rev", (1/2/pi));
-        unitsPerM.put("rad", 1);
+      private final double unitsPerMeter;
 
-        Set<String> validUnits = new HashSet<>();
-        validUnits.addAll(unitsPerM.keys());
-        validUnits.addAll(unitsPerRad.keys());
+      Distance(double unitPerMeter) {
+        this.unitsPerMeter = unitsPerMeter;
+      }
+    }
+    public static enum Angle {
+      DEG(180 / Math.PI),
+      REV(1 / (2 * Math.PI)),
+      RAD(1);
 
-        List<String> conversionTable = new Hashset<>();
-        conversionTable.addAll(unitsPerM);
-        conversionTable.addAll(unitsPerRad);
+      private final double unitsPerRadian;
 
+      Angle(double unitsPerRadian) {
+        this.unitsPerRadian = unitsPerRadian;
+      }
     }
 
-    public static double convert(double value, String fromUnit, String toUnit)
+    public static double convert(double value, Distance fromUnit, Distance toUnit)
     {
-        if (!validUnits.contains(fromUnit))
-        {
-            throw new IllegalArgumentException("Invalid fromUnit " + fromUnit);
-        }
-        else if (!validUnits.contains(toUnit))
-        {
-            throw new IllegalArgumentException("Invalid toUnit " + toUnit);
-        }
-        for (Dictionary<String, Double> table : conversionTable)
-        {
-            if (fromUnit.contains(table) && toUnit.contains(table))
-            {
-                return (value * table.get(fromUnit) / table.get(toUnit));
-            }
-        }
+        return value * toUnit.unitsPerMeter / fromUnit.unitsPerMeter;
+    }
+    public static double convert(double value, Angle fromUnit, Angle toUnit)
+    {
+        return value * toUnit.unitsPerRadian / fromUnit.unitsPerRadian;
     }
 }
