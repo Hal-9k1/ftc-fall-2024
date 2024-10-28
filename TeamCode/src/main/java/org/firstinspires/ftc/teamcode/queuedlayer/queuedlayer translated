@@ -1,0 +1,25 @@
+import java.util.Iterator;
+
+public class QueuedLayer
+{
+    //varibles go under here//
+    
+    public QueuedLayer(this, initInfo)
+    {
+        //Not sure what to set nextSubtask to//
+        this.nextSubtask = 
+        this.subTaskIter = iter([])
+    }
+    
+    public update(this, queue)
+    {
+        //set nextSubtask here to next item in list, confused about how to code it//
+        subtask = this.nextSubtask
+        this.nextSubtask = 
+        return subtask
+    }
+    protected void submitSubtaskQueue(this, queue)
+    {
+
+    }
+}
