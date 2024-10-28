@@ -1,3 +1,5 @@
+package org.firstinspires.ftc.teamcode;
+
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -44,7 +46,7 @@ public class Units
         {
             throw new IllegalArgumentException("Invalid toUnit " + toUnit);
         }
-        for (Dictionary<String, Double> table : conversionTable; conversionTable.contains(table))
+        for (Dictionary<String, Double> table : conversionTable)
         {
             if (fromUnit.contains(table) && toUnit.contains(table))
             {
