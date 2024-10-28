@@ -1,6 +1,6 @@
 from task import UnsupportedTaskError
 
-    public InputGenerator extends Layer
+    public InputGenerator implements Layer
     {
         public isTaskDone()
          {
@@ -14,22 +14,3 @@ from task import UnsupportedTaskError
                   
     }
 
-from task import UnsupportedTaskError
-
-public interface Layer(metaclass)  
-{
-
-  public isTaskDone()
-  { 
-  }
- 
-  public update()
-  {
-  }
-
-  public acceptTask(task)
-  {
-  }   
-
-} 
-   
