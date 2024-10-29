@@ -1,15 +1,20 @@
 from task import UnsupportedTaskError
 
-    public InputGenerator implements Layer
+    public class InputGenerator implements Layer
     {
-        public isTaskDone()
+        public boolean isTaskDone()
          {
-          false;
+            return false;
          }
          
-         public void acceptTask(task);
+         public void update() 
          {
-         throw new UnsupportedTaskError(task)
+            //Unimplemented, - Cheering for you!!!!
+         }
+
+         public void acceptTask(Task task)
+         {
+            throw new UnsupportedTaskError(this, task);
          }
                   
     }

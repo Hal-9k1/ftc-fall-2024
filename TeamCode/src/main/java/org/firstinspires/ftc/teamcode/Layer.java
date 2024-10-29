@@ -1,19 +1,12 @@
 from task import UnsupportedTaskError
 
-public interface Layer(metaclass)  
-{
+public interface Layer{
 
-  public isTaskDone()
-  { 
-  }
+  boolean isTaskDone();
  
-  public update()
-  {
-  }
+  void update();
 
-  public acceptTask(task)
-  {
-  }   
+  void acceptTask(Task task);
 
 } 
    
