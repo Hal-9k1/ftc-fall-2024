@@ -21,14 +21,14 @@ public abstract class QueuedLayer implements Layer {
   }
 
   public boolean isTaskDone() {
-
+    // (Remove) check if there's nothing left in subtaskIter, or if subtaskIter is null
   }
 
   public void update() {
-
+    // (Remove) return the next subtask
   }
 
   protected void setSubtasks(List<Task> subtasks) {
-
+    // (Remove) make an iterator out of the 'subtasks' list and assign it to subtaskIter
   }
 }
