@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.task;
 
+import org.firstinspires.ftc.teamcode.layer.Layer;
+
 /**
  * Exception raised by layers when accepting a task type they don't support.
  */
@@ -11,7 +13,7 @@ public class UnsupportedTaskException extends IllegalArgumentException {
      * @param task the Task that the layer rejected.
      */
     public UnsupportedTaskException(Layer layer, Task task) {
-        super("Layer '" + layer.getClass.getName() + "' does not support task of type '"
+        super("Layer '" + layer.getClass().getName() + "' does not support task of type '"
             + task.getClass().getName() + "'.");
     }
 }
