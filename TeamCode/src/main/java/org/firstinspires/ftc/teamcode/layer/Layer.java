@@ -12,10 +12,17 @@ import org.firstinspires.ftc.teamcode.task.Task;
  */
 public interface Layer {
     /**
+     * Performs layer setup that requires access to hardware and the RobotController.
+     * @param setup LayerSetupInfo provided to set up the layer.
+     */
+    void setup(LayerSetupInfo setup);
+
+    /**
      * Returns whether the layer is ready to accept a new task.
      * @return true if the layer has finished processing the last accepted task, if any.
      */
     boolean isTaskDone();
+
     /**
      * Returns the next subordinate task produced from this layer's current task.
      * Calculates the next subordinate task that should be submitted to the below layer. The return
@@ -23,6 +30,7 @@ public interface Layer {
      * @return The next task that the lower layer should run.
      */
     Task update();
+
     /**
      * Sets the layer's current task.
      * Accepts a task from the above layer. Should only be called after {@link Layer#isTaskDone}
