@@ -1,8 +1,8 @@
 package org.firstinspires.ftc.teamcode.layer;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import java.util.Consumer;
-import org.firstinspitres.ftc.teamcode.RobotController;
+import java.util.function.Consumer;
+import org.firstinspires.ftc.teamcode.RobotController;
 
 /**
  * Contains the information needed to initialize a layer.
@@ -28,13 +28,13 @@ public class LayerSetupInfo {
      * robot.
      */
     public HardwareMap getHardwareMap() {
-        return this.hardwareMap;
+        return hardwareMap;
     }
     /**
      * Registers a callback to be called on every update of the owning RobotController.
      * @param listener The callback to be called.
      */
     public void addUpdateListener(Consumer<Boolean> listener) {
-        this.robotController.addUpdateListener(listener);
+        robotController.addUpdateListener(listener);
     }
 }
