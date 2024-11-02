@@ -1,5 +1,6 @@
-package org.firstinspires.ftc.teamcode.layer;
+package org.firstinspires.ftc.teamcode.layer.input;
 
+import org.firstinspires.ftc.teamcode.layer.Layer;
 import org.firstinspires.ftc.teamcode.task.Task;
 import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
 
