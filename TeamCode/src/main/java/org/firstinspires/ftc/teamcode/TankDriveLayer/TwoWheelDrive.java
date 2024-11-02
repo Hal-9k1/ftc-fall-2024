@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
-// More imports that doesn't exist yet except for Units.
+
+import java.lang.Math;
+
 import org.firstinspires.ftc.teamcode.task.AxialMovementTask;
-import org.firstinspires.ftc.teamcode.task.TankDriveTask;  //Is there really a tank drive task? or does it mean tank drive layer?
+import org.firstinspires.ftc.teamcode.task.TankDriveTask;
 import org.firstinspires.ftc.teamcode.task.TurnTask;
-import org.firstinspires.ftc.teamcode.UnsupportedTaskError;  //I may be wrong because UnsupportedTaskError doesn't seem to have been written yet.
+import org.firstinspires.ftc.teamcode.UnsupportedTaskError;
 import org.firstinspires.ftc.teamcode.Units;
 /**
  * Drive layer for a two-wheel drive robot.
@@ -14,8 +16,8 @@ import org.firstinspires.ftc.teamcode.Units;
 
 public class TwoWheelDrive implements Layer {
 
-    // TODO: Find out the FTC equivalent and change the below variable.
-    private static String driveKoalaBear = "6_spamandeggs"; // Don't know what the Koala Bear equivalent in FTC is.
+    // Not sure if this is needed or needs to be changed to FTC equivalent.
+    private static String driveKoalaBear = "6_spamandeggs";
 
     // Some values from below might need to be changed according to the hardware parts.
     private static double ticksPerRot = 888;
@@ -29,7 +31,6 @@ public class TwoWheelDrive implements Layer {
     private Wheel rightWheel;
 
     // New important lore drop from Eddy: Use DcMotor and Servo interfaces from FTC in place of the wrapper classes from actuators.py
-    // Sure hope that Wheel class is implemented in Java when this is done.
 
     public TwoWheelDrive(LayerSetupInfo initInfo){
         // Wheel class has three parameters: motor, radius, and ticks per rotation.
@@ -66,6 +67,34 @@ public class TwoWheelDrive implements Layer {
     }
 
     public acceptTask(Task task){
-        // Gonna fall asleep will do this tomorrow morning
+        this.leftStartPos = this.leftWheel.getDistance();
+        this.rightStartPos = this.rightWheel.getDistance();
+
+        if (task instanceof AxialMovementTask){
+            this.leftGoalDelta = task.distance;
+            this.rightGoalDelta = task.distance;
+        }
+        else if (task instanceof TurnTask){
+            // Don't know what access modifier is necessary below. Have to implement later.
+            // "Effective" as in "multiplied by all the weird constants we need"
+            double effectiveRadius = TwoWheelDrive.wheelSpanRadius * TwoWheelDrive.gearRatio * TwoWheelDrive.slippingConstant;
+            this.leftGoalDelta = -task.angle * effectiveRadius;
+            this.rightGoalDelta = task.angle * effectiveRadius;
+        }
+        else if (task instanceof TankDriveTask){
+            // Teleop, set deltas to 0 to pretend we're done
+            this.leftGoalDelta = 0;
+            this.rightGoalDelta = 0;
+            // Clamp to 1 to prevent upscaling
+            double maxAbsPower = Math.max(Math.abs(task.left), Math.abs(task.right), 1);  
+            // Question: Why do we use max if we're trying to prevent upscaling?
+            this.leftWheel.setVelocity(task.left / maxAbsPower);
+            this.rightWheel.setVelocity(task.right / maxAbsPower);
+        }
+        else{
+            throw new UnsupportedTaskError(task);
+        }
+        this.leftWheel.setVelocity(Math.copySign(1, this.leftGoalDelta));
+        this.rightWheel.setVelocity(Math.copySign(1, this.rightGoalDelta));
     }
 }
