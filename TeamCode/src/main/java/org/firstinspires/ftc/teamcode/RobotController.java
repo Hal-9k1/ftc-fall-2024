@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.ArrayList;
 import java.util.function.Consumer;
 import org.firstinspires.ftc.teamcode.layer.Layer;
@@ -22,6 +23,7 @@ public class RobotController {
      */
     public RobotController() {
         updateListeners = new ArrayList<>();
+        layers = null;
     }
 
     /**
@@ -31,7 +33,7 @@ public class RobotController {
      * @param layers the layer stack to use.
      */
     public void setup(HardwareMap hardwareMap, List<Layer> layers) {
-        LayerSetupInfo setupInfo = new LayerSetupInfo(hardwareMap);
+        LayerSetupInfo setupInfo = new LayerSetupInfo(hardwareMap, this);
         for (Layer layer : layers) {
             layer.setup(setupInfo);
         }
@@ -49,7 +51,7 @@ public class RobotController {
     public boolean update() {
         // Call all update listeners
         for (Consumer<Boolean> listener : updateListeners) {
-            listener.consume(false);
+            listener.accept(false);
         }
 
         // Do work on layers
@@ -57,36 +59,37 @@ public class RobotController {
             return true;
         }
         int i = 0;
-        Task currentTask = null;
-        for (Layer layer : layers) {
+        Layer layer = null;
+        ListIterator<Layer> layerIter = layers.listIterator();
+        while (true) {
+            layer = layerIter.next();
             if (!layer.isTaskDone()) {
-                currentTask = layer.update();
-                if (currentTask == null) {
-                    throw new NullPointerException("Layer '" + layer.getClass().getName()
-                        + "' returned null from update.");
-                }
                 break;
             }
-            i++;
-        }
-        if (currentTask == null) {
-            // No tasks left in any layer, inform all listeners of completion
-            for (Consumer<Boolean> listener : updateListeners) {
-                listener.consume(true);
+            if (!layerIter.hasNext()) {
+                // No tasks left in any layer, inform all listeners of completion
+                for (Consumer<Boolean> listener : updateListeners) {
+                    listener.accept(true);
+                }
+                updateListeners.clear();
+                layers = null;
+                return true;
             }
-            updateListeners.clear();
-            layers = null;
-            return true;
         }
-        for (int j = i - 1; j > -1; j--) {
-            layers[j].acceptTask(currentTask);
-            currentTask = layers[j].update();
-            if (currentTask = null) {
-                throw new NullPointerException("Layer '" + layers[j].getClass().getName()
+        Task task;
+        while (true) {
+            task = layer.update();
+            if (task == null) {
+                throw new NullPointerException("Layer '" + layer.getClass().getName()
                     + "' returned null from update.");
             }
-            return false;
+            if (!layerIter.hasPrevious()) {
+                break;
+            }
+            layer = layerIter.previous();
+            layer.acceptTask(task);
         }
+        return false;
     }
 
     /**
