@@ -4,7 +4,7 @@ package org.firstinspires.ftc.teamcode.task;
  * Specifies relative accelerations for left and right side of the robot.
  * Despite the name, not necessarily produced by tank drive controls.
  */
-public class TankDriveTask {
+public class TankDriveTask implements Task {
     /**
      * The relative acceleration to apply to the left side of the robot.
      * Positive values indicate forward movement and negative values indicate backward.

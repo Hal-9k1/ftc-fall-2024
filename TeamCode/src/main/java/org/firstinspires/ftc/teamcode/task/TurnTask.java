@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.task;
 /**
  * Turns the robot in place.
  */
-public class TurnTask {
+public class TurnTask implements Task {
     /**
      * The angle in radians to turn the robot counterclockwise.
      * Negative values indicate clockwise turns.
