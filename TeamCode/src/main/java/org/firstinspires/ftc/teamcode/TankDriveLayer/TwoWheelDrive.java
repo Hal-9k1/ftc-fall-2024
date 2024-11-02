@@ -13,19 +13,24 @@ import org.firstinspires.ftc.teamcode.Units;
  */
 
 public class TwoWheelDrive implements Layer {
+
+    // TODO: Find out the FTC equivalent and change the below variable.
     private static String driveKoalaBear = "6_spamandeggs"; // Don't know what the Koala Bear equivalent in FTC is.
+
     // Some values from below might need to be changed according to the hardware parts.
     private static double ticksPerRot = 888;
     private static double wheelRadius = 0.42;
     private static double gearRatio = 1;
     private static double wheelSpanRadius = 0.84;
     private static double slippingConstant = 1;
+
     // Wheel is a class from Mechanisms.py, probably translated into Mechanism.java
     private Wheel leftWheel;
     private Wheel rightWheel;
 
     // New important lore drop from Eddy: Use DcMotor and Servo interfaces from FTC in place of the wrapper classes from actuators.py
     // Sure hope that Wheel class is implemented in Java when this is done.
+
     public TwoWheelDrive(LayerSetupInfo initInfo){
         // Wheel class has three parameters: motor, radius, and ticks per rotation.
         this.leftWheel = new Wheel(hardwareMap.get(DcMotor.class, "leftdrivemotor"),
