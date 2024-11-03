@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import java.util.List;
 import java.util.ListIterator;
@@ -31,9 +32,12 @@ public class RobotController {
      *
      * @param hardwareMap HardwareMap used to retrieve interfaces for robot hardware.
      * @param layers the layer stack to use.
+     * @param gamepad0 the first connected Gamepad, or null if none is connected or available.
+     * @param gamepad1 the second connected Gamepad, or null if none is connected or available.
      */
-    public void setup(HardwareMap hardwareMap, List<Layer> layers) {
-        LayerSetupInfo setupInfo = new LayerSetupInfo(hardwareMap, this);
+    public void setup(HardwareMap hardwareMap, List<Layer> layers, Gamepad gamepad0,
+        Gamepad gamepad1) {
+        LayerSetupInfo setupInfo = new LayerSetupInfo(hardwareMap, this, gamepad0, gamepad1);
         for (Layer layer : layers) {
             layer.setup(setupInfo);
         }

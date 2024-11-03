@@ -11,8 +11,8 @@ public class GamepadInputGenerator extends InputGenerator {
     private Gamepad gamepad1;
 
     public void setup(LayerSetupInfo setupInfo) {
-        gamepad0 = setupInfo.gamepad0;
-        gamepad1 = setupInfo.gamepad1;
+        gamepad0 = setupInfo.getGamepad0();
+        gamepad1 = setupInfo.getGamepad1();
         if (gamepad0 == null && gamepad1 == null) {
             throw new IllegalArgumentException("At least one gamepad must be connected to the "
                 + "robot.");

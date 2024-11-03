@@ -192,7 +192,7 @@ public class GamepadInputTask implements Task {
      * is connected.
      */
     public GamepadInputTask(GamepadInput gamepad0, GamepadInput gamepad1) {
-        gamepad0 = gamepad0;
-        gamepad1 = gamepad1;
+        this.gamepad0 = gamepad0;
+        this.gamepad1 = gamepad1;
     }
 }
