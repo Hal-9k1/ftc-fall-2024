@@ -71,49 +71,54 @@ public class TwoWheelDrive implements Layer {
     }
 
     public boolean isTaskDone() {
-        boolean leftDone = ((this.leftWheel.getDistance() - this.leftStartPos < 0)
-            == (this.leftGoalDelta < 0)) || this.leftGoalDelta == 0;
-        boolean rightDone = ((this.rightWheel.getDistance() - this.rightStartPos < 0)
-            == (this.rightGoalDelta < 0)) || this.rightGoalDelta == 0;
+        double leftDelta = leftWheel.getDistance() - leftStartPos < 0;
+        boolean leftDeltaSignsMatch = (leftDelta < 0) == (leftGoalDelta < 0);
+        boolean leftGoalDeltaExceeded = Math.abs(leftDelta) >= Math.abs(leftGoalDelta);
+        boolean leftDone = (leftDeltaSignsMatch && leftGoalDeltaExceeded) || leftGoalDelta == 0;
+
+        double rightDelta = rightWheel.getDistance() - rightStartPos < 0;
+        boolean rightDeltaSignsMatch = (rightDelta < 0) == (rightGoalDelta < 0);
+        boolean rightGoalDeltaExceeded = Math.abs(rightDelta) >= Math.abs(rightGoalDelta);
+        boolean rightDone = (rightDeltaSignsMatch && rightGoalDeltaExceeded) || rightGoalDelta == 0;
         boolean done = leftDone && rightDone;
         if (done) {
-            this.leftWheel.setVelocity(0);
-            this.rightWheel.setVelocity(0);
+            leftWheel.setVelocity(0);
+            rightWheel.setVelocity(0);
         }
         return done;
     }
 
     public Task update() {
-        // Adaptive velocity controller goes here.
+        // Adaptive velocity control goes here.
         return null;
     }
 
     public void acceptTask(Task task) {
-        this.leftStartPos = this.leftWheel.getDistance();
-        this.rightStartPos = this.rightWheel.getDistance();
+        leftStartPos = leftWheel.getDistance();
+        rightStartPos = rightWheel.getDistance();
 
         if (task instanceof AxialMovementTask) {
-            this.leftGoalDelta = task.distance;
-            this.rightGoalDelta = task.distance;
+            leftGoalDelta = task.distance;
+            rightGoalDelta = task.distance;
         } else if (task instanceof TurnTask) {
             // Don't know what access modifier is necessary below. Have to implement later.
             // "Effective" as in "multiplied by all the weird constants we need"
             double effectiveRadius = WHEEL_SPAN_RADIUS * GEAR_RATIO * SLIPPING_CONSTANT;
-            this.leftGoalDelta = -task.angle * effectiveRadius;
-            this.rightGoalDelta = task.angle * effectiveRadius;
+            leftGoalDelta = -task.angle * effectiveRadius;
+            rightGoalDelta = task.angle * effectiveRadius;
         } else if (task instanceof TankDriveTask) {
             // Teleop, set deltas to 0 to pretend we're done
-            this.leftGoalDelta = 0;
-            this.rightGoalDelta = 0;
+            leftGoalDelta = 0;
+            rightGoalDelta = 0;
             // Clamp to 1 to prevent upscaling
             double maxAbsPower = Math.max(Math.abs(task.left), Math.abs(task.right), 1);  
             // Question: Why do we use max if we're trying to prevent upscaling?
-            this.leftWheel.setVelocity(task.left / maxAbsPower);
-            this.rightWheel.setVelocity(task.right / maxAbsPower);
+            leftWheel.setVelocity(task.left / maxAbsPower);
+            rightWheel.setVelocity(task.right / maxAbsPower);
         } else {
             throw new UnsupportedTaskError(task);
         }
-        this.leftWheel.setVelocity(Math.signum(this.leftGoalDelta));
-        this.rightWheel.setVelocity(Math.signum(this.rightGoalDelta));
+        leftWheel.setVelocity(Math.signum(leftGoalDelta));
+        rightWheel.setVelocity(Math.signum(rightGoalDelta));
     }
 }
