@@ -83,11 +83,12 @@ public class TwoWheelDrive implements Layer {
         return done;
     }
 
-    public update() {
+    public Task update() {
         // Adaptive velocity controller goes here.
+        return null;
     }
 
-    public acceptTask(Task task) {
+    public void acceptTask(Task task) {
         this.leftStartPos = this.leftWheel.getDistance();
         this.rightStartPos = this.rightWheel.getDistance();
 
