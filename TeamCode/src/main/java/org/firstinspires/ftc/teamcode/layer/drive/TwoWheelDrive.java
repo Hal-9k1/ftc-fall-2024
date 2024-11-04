@@ -1,12 +1,14 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.layer.drive;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.teamcode.layer.Layer;
 import org.firstinspires.ftc.teamcode.mechanism.Wheel;
-import org.firstinspires.ftc.teamcode.layer.UnsupportedTaskError;
 import org.firstinspires.ftc.teamcode.task.AxialMovementTask;
 import org.firstinspires.ftc.teamcode.task.TankDriveTask;
+import org.firstinspires.ftc.teamcode.task.Task;
 import org.firstinspires.ftc.teamcode.task.TurnTask;
+import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
 import org.firstinspires.ftc.teamcode.Units;
 
 /**
@@ -71,12 +73,12 @@ public class TwoWheelDrive implements Layer {
     }
 
     public boolean isTaskDone() {
-        double leftDelta = leftWheel.getDistance() - leftStartPos < 0;
+        double leftDelta = leftWheel.getDistance() - leftStartPos;
         boolean leftDeltaSignsMatch = (leftDelta < 0) == (leftGoalDelta < 0);
         boolean leftGoalDeltaExceeded = Math.abs(leftDelta) >= Math.abs(leftGoalDelta);
         boolean leftDone = (leftDeltaSignsMatch && leftGoalDeltaExceeded) || leftGoalDelta == 0;
 
-        double rightDelta = rightWheel.getDistance() - rightStartPos < 0;
+        double rightDelta = rightWheel.getDistance() - rightStartPos;
         boolean rightDeltaSignsMatch = (rightDelta < 0) == (rightGoalDelta < 0);
         boolean rightGoalDeltaExceeded = Math.abs(rightDelta) >= Math.abs(rightGoalDelta);
         boolean rightDone = (rightDeltaSignsMatch && rightGoalDeltaExceeded) || rightGoalDelta == 0;
@@ -116,7 +118,7 @@ public class TwoWheelDrive implements Layer {
             leftWheel.setVelocity(task.left / maxAbsPower);
             rightWheel.setVelocity(task.right / maxAbsPower);
         } else {
-            throw new UnsupportedTaskError(task);
+            throw new UnsupportedTaskException(task);
         }
         leftWheel.setVelocity(Math.signum(leftGoalDelta));
         rightWheel.setVelocity(Math.signum(rightGoalDelta));

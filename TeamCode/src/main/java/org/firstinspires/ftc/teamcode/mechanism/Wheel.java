@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.mechanism;
 
+import com.qualcomm.robotcore.hardware.DcMotor;
+
 /**
  * Represents a wheel directly or indirectly driven by a motor that can calculate translation using
  * the motor's position and the wheel's radius.
