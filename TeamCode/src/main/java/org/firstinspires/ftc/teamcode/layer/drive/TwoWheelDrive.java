@@ -79,7 +79,7 @@ public class TwoWheelDrive implements Layer {
     public boolean isTaskDone() {
         boolean leftDone = ((this.leftWheel.getDistance() - this.leftStartPos < 0)
             == (this.leftGoalDelta < 0)) || this.leftGoalDelta == 0;
-        boolean rightDone = ((this.rightWheel.getDistance() - this.rightStartPos< 0)
+        boolean rightDone = ((this.rightWheel.getDistance() - this.rightStartPos < 0)
             == (this.rightGoalDelta < 0)) || this.rightGoalDelta == 0;
         boolean done = leftDone && rightDone;
         if (done) {
