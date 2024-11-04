@@ -22,10 +22,6 @@ public class TwoWheelDrive implements Layer {
      */
     private static final String RIGHT_DRIVE_MOTOR_NAME = "6_spamandeggs";
     /**
-     * The number of encoder ticks per rotation of the drive motor shafts.
-     */
-    private static final double TICKS_PER_ROT = 888;
-    /**
      * The radius of the drive wheels in meters.
      */
     private static final double WHEEL_RADIUS = 0.42;
@@ -61,13 +57,11 @@ public class TwoWheelDrive implements Layer {
         // Wheel class has three parameters: motor, radius, and ticks per rotation.
         leftWheel = new Wheel(
             initInfo.getHardwareMap().get(DcMotor.class, LEFT_DRIVE_MOTOR_NAME),
-            WHEEL_RADIUS,
-            TICKS_PER_ROT
+            WHEEL_RADIUS
         );
         rightWheel = new Wheel(
             initInfo.getHardwareMap().hardwareMap.get(DcMotor.class, RIGHT_DRIVE_MOTOR_NAME),
-            WHEEL_RADIUS,
-            TICKS_PER_ROT
+            WHEEL_RADIUS
         );
         
         leftStartPos = 0;
