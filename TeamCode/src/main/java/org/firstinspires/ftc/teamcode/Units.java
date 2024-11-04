@@ -18,7 +18,7 @@ public class Units
 
       private final double unitsPerMeter;
 
-      Distance(double unitPerMeter) {
+      Distance(double unitsPerMeter) {
         this.unitsPerMeter = unitsPerMeter;
       }
     }
