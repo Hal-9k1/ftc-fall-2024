@@ -7,10 +7,10 @@ import org.firstinspires.ftc.teamcode.task.TankDriveTask;
 import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
 
 /**
- * Mapping for gamepad input that uses the y components of each joystick to
- * control power to the corrosponding side of the robot.
+ * Mapping for gamepad input that uses the x and y components of the left
+ * joystick for movement and turning, leaving the other joystick free.
  */
-public class TankMapping extends FunctionLayer {
+public class ZeldaDriveMapping extends FunctionLayer {
     @Override
     public void setup(LayerSetupInfo setupInfo) { }
 
@@ -18,9 +18,11 @@ public class TankMapping extends FunctionLayer {
     public Task map(Task task) {
         if (task instanceof GamepadInputTask) {
             GamepadInputTask castedTask = (GamepadInputTask)task;
+            double axial = castedTask.gamepad0.joysticks.left.y;
+            double yaw = castedTask.gamepad0.joysticks.left.x;
             return new GamepadInputTask(
-                castedTask.gamepad0.joysticks.left.y,
-                castedTask.gamepad0.joysticks.right.y
+                axial + yaw,
+                axial - yaw
             );
         } else {
             throw new UnsupportedTaskException(this, task);
