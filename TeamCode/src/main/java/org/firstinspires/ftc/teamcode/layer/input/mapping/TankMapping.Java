@@ -6,6 +6,10 @@ import org.firstinspires.ftc.teamcode.task.Task;
 import org.firstinspires.ftc.teamcode.task.TankDriveTask;
 import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
 
+/**
+ * Mapping for gamepad input that uses the y components of each joystick to
+ * control power to the corrosponding side of the robot.
+ */
 public class TankMapping extends FunctionLayer {
     @Override
     public void setup(LayerSetupInfo setupInfo) { }
