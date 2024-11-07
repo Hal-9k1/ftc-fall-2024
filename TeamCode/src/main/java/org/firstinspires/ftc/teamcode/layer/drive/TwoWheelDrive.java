@@ -95,34 +95,17 @@ public class TwoWheelDrive implements Layer {
         return null;
     }
 
-<<<<<<< HEAD
-    public acceptTask(Task task) {
-        this.leftStartPos = this.leftWheel.getDistance();
-        this.rightStartPos = this.rightWheel.getDistance();
-        double deltaFac = TwoWheelDrive.GEAR_RATIO * TwoWheelDrive.SLIPPING_CONSTANT;
-        if (task instanceof AxialMovementTask) {
-            this.leftGoalDelta = task.distance * deltaFac;
-            this.rightGoalDelta = task.distance * deltaFac;
-        } else if (task instanceof TurnTask) {
-            // Don't know what access modifier is necessary below. Have to implement later.
-            // "Effective" as in "multiplied by all the weird constants we need"
-            this.leftGoalDelta = -task.angle * TwoWheelDrive.WHEEL_SPAN_RADIUS * deltaFac;
-            this.rightGoalDelta = task.angle * TwoWheelDrive.WHEEL_SPAN_RADIUS * deltaFac;
-=======
     public void acceptTask(Task task) {
         leftStartPos = leftWheel.getDistance();
         rightStartPos = rightWheel.getDistance();
-
+        double deltaFac = TwoWheelDrive.GEAR_RATIO * TwoWheelDrive.SLIPPING_CONSTANT;
         if (task instanceof AxialMovementTask) {
-            leftGoalDelta = task.distance;
-            rightGoalDelta = task.distance;
+            leftGoalDelta = task.distance * deltaFac;
+            rightGoalDelta = task.distance * deltaFac;
         } else if (task instanceof TurnTask) {
             // Don't know what access modifier is necessary below. Have to implement later.
-            // "Effective" as in "multiplied by all the weird constants we need"
-            double effectiveRadius = WHEEL_SPAN_RADIUS * GEAR_RATIO * SLIPPING_CONSTANT;
-            leftGoalDelta = -task.angle * effectiveRadius;
-            rightGoalDelta = task.angle * effectiveRadius;
->>>>>>> refs/remotes/origin/tankDriveLayer
+            leftGoalDelta = -task.angle * TwoWheelDrive.WHEEL_SPAN_RADIUS * deltaFac;
+            rightGoalDelta = task.angle * TwoWheelDrive.WHEEL_SPAN_RADIUS * deltaFac;
         } else if (task instanceof TankDriveTask) {
             // Teleop, set deltas to 0 to pretend we're done
             leftGoalDelta = 0;
