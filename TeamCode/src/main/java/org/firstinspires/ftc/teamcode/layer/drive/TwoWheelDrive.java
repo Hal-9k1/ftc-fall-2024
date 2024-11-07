@@ -96,16 +96,15 @@ public class TwoWheelDrive implements Layer {
     public acceptTask(Task task) {
         this.leftStartPos = this.leftWheel.getDistance();
         this.rightStartPos = this.rightWheel.getDistance();
-
+        double deltaFac = TwoWheelDrive.GEAR_RATIO * TwoWheelDrive.SLIPPING_CONSTANT;
         if (task instanceof AxialMovementTask) {
-            this.leftGoalDelta = task.distance;
-            this.rightGoalDelta = task.distance;
+            this.leftGoalDelta = task.distance * deltaFac;
+            this.rightGoalDelta = task.distance * deltaFac;
         } else if (task instanceof TurnTask) {
             // Don't know what access modifier is necessary below. Have to implement later.
             // "Effective" as in "multiplied by all the weird constants we need"
-            double effectiveRadius = WHEEL_SPAN_RADIUS * GEAR_RATIO * SLIPPING_CONSTANT;
-            this.leftGoalDelta = -task.angle * effectiveRadius;
-            this.rightGoalDelta = task.angle * effectiveRadius;
+            this.leftGoalDelta = -task.angle * TwoWheelDrive.WHEEL_SPAN_RADIUS * deltaFac;
+            this.rightGoalDelta = task.angle * TwoWheelDrive.WHEEL_SPAN_RADIUS * deltaFac;
         } else if (task instanceof TankDriveTask) {
             // Teleop, set deltas to 0 to pretend we're done
             this.leftGoalDelta = 0;
