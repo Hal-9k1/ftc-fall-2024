@@ -83,12 +83,12 @@ public class RobotController {
         Task task;
         while (true) {
             task = layer.update();
+            if (!layerIter.hasPrevious()) {
+                break; // Break before null check; drive layers may return null
+            }
             if (task == null) {
                 throw new NullPointerException("Layer '" + layer.getClass().getName()
                     + "' returned null from update.");
-            }
-            if (!layerIter.hasPrevious()) {
-                break;
             }
             layer = layerIter.previous();
             layer.acceptTask(task);
