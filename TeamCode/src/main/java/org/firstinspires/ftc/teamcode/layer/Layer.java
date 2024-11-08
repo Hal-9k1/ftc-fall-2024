@@ -19,6 +19,8 @@ public interface Layer {
 
     /**
      * Returns whether the layer is ready to accept a new task.
+     * This method shouldbe free of any side effects; move code mutating state to update or
+     * acceptTask.
      * @return true if the layer has finished processing the last accepted task, if any.
      */
     boolean isTaskDone();
@@ -27,7 +29,8 @@ public interface Layer {
      * Returns the next subordinate task produced from this layer's current task.
      * Calculates the next subordinate task that should be submitted to the below layer. The return
      * value of a bottom layer's update function is not used.
-     * @return The next task that the lower layer should run.
+     * @return The next task that the lower layer should run. Must not be null unless this is the
+     * bottommost layer.
      */
     Task update();
 
