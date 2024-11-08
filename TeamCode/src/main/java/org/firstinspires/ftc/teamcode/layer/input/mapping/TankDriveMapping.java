@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.layer.input.mapping;
 
 import org.firstinspires.ftc.teamcode.layer.FunctionLayer;
 import org.firstinspires.ftc.teamcode.layer.LayerSetupInfo;
+import org.firstinspires.ftc.teamcode.task.GamepadInputTask;
 import org.firstinspires.ftc.teamcode.task.Task;
 import org.firstinspires.ftc.teamcode.task.TankDriveTask;
 import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
@@ -18,7 +19,7 @@ public class TankDriveMapping extends FunctionLayer {
     public Task map(Task task) {
         if (task instanceof GamepadInputTask) {
             GamepadInputTask castedTask = (GamepadInputTask)task;
-            return new GamepadInputTask(
+            return new TankDriveTask(
                 castedTask.gamepad0.joysticks.left.y,
                 castedTask.gamepad0.joysticks.right.y
             );

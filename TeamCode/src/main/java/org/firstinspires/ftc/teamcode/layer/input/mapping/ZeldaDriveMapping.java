@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.layer.input.mapping;
 
 import org.firstinspires.ftc.teamcode.layer.FunctionLayer;
 import org.firstinspires.ftc.teamcode.layer.LayerSetupInfo;
+import org.firstinspires.ftc.teamcode.task.GamepadInputTask;
 import org.firstinspires.ftc.teamcode.task.Task;
 import org.firstinspires.ftc.teamcode.task.TankDriveTask;
 import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
@@ -20,7 +21,7 @@ public class ZeldaDriveMapping extends FunctionLayer {
             GamepadInputTask castedTask = (GamepadInputTask)task;
             double axial = castedTask.gamepad0.joysticks.left.y;
             double yaw = castedTask.gamepad0.joysticks.left.x;
-            return new GamepadInputTask(
+            return new TankDriveTask(
                 axial + yaw,
                 axial - yaw
             );
