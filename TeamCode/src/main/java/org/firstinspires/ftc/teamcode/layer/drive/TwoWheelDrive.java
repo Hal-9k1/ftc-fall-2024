@@ -79,7 +79,6 @@ public class TwoWheelDrive implements Layer {
 
     @Override
     public void setup(LayerSetupInfo initInfo) {
-        // Wheel class has three parameters: motor, radius, and ticks per rotation.
         leftWheel = new Wheel(
             initInfo.getHardwareMap().get(DcMotor.class, LEFT_DRIVE_MOTOR_NAME),
             WHEEL_RADIUS
@@ -148,6 +147,7 @@ public class TwoWheelDrive implements Layer {
             );
             leftWheel.setVelocity(castedTask.left / maxAbsPower);
             rightWheel.setVelocity(castedTask.right / maxAbsPower);
+            return;
         } else {
             throw new UnsupportedTaskException(this, task);
         }
