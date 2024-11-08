@@ -71,6 +71,10 @@ public class TwoWheelDrive implements Layer {
      * meters.
      */
     private double rightGoalDelta;
+    /**
+     * Whether the currently executing task has completed.
+     */
+    private boolean currentTaskDone;
 
     public TwoWheelDrive(LayerSetupInfo initInfo) {
         // Wheel class has three parameters: motor, radius, and ticks per rotation.
@@ -87,10 +91,16 @@ public class TwoWheelDrive implements Layer {
         rightStartPos = 0;
         leftGoalDelta = 0;
         rightGoalDelta = 0;
+        currentTaskDone = true;
     }
 
     @Override
     public boolean isTaskDone() {
+        return currentTaskDone;
+    }
+
+    @Override
+    public Task update() {
         double leftDelta = leftWheel.getDistance() - leftStartPos;
         boolean leftDeltaSignsMatch = (leftDelta < 0) == (leftGoalDelta < 0);
         boolean leftGoalDeltaExceeded = Math.abs(leftDelta) >= Math.abs(leftGoalDelta);
@@ -100,22 +110,20 @@ public class TwoWheelDrive implements Layer {
         boolean rightDeltaSignsMatch = (rightDelta < 0) == (rightGoalDelta < 0);
         boolean rightGoalDeltaExceeded = Math.abs(rightDelta) >= Math.abs(rightGoalDelta);
         boolean rightDone = (rightDeltaSignsMatch && rightGoalDeltaExceeded) || rightGoalDelta == 0;
-        boolean done = leftDone && rightDone;
-        if (done) {
+
+        boolean isTeleopTask = leftGoalDelta == 0 && rightGoalDelta == 0;
+        currentTaskDone = leftDone && rightDone;
+        if (currentTaskDone && !isTeleopTask) {
             leftWheel.setVelocity(0);
             rightWheel.setVelocity(0);
         }
-        return done;
-    }
-
-    @Override
-    public Task update() {
         // Adaptive velocity control goes here.
         return null;
     }
 
     @Override
     public void acceptTask(Task task) {
+        currentTaskDone = false;
         leftStartPos = leftWheel.getDistance();
         rightStartPos = rightWheel.getDistance();
         double deltaFac = GEAR_RATIO * SLIPPING_CONSTANT;
