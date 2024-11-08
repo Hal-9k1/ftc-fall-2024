@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.layer.drive;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.layer.Layer;
+import org.firstinspires.ftc.teamcode.layer.LayerSetupInfo;
 import org.firstinspires.ftc.teamcode.mechanism.Wheel;
 import org.firstinspires.ftc.teamcode.task.AxialMovementTask;
 import org.firstinspires.ftc.teamcode.task.TankDriveTask;
@@ -48,11 +49,11 @@ public class TwoWheelDrive implements Layer {
     /**
      * The robot's left wheel.
      */
-    private final Wheel leftWheel;
+    private Wheel leftWheel;
     /**
      * The robot's right wheel.
      */
-    private final Wheel rightWheel;
+    private Wheel rightWheel;
     /**
      * The position of the left wheel at the start of the currently executing task, in meters.
      */
@@ -76,14 +77,15 @@ public class TwoWheelDrive implements Layer {
      */
     private boolean currentTaskDone;
 
-    public TwoWheelDrive(LayerSetupInfo initInfo) {
+    @Override
+    public void setup(LayerSetupInfo initInfo) {
         // Wheel class has three parameters: motor, radius, and ticks per rotation.
         leftWheel = new Wheel(
             initInfo.getHardwareMap().get(DcMotor.class, LEFT_DRIVE_MOTOR_NAME),
             WHEEL_RADIUS
         );
         rightWheel = new Wheel(
-            initInfo.getHardwareMap().hardwareMap.get(DcMotor.class, RIGHT_DRIVE_MOTOR_NAME),
+            initInfo.getHardwareMap().get(DcMotor.class, RIGHT_DRIVE_MOTOR_NAME),
             WHEEL_RADIUS
         );
         
