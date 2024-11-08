@@ -45,15 +45,32 @@ public class TwoWheelDrive implements Layer {
      */
     private static final double SLIPPING_CONSTANT = 1;
 
-    // Wheel is a class from Mechanisms.py, probably translated into Mechanism.java
+    /**
+     * The robot's left wheel.
+     */
     private final Wheel leftWheel;
+    /**
+     * The robot's right wheel.
+     */
     private final Wheel rightWheel;
+    /**
+     * The position of the left wheel at the start of the currently executing task, in meters.
+     */
     private double leftStartPos;
+    /**
+     * The position of the right wheel at the start of the currently executing task, in meters.
+     */
     private double rightStartPos;
+    /**
+     * The required delta position of the left wheel to complete the currently executing task, in
+     * meters.
+     */
     private double leftGoalDelta;
+    /**
+     * The required delta position of the right wheel to complete the currently executing task, in
+     * meters.
+     */
     private double rightGoalDelta;
-
-    // New important lore drop from Eddy: Use DcMotor and Servo interfaces from FTC in place of the wrapper classes from actuators.py
 
     public TwoWheelDrive(LayerSetupInfo initInfo) {
         // Wheel class has three parameters: motor, radius, and ticks per rotation.
@@ -72,6 +89,7 @@ public class TwoWheelDrive implements Layer {
         rightGoalDelta = 0;
     }
 
+    @Override
     public boolean isTaskDone() {
         double leftDelta = leftWheel.getDistance() - leftStartPos;
         boolean leftDeltaSignsMatch = (leftDelta < 0) == (leftGoalDelta < 0);
@@ -90,33 +108,38 @@ public class TwoWheelDrive implements Layer {
         return done;
     }
 
+    @Override
     public Task update() {
         // Adaptive velocity control goes here.
         return null;
     }
 
+    @Override
     public void acceptTask(Task task) {
         leftStartPos = leftWheel.getDistance();
         rightStartPos = rightWheel.getDistance();
-        double deltaFac = TwoWheelDrive.GEAR_RATIO * TwoWheelDrive.SLIPPING_CONSTANT;
+        double deltaFac = GEAR_RATIO * SLIPPING_CONSTANT;
         if (task instanceof AxialMovementTask) {
-            leftGoalDelta = task.distance * deltaFac;
-            rightGoalDelta = task.distance * deltaFac;
+            AxialMovementTask castedTask = (AxialMovementTask)task;
+            leftGoalDelta = castedTask.distance * deltaFac;
+            rightGoalDelta = castedTask.distance * deltaFac;
         } else if (task instanceof TurnTask) {
-            // Don't know what access modifier is necessary below. Have to implement later.
-            leftGoalDelta = -task.angle * TwoWheelDrive.WHEEL_SPAN_RADIUS * deltaFac;
-            rightGoalDelta = task.angle * TwoWheelDrive.WHEEL_SPAN_RADIUS * deltaFac;
+            TurnTask castedTask = (TurnTask)task;
+            leftGoalDelta = -castedTask.angle * WHEEL_SPAN_RADIUS * deltaFac;
+            rightGoalDelta = castedTask.angle * WHEEL_SPAN_RADIUS * deltaFac;
         } else if (task instanceof TankDriveTask) {
             // Teleop, set deltas to 0 to pretend we're done
             leftGoalDelta = 0;
             rightGoalDelta = 0;
-            // Clamp to 1 to prevent upscaling
-            double maxAbsPower = Math.max(Math.abs(task.left), Math.abs(task.right), 1);  
-            // Question: Why do we use max if we're trying to prevent upscaling?
-            leftWheel.setVelocity(task.left / maxAbsPower);
-            rightWheel.setVelocity(task.right / maxAbsPower);
+            TankDriveTask castedTask = (TankDriveTask)task;
+            double maxAbsPower = Math.max(
+                Math.max(Math.abs(castedTask.left), Math.abs(castedTask.right)),
+                1 // Clamp to 1 to prevent upscaling
+            );
+            leftWheel.setVelocity(castedTask.left / maxAbsPower);
+            rightWheel.setVelocity(castedTask.right / maxAbsPower);
         } else {
-            throw new UnsupportedTaskException(task);
+            throw new UnsupportedTaskException(this, task);
         }
         leftWheel.setVelocity(Math.signum(leftGoalDelta));
         rightWheel.setVelocity(Math.signum(rightGoalDelta));

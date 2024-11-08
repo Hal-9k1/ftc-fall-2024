@@ -24,7 +24,6 @@ public class Wheel {
     public Wheel(DcMotor motor, double radius) {
         this.motor = motor;
         this.radius = radius;
-        this.ticksPerRot = ticksPerRot;
     }
 
     /**
