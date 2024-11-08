@@ -4,6 +4,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
+import java.util.function.BiPredicate;
+import java.util.function.Function;
 
 import org.firstinspires.ftc.teamcode.layer.Layer;
 import org.firstinspires.ftc.teamcode.layer.LayerSetupInfo;
@@ -79,7 +81,7 @@ public class MecanumDrive implements Layer {
          * Creates a WheelProperty by applying a function to each wheel.
          */
         public static <R> WheelProperty<R> populate(Function<WheelKey, R> populator) {
-            return NULL_PROP.map((key, _) -> populator.apply(key));
+            return NULL_PROP.map((key, _null) -> populator.apply(key));
         }
         /**
          * Gets the value of the property for the given wheel.
@@ -88,15 +90,16 @@ public class MecanumDrive implements Layer {
          */
         public T get(WheelKey key) {
             switch (key) {
-                case WheelKey.LEFT_FRONT:
+                case LEFT_FRONT:
                     return leftFront;
-                case WheelKey.RIGHT_FRONT:
+                case RIGHT_FRONT:
                     return rightFront;
-                case WheelKey.LEFT_BACK:
+                case LEFT_BACK:
                     return leftBack;
-                case WheelKey.RIGHT_BACK:
+                case RIGHT_BACK:
                     return rightBack;
             }
+            throw new IllegalArgumentException("Bad WheelKey to WheelProperty.get.");
         }
         /**
          * Sets the value of the property for the given wheel.
@@ -105,13 +108,13 @@ public class MecanumDrive implements Layer {
          */
         public void put(WheelKey key, T value) {
             switch (key) {
-                case WheelKey.LEFT_FRONT:
+                case LEFT_FRONT:
                     leftFront = value;
-                case WheelKey.RIGHT_FRONT:
+                case RIGHT_FRONT:
                     rightFront = value;
-                case WheelKey.LEFT_BACK:
+                case LEFT_BACK:
                     leftBack = value;
-                case WheelKey.RIGHT_BACK:
+                case RIGHT_BACK:
                     rightBack = value;
             }
         }
@@ -149,6 +152,17 @@ public class MecanumDrive implements Layer {
             forEach((key, old) -> mapped.put(key, mapper.apply(key, old)));
             return mapped;
         }
+        /**
+         * Returns whether a predicate tests true on each of the wheels' keys and values.
+         * @param predicate - the predicate to test
+         * @returns whether the predicate tests true on each of the wheels' keys and values
+         */
+        public boolean all(BiPredicate<WheelKey, T> predicate) {
+            return predicate.test(WheelKey.LEFT_FRONT, leftFront)
+                && predicate.test(WheelKey.RIGHT_FRONT, rightFront)
+                && predicate.test(WheelKey.LEFT_BACK, leftBack)
+                && predicate.test(WheelKey.RIGHT_BACK, rightBack);
+        }
     }
     /**
      * Name of the drive motors in the robot configuration.
@@ -169,7 +183,7 @@ public class MecanumDrive implements Layer {
      * should cancel out. Differently teethed gears driven by the same axle require more
      * consideration.
      */
-    private static final WheelProperty<Double> GEAR_RATIO = new WheelProperty.populate((_) -> 1.0);
+    private static final WheelProperty<Double> GEAR_RATIO = WheelProperty.populate((_key) -> 1.0);
     /**
      * Half the distance between the driving wheels in meters.
      */
@@ -184,16 +198,16 @@ public class MecanumDrive implements Layer {
     /**
      * The robot's wheels.
      */
-    private final WheelProperty<Wheel> wheels;
+    private WheelProperty<Wheel> wheels;
     /**
      * The position of the wheels at the start of the currently executing task, in meters.
      */
-    private final WheelProperty<Double> wheelStartPos;
+    private WheelProperty<Double> wheelStartPos;
     /**
      * The required delta position of the wheels to complete the currently executing task, in
      * meters.
      */
-    private final WheelProperty<Double> wheelGoalDeltas;
+    private WheelProperty<Double> wheelGoalDeltas;
     /**
      * Whether the currently executing task has completed.
      */
@@ -205,8 +219,8 @@ public class MecanumDrive implements Layer {
             initInfo.getHardwareMap().get(DcMotor.class, motorName),
             WHEEL_RADIUS
         ));
-        wheelStartPos = WheelProperty.populate((_) -> 0);
-        wheelGoalDeltas = WheelProperty.populate((_) -> 0);
+        wheelStartPos = WheelProperty.populate((_key) -> 0.0);
+        wheelGoalDeltas = WheelProperty.populate((_key) -> 0.0);
         currentTaskDone = true;
     }
 
@@ -230,11 +244,10 @@ public class MecanumDrive implements Layer {
             (deltaSignsMatch.get(key) && goalDeltaExceeded.get(key)) || goalDelta == 0
         );
 
-        boolean isTeleopTask = leftGoalDelta == 0 && rightGoalDelta == 0;
-        currentTaskDone = true;
-        wheelDone.forEach((_, done) -> currentTaskDone = done && currentTaskDone);
+        boolean isTeleopTask = wheelGoalDeltas.all((_key, goalDelta) -> goalDelta == 0);
+        currentTaskDone = wheelDone.all((_key, done) -> done);
         if (currentTaskDone && !isTeleopTask) {
-            wheels.forEach((_, wheel) -> wheel.setVelocity(0));
+            wheels.forEach((_key, wheel) -> wheel.setVelocity(0));
         }
         // Adaptive velocity control goes here.
         return null;
@@ -244,7 +257,6 @@ public class MecanumDrive implements Layer {
     public void acceptTask(Task task) {
         currentTaskDone = false;
         wheels.forEach((key, wheel) -> wheelStartPos.put(key, wheel.getDistance()));
-        double deltaFac = GEAR_RATIO * SLIPPING_CONSTANT;
         if (task instanceof AxialMovementTask) {
             AxialMovementTask castedTask = (AxialMovementTask)task;
             GEAR_RATIO.forEach((key, gearRatio) ->
@@ -266,14 +278,14 @@ public class MecanumDrive implements Layer {
                 wheel.setVelocity(Math.signum(wheelGoalDeltas.get(key))));
         } else if (task instanceof TankDriveTask) {
             // Teleop, set deltas to 0 to pretend we're done
-            wheelGoalDeltas.forEach((key, _) -> wheelGoalDeltas.put(0));
+            wheelGoalDeltas.forEach((key, _delta) -> wheelGoalDeltas.put(key, 0.0));
             TankDriveTask castedTask = (TankDriveTask)task;
             double maxAbsPower = Math.max(
                 Math.max(Math.abs(castedTask.left), Math.abs(castedTask.right)),
                 1 // Clamp to 1 to prevent upscaling
             );
-            wheels.leftForEach((_, wheel) -> wheel.setVelocity(castedTask.left / maxAbsPower));
-            wheels.rightForEach((_, wheel) -> wheel.setVelocity(castedTask.right / maxAbsPower));
+            wheels.leftForEach((_key, wheel) -> wheel.setVelocity(castedTask.left / maxAbsPower));
+            wheels.rightForEach((_key, wheel) -> wheel.setVelocity(castedTask.right / maxAbsPower));
         } else {
             throw new UnsupportedTaskException(this, task);
         }
