@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.task.Task;
 public interface Layer {
     /**
      * Performs layer setup that requires access to hardware and the RobotController.
-     * @param setup LayerSetupInfo provided to set up the layer.
+     * @param setup - LayerSetupInfo provided to set up the layer.
      */
     void setup(LayerSetupInfo setup);
 
@@ -36,9 +36,12 @@ public interface Layer {
 
     /**
      * Sets the layer's current task.
-     * Accepts a task from the above layer. Should only be called after {@link Layer#isTaskDone}
-     * returns True.
-     * @param task the task this layer should start processing.
+     * Accepts a task from the above layer.
+     * Behavior is only defined if {@link Layer#isTaskDone} returns true.
+     * @param task - the task this layer should start processing.
+     * @throws UnsupportedTaskException - this layer does not support the given task.
+     * Implementations must not change the internal state of the layer if this is thrown; isTaskDone
+     * should still return true.
      */
     void acceptTask(Task task);
 }
