@@ -22,6 +22,7 @@ public class MultiplexLayer implements Layer {
     @Override
     public Task update() {
         // ??? How do we know which layer to ask for a new subtask from
+        return null;
     }
 
     @Override
@@ -41,7 +42,7 @@ public class MultiplexLayer implements Layer {
         });
         if (!anyAccepted) {
             // Should list component layers, not say MultiplexLayer
-            throw new UnsupportedTaskException(this, layer);
+            throw new UnsupportedTaskException(this, task);
         }
     }
 }

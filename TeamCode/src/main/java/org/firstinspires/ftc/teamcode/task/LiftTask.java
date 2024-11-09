@@ -22,7 +22,7 @@ public class LiftTask implements Task {
         this.raise = raise;
         this.lower = lower;
         if (raise && lower) {
-            throw new InvalidArgumentException("Cannot simultaneously raise and lower the lift.");
+            throw new IllegalArgumentException("Cannot simultaneously raise and lower the lift.");
         }
     }
 }

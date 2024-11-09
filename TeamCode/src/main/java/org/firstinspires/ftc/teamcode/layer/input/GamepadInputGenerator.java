@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.layer.input;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import org.firstinspires.ftc.teamcode.layer.LayerSetupInfo;
 import org.firstinspires.ftc.teamcode.task.GamepadInputTask;
+import org.firstinspires.ftc.teamcode.task.Task;
 
 public class GamepadInputGenerator extends InputGenerator {
     private Gamepad gamepad0;
