@@ -11,6 +11,8 @@ import org.firstinspires.ftc.teamcode.layer.Layer;
 import org.firstinspires.ftc.teamcode.layer.LayerSetupInfo;
 import org.firstinspires.ftc.teamcode.mechanism.Wheel;
 import org.firstinspires.ftc.teamcode.task.AxialMovementTask;
+import org.firstinspires.ftc.teamcode.task.LinearMovementTask;
+import org.firstinspires.ftc.teamcode.task.MecanumDriveTask;
 import org.firstinspires.ftc.teamcode.task.TankDriveTask;
 import org.firstinspires.ftc.teamcode.task.Task;
 import org.firstinspires.ftc.teamcode.task.TurnTask;
@@ -32,7 +34,7 @@ public class MecanumDrive implements Layer {
             LEFT_FRONT(true, true),
             RIGHT_FRONT(false, true),
             LEFT_BACK(true, false),
-            RIGHT_BACK(false, false)
+            RIGHT_BACK(false, false);
 
             /**
              * Whether the wheel is on the left side of the robot.
