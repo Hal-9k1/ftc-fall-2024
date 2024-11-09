@@ -1,9 +1,10 @@
 package org.firstinspires.ftc.teamcode.task;
 
 /**
- * Specifies relative accelerations for the axial, lateral, and yaw component of a mecanum drive.
+ * Specifies relative accelerations for the axial, lateral, and yaw component of a holonomic drive
+ * (a drive train that can strafe without turning).
  */
-public class MecanumDriveTask implements Task {
+public class HolonomicDriveTask implements Task {
     /**
      * The relative acceleration to apply in the direction the robot is facing.
      * Positive values indicate forward movement and negative values indicate backward.
@@ -21,13 +22,13 @@ public class MecanumDriveTask implements Task {
      */
     public double yaw;
     /**
-     * Constructs a MecanumDriveTask.
+     * Constructs a HolonomicDriveTask.
      * @param axial - the relative acceleration to apply in the direction the robot is facing.
      * @param lateral - the relative acceleration to apply in the direction perpendicular to the one
      * the robot is facing.
      * @param yaw - the relative acceleration to use to turn the robot.
      */
-    public MecanumDriveTask(double axial, double lateral, double yaw) {
+    public HolonomicDriveTask(double axial, double lateral, double yaw) {
         this.axial = axial;
         this.lateral = lateral;
         this.yaw = yaw;

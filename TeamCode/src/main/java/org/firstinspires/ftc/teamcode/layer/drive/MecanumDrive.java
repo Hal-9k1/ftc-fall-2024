@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.layer.LayerSetupInfo;
 import org.firstinspires.ftc.teamcode.mechanism.Wheel;
 import org.firstinspires.ftc.teamcode.task.AxialMovementTask;
 import org.firstinspires.ftc.teamcode.task.LinearMovementTask;
-import org.firstinspires.ftc.teamcode.task.MecanumDriveTask;
+import org.firstinspires.ftc.teamcode.task.HolonomicDriveTask;
 import org.firstinspires.ftc.teamcode.task.TankDriveTask;
 import org.firstinspires.ftc.teamcode.task.Task;
 import org.firstinspires.ftc.teamcode.task.TurnTask;
@@ -287,9 +287,9 @@ public class MecanumDrive implements Layer {
                 castedTask.left,
                 castedTask.right
             )).forEach((key, velocity) -> wheels.get(key).setVelocity(velocity));
-        } else if (task instanceof MecanumDriveTask) {
+        } else if (task instanceof HolonomicDriveTask) {
             isAuto = false;
-            MecanumDriveTask castedTask = (MecanumDriveTask)task;
+            HolonomicDriveTask castedTask = (HolonomicDriveTask)task;
             normalizeVelocities(calculateAlyDeltas(
                 castedTask.axial,
                 castedTask.lateral,
