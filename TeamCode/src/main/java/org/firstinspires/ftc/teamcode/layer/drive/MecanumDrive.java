@@ -28,11 +28,25 @@ public class MecanumDrive implements Layer {
         /**
          * Denotes a wheel.
          */
-        private static enum WheelKey {
-            LEFT_FRONT,
-            RIGHT_FRONT,
-            LEFT_BACK,
-            RIGHT_BACK
+        public static enum WheelKey {
+            LEFT_FRONT(true, true),
+            RIGHT_FRONT(false, true),
+            LEFT_BACK(true, false),
+            RIGHT_BACK(false, false)
+
+            /**
+             * Whether the wheel is on the left side of the robot.
+             */
+            public boolean isLeft;
+            /**
+             * Whether the wheel is in the front of the robot.
+             */
+            public boolean isFront;
+
+            private WheelKey(boolean isLeft, boolean isFront) {
+                this.isLeft = isLeft;
+                this.isFront = isFront;
+            }
         }
         /**
          * A never-to-be-changed null WheelProperty used to minimize the number of objects created
@@ -119,28 +133,14 @@ public class MecanumDrive implements Layer {
             }
         }
         /**
-         * Calls a function on each of the left wheels' keys and values.
-         * @param callback - the function to call
-         */
-        public void leftForEach(BiConsumer<WheelKey, T> callback) {
-            callback.accept(WheelKey.LEFT_FRONT, leftFront);
-            callback.accept(WheelKey.LEFT_BACK, leftBack);
-        }
-        /**
-         * Calls a function on each of the right wheels' keys and values.
-         * @param callback - the function to call
-         */
-        public void rightForEach(BiConsumer<WheelKey, T> callback) {
-            callback.accept(WheelKey.RIGHT_FRONT, rightFront);
-            callback.accept(WheelKey.RIGHT_BACK, rightBack);
-        }
-        /**
          * Calls a function on each of the wheels' keys and values.
          * @param callback - the function to call
          */
         public void forEach(BiConsumer<WheelKey, T> callback) {
-            leftForEach(callback);
-            rightForEach(callback);
+            callback.accept(WheelKey.LEFT_FRONT, leftFront);
+            callback.accept(WheelKey.RIGHT_FRONT, rightFront);
+            callback.accept(WheelKey.LEFT_BACK, leftBack);
+            callback.accept(WheelKey.RIGHT_BACK, rightBack);
         }
         /**
          * Returns a new WheelProperty populated with the results of calling a mapper function with
@@ -155,7 +155,7 @@ public class MecanumDrive implements Layer {
         /**
          * Returns whether a predicate tests true on each of the wheels' keys and values.
          * @param predicate - the predicate to test
-         * @returns whether the predicate tests true on each of the wheels' keys and values
+         * @return whether the predicate tests true on each of the wheels' keys and values
          */
         public boolean all(BiPredicate<WheelKey, T> predicate) {
             return predicate.test(WheelKey.LEFT_FRONT, leftFront)
@@ -231,17 +231,18 @@ public class MecanumDrive implements Layer {
 
     @Override
     public Task update() {
-        WheelProperty<Double> deltas = wheels.map((key, wheel) -> 
-            wheel.getDistance() - wheelStartPos.get(key)
+        WheelProperty<Double> deltas = WheelProperty.populate((key) ->
+            wheels.get(key).getDistance() - wheelStartPos.get(key)
         );
-        WheelProperty<Boolean> deltaSignsMatch = deltas.map((key, delta) ->
-            (delta < 0) == (wheelGoalDeltas.get(key) < 0)
+        WheelProperty<Boolean> deltaSignsMatch = WheelProperty.populate((key) ->
+            (deltas.get(key) < 0) == (wheelGoalDeltas.get(key) < 0)
         );
-        WheelProperty<Boolean> goalDeltaExceeded = deltas.map((key, delta) ->
-            Math.abs(delta) >= Math.abs(wheelGoalDeltas.get(key))
+        WheelProperty<Boolean> goalDeltaExceeded = WheelProperty.populate((key) ->
+            Math.abs(deltas.get(key)) >= Math.abs(wheelGoalDeltas.get(key))
         );
-        WheelProperty<Boolean> wheelDone = wheelGoalDeltas.map((key, goalDelta) ->
-            (deltaSignsMatch.get(key) && goalDeltaExceeded.get(key)) || goalDelta == 0
+        WheelProperty<Boolean> wheelDone = WheelProperty.populate((key) ->
+            (deltaSignsMatch.get(key) && goalDeltaExceeded.get(key))
+                || wheelGoalDeltas.get(key) == 0
         );
 
         boolean isTeleopTask = wheelGoalDeltas.all((_key, goalDelta) -> goalDelta == 0);
@@ -256,38 +257,91 @@ public class MecanumDrive implements Layer {
     @Override
     public void acceptTask(Task task) {
         currentTaskDone = false;
-        wheels.forEach((key, wheel) -> wheelStartPos.put(key, wheel.getDistance()));
+        wheelStartPos = wheels.map((_key, wheel) -> wheel.getDistance());
+        boolean isAuto;
         if (task instanceof AxialMovementTask) {
+            isAuto = true;
             AxialMovementTask castedTask = (AxialMovementTask)task;
-            GEAR_RATIO.forEach((key, gearRatio) ->
-                wheelGoalDeltas.put(key, castedTask.distance * gearRatio * SLIPPING_CONSTANT)
+            wheelGoalDeltas = GEAR_RATIO.map((_key, gearRatio) ->
+                castedTask.distance * gearRatio * SLIPPING_CONSTANT
             );
-            wheels.forEach((key, wheel) ->
-                wheel.setVelocity(Math.signum(wheelGoalDeltas.get(key))));
         } else if (task instanceof TurnTask) {
+            isAuto = true;
             TurnTask castedTask = (TurnTask)task;
-            GEAR_RATIO.leftForEach((key, gearRatio) -> wheelGoalDeltas.put(
-                key,
-                -castedTask.angle * WHEEL_SPAN_RADIUS * gearRatio * SLIPPING_CONSTANT
-            ));
-            GEAR_RATIO.rightForEach((key, gearRatio) -> wheelGoalDeltas.put(
-                key,
-                castedTask.angle * WHEEL_SPAN_RADIUS * gearRatio * SLIPPING_CONSTANT
-            ));
-            wheels.forEach((key, wheel) ->
-                wheel.setVelocity(Math.signum(wheelGoalDeltas.get(key))));
-        } else if (task instanceof TankDriveTask) {
-            // Teleop, set deltas to 0 to pretend we're done
-            wheelGoalDeltas.forEach((key, _delta) -> wheelGoalDeltas.put(key, 0.0));
-            TankDriveTask castedTask = (TankDriveTask)task;
-            double maxAbsPower = Math.max(
-                Math.max(Math.abs(castedTask.left), Math.abs(castedTask.right)),
-                1 // Clamp to 1 to prevent upscaling
+            wheelGoalDeltas = GEAR_RATIO.map((key, gearRatio) ->
+                (key.isLeft ? -1 : 1) * castedTask.angle * WHEEL_SPAN_RADIUS * gearRatio
+                    * SLIPPING_CONSTANT
             );
-            wheels.leftForEach((_key, wheel) -> wheel.setVelocity(castedTask.left / maxAbsPower));
-            wheels.rightForEach((_key, wheel) -> wheel.setVelocity(castedTask.right / maxAbsPower));
+        } else if (task instanceof LinearMovementTask) {
+            isAuto = true;
+            LinearMovementTask castedTask = (LinearMovementTask)task;
+            wheelGoalDeltas = calculateAlyDeltas(castedTask.axial, castedTask.lateral, 0);
+        } else if (task instanceof TankDriveTask) {
+            isAuto = false;
+            TankDriveTask castedTask = (TankDriveTask)task;
+            normalizeVelocities(new WheelProperty<>(
+                castedTask.left,
+                castedTask.right,
+                castedTask.left,
+                castedTask.right
+            )).forEach((key, velocity) -> wheels.get(key).setVelocity(velocity));
+        } else if (task instanceof MecanumDriveTask) {
+            isAuto = false;
+            MecanumDriveTask castedTask = (MecanumDriveTask)task;
+            normalizeVelocities(calculateAlyDeltas(
+                castedTask.axial,
+                castedTask.lateral,
+                castedTask.yaw
+            )).forEach((key, velocity) -> wheels.get(key).setVelocity(velocity));
         } else {
             throw new UnsupportedTaskException(this, task);
         }
+        if (isAuto) {
+            normalizeVelocities(wheelGoalDeltas)
+                .forEach((key, velocity) -> wheels.get(key).setVelocity(velocity));
+        } else {
+            // Say teleop tasks are instantly done in isTaskDone
+            wheelGoalDeltas = WheelProperty.populate((_key) -> 0.0);
+        }
+    }
+
+    /**
+     * Calculates motor deltas from axial, lateral, and yaw given in arbitrary units.
+     * @param axial - axial value
+     * @param lateral - lateral value
+     * @param yaw - yaw value
+     * @return motor deltas calculated for each wheel.
+     */
+    private WheelProperty<Double> calculateAlyDeltas(double axial, double lateral, double yaw) {
+        return new WheelProperty<>(
+            axial - lateral - yaw,
+            axial + lateral + yaw,
+            axial + lateral - yaw,
+            axial - lateral + yaw
+        );
+    }
+
+    /**
+     * Scales velocities downward so the maximum absolute value is no more than 1.0 -- appropriate
+     * for use as motor velocities.
+     * @param velocities - the velocities to scale down
+     * @return the scaled velocities.
+     */
+    private WheelProperty<Double> normalizeVelocities(WheelProperty<Double> velocities) {
+        WheelProperty<Double> absolute = velocities.map((_key, velocity) -> Math.abs(velocity));
+        double maxAbsVelocity = Math.max(
+            Math.max(
+                Math.max(
+                    absolute.leftFront,
+                    absolute.rightFront
+                ),
+                Math.max(
+                    absolute.leftBack,
+                    absolute.rightBack
+                )
+            ),
+            1.0 // Clamp to 1 to prevent upscaling
+        );
+        return velocities.map((_key, velocity) -> velocity / maxAbsVelocity);
     }
 }
