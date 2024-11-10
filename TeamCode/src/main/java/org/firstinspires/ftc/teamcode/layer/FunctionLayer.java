@@ -28,8 +28,8 @@ public abstract class FunctionLayer implements Layer {
 
     @Override
     public void acceptTask(Task task) {
-        emittedSubtask = false;
         subtask = map(task);
+        emittedSubtask = false;
     }
 
     /**
