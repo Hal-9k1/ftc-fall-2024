@@ -1,8 +1,15 @@
 package org.firstinspires.ftc.teamcode.layer.manipulator;
 
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.TouchSensor;
+
 import org.firstinspires.ftc.teamcode.CircularBuffer;
 import org.firstinspires.ftc.teamcode.layer.Layer;
+import org.firstinspires.ftc.teamcode.layer.LayerSetupInfo;
+import org.firstinspires.ftc.teamcode.mechanism.Wheel;
+import org.firstinspires.ftc.teamcode.task.Task;
 import org.firstinspires.ftc.teamcode.task.LiftTask;
+import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
 
 /**
  * Controls an extendable lift operated by a pulley.
@@ -31,6 +38,10 @@ public class LiftLayer implements Layer {
      * Weight of integral component in pulley velocity calculation.
      */
     private static final double PULLEY_I_COEFF = 0.05;
+    /**
+     * Radius of the pulley in meters.
+     */
+    private static final double PULLEY_RADIUS = 0.42;
 
     /**
      * The motor used to power the lift, only retained to change zero power behavior.
@@ -64,10 +75,7 @@ public class LiftLayer implements Layer {
     @Override
     public void setup(LayerSetupInfo setupInfo) {
         pulleyMotor = setupInfo.getHardwareMap().get(DcMotor.class, "lift_motor");
-        pulley = new Wheel(
-            liftMotor,
-            PULLEY_RADIUS
-        );
+        pulley = new Wheel(pulleyMotor, PULLEY_RADIUS);
         TouchSensor zeroSwitch = setupInfo.getHardwareMap().get(TouchSensor.class,
             "lift_zero_switch");
         zeroDist = pulley.getDistance();
@@ -99,6 +107,8 @@ public class LiftLayer implements Layer {
         }
         if (!raising && goalAchieved) {
             pulley.setVelocity(0);
+        } else if (!raising) {
+            pulley.setVelocity(-1);
         } else {
             double proportional = PULLEY_P_COEFF * remainingDelta;
             double integral = PULLEY_I_COEFF * deltaHistory
@@ -109,7 +119,7 @@ public class LiftLayer implements Layer {
             deltaHistory.add(remainingDelta);
             double velocity = Math.max(-1.0, Math.min(1.0, proportional + integral));
             pulley.setVelocity(velocity);
-        } 
+        }
         return null;
     }
 

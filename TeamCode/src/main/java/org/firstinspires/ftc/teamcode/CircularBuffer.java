@@ -32,7 +32,7 @@ public class CircularBuffer<E> implements Collection<E> {
 
     @Override
     public boolean addAll(Collection<? extends E> c) {
-        c.forEach(add);
+        c.forEach(this::add);
         return true;
     }
 
@@ -50,6 +50,11 @@ public class CircularBuffer<E> implements Collection<E> {
     @Override
     public boolean containsAll(Collection<?> c) {
         return buffer.containsAll(c);
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return buffer.isEmpty();
     }
 
     @Override
