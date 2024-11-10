@@ -30,7 +30,7 @@ public class MecanumDrive implements Layer {
         /**
          * Denotes a wheel.
          */
-        public static enum WheelKey {
+        public enum WheelKey {
             LEFT_FRONT(true, true),
             RIGHT_FRONT(false, true),
             LEFT_BACK(true, false),
@@ -45,7 +45,7 @@ public class MecanumDrive implements Layer {
              */
             public final boolean isFront;
 
-            private WheelKey(boolean isLeft, boolean isFront) {
+            WheelKey(boolean isLeft, boolean isFront) {
                 this.isLeft = isLeft;
                 this.isFront = isFront;
             }

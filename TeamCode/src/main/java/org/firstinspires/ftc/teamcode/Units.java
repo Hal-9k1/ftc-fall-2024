@@ -1,8 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 public class Units {
-    private static double pi = Math.PI;
-    public static enum Distance {
+    public enum Distance {
         MM(1000),
         CM(100),
         IN(100 / 2.54),
@@ -16,7 +15,7 @@ public class Units {
             this.unitsPerMeter = unitsPerMeter;
         }
     }
-    public static enum Angle {
+    public enum Angle {
         DEG(180 / Math.PI),
         REV(1 / (2 * Math.PI)),
         RAD(1);
