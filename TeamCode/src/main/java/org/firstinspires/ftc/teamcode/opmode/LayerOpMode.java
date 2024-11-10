@@ -15,13 +15,15 @@ public abstract class LayerOpMode extends OpMode {
 
     @Override
     public void init() {
+        telemetry.setAutoClear(true);
         controller = new RobotController();
-        controller.setup(hardwareMap, getLayers(), gamepad1, gamepad2);
+        controller.setup(hardwareMap, telemetry, getLayers(), gamepad1, gamepad2);
     }
 
     @Override
     public void loop() {
         controller.update();
+        updateTelemetry(telemetry);
     }
 
     /**

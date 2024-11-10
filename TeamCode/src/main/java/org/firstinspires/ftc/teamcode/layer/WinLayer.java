@@ -13,7 +13,7 @@ public class WinLayer implements Layer {
     private boolean emittedWin;
 
     public WinLayer() {
-        emittedWin = true;
+        emittedWin = false;
     }
 
     @Override
@@ -32,6 +32,6 @@ public class WinLayer implements Layer {
 
     @Override
     public void acceptTask(Task task) {
-        throw new UnsupportedTaskException();
+        throw new UnsupportedTaskException(this, task);
     }
 }

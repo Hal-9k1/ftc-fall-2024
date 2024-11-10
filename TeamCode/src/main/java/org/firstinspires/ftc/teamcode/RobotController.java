@@ -6,8 +6,11 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.ArrayList;
 import java.util.function.Consumer;
+
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.layer.Layer;
 import org.firstinspires.ftc.teamcode.layer.LayerSetupInfo;
+import org.firstinspires.ftc.teamcode.layer.input.GamepadInputGenerator;
 import org.firstinspires.ftc.teamcode.task.Task;
 
 /**
@@ -19,6 +22,7 @@ public class RobotController {
     private final ArrayList<Consumer<Boolean>> updateListeners;
     private List<Layer> layers;
     private Telemetry telemetry;
+    private boolean debug;
 
     /**
      * Constructs a RobotController.
@@ -46,6 +50,7 @@ public class RobotController {
         }
         this.layers = layers;
         this.telemetry = telemetry;
+        debug = !layers.stream().anyMatch(x -> x instanceof GamepadInputGenerator);
     }
 
     /**
@@ -74,6 +79,9 @@ public class RobotController {
             if (!layer.isTaskDone()) {
                 break;
             }
+            if (debug) {
+                telemetry.log().add("Layer %s requests next task", layer.getClass().getName());
+            }
             if (!layerIter.hasNext()) {
                 // No tasks left in any layer, inform all listeners of completion
                 for (Consumer<Boolean> listener : updateListeners) {
@@ -81,6 +89,9 @@ public class RobotController {
                 }
                 updateListeners.clear();
                 layers = null;
+                if (debug) {
+                    telemetry.log().add("RobotController finished executing layers");
+                }
                 return true;
             }
         }

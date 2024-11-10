@@ -7,6 +7,7 @@ import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.layer.Layer;
 import org.firstinspires.ftc.teamcode.layer.LayerSetupInfo;
 import org.firstinspires.ftc.teamcode.mechanism.Wheel;
@@ -216,6 +217,8 @@ public class MecanumDrive implements Layer {
      */
     private boolean currentTaskDone;
 
+    private Telemetry telemetry;
+
     @Override
     public void setup(LayerSetupInfo initInfo) {
         wheels = DRIVE_MOTOR_NAMES.map((key, motorName) -> new Wheel(
@@ -225,6 +228,7 @@ public class MecanumDrive implements Layer {
         wheelStartPos = WheelProperty.populate((_key) -> 0.0);
         wheelGoalDeltas = WheelProperty.populate((_key) -> 0.0);
         currentTaskDone = true;
+        telemetry = initInfo.getTelemetry();
     }
 
     @Override
@@ -247,13 +251,18 @@ public class MecanumDrive implements Layer {
             (deltaSignsMatch.get(key) && goalDeltaExceeded.get(key))
                 || wheelGoalDeltas.get(key) == 0
         );
+        wheels.forEach((key, _wheel) -> {
+            telemetry.addLine(key.name())
+                .addData("delta", deltas.get(key))
+                .addData("goalDelta", wheelGoalDeltas.get(key))
+                .addData("done", wheelDone.get(key));
+        });
 
         boolean isTeleopTask = wheelGoalDeltas.all((_key, goalDelta) -> goalDelta == 0);
         currentTaskDone = wheelDone.all((_key, done) -> done);
         if (currentTaskDone && !isTeleopTask) {
             wheels.forEach((_key, wheel) -> wheel.setVelocity(0));
         }
-        // Adaptive velocity control goes here.
         return null;
     }
 
@@ -287,7 +296,7 @@ public class MecanumDrive implements Layer {
                 castedTask.right,
                 castedTask.left,
                 castedTask.right
-            )).forEach((key, velocity) -> wheels.get(key).setVelocity(velocity));
+            ), false).forEach((key, velocity) -> wheels.get(key).setVelocity(velocity));
         } else if (task instanceof HolonomicDriveTask) {
             isAuto = false;
             HolonomicDriveTask castedTask = (HolonomicDriveTask)task;
@@ -295,13 +304,16 @@ public class MecanumDrive implements Layer {
                 castedTask.axial,
                 castedTask.lateral,
                 castedTask.yaw
-            )).forEach((key, velocity) -> wheels.get(key).setVelocity(velocity));
+            ), false).forEach((key, velocity) -> wheels.get(key).setVelocity(velocity));
         } else {
             throw new UnsupportedTaskException(this, task);
         }
         if (isAuto) {
-            normalizeVelocities(wheelGoalDeltas)
-                .forEach((key, velocity) -> wheels.get(key).setVelocity(velocity));
+            normalizeVelocities(wheelGoalDeltas, true)
+                .forEach((key, velocity) -> {
+                    telemetry.addData("MecanumDrive " + key.name(), velocity);
+                    wheels.get(key).setVelocity(velocity);
+                });
         } else {
             // Say teleop tasks are instantly done in isTaskDone
             wheelGoalDeltas = WheelProperty.populate((_key) -> 0.0);
@@ -325,12 +337,14 @@ public class MecanumDrive implements Layer {
     }
 
     /**
-     * Scales velocities downward so the maximum absolute value is no more than 1.0 -- appropriate
+     * Scales velocities so the maximum absolute value is no more than 1.0 -- appropriate
      * for use as motor velocities.
      * @param velocities - the velocities to scale down
+     * @param scaleUp - whether velocities may be scaled upwards. Should be false when handling user
+     * input so drivers may be gentle.
      * @return the scaled velocities.
      */
-    private WheelProperty<Double> normalizeVelocities(WheelProperty<Double> velocities) {
+    private WheelProperty<Double> normalizeVelocities(WheelProperty<Double> velocities, boolean scaleUp) {
         WheelProperty<Double> absolute = velocities.map((_key, velocity) -> Math.abs(velocity));
         double maxAbsVelocity = Math.max(
             Math.max(
@@ -343,7 +357,7 @@ public class MecanumDrive implements Layer {
                     absolute.rightBack
                 )
             ),
-            1.0 // Clamp to 1 to prevent upscaling
+            scaleUp ? Double.MIN_VALUE : 1.0 // Clamp to 1 when scaleUp is false to prevent upscaling
         );
         return velocities.map((_key, velocity) -> velocity / maxAbsVelocity);
     }
