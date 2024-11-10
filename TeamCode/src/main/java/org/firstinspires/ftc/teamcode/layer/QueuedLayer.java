@@ -1,9 +1,9 @@
-package org.firstinspires.teamcode.layer;
+package org.firstinspires.ftc.teamcode.layer;
 
 import java.util.Iterator;
 import java.util.List;
-import org.firstinspires.teamcode.layer.LayerSetupInfo;
-import org.firstinspires.teamcode.task.Task;
+import org.firstinspires.ftc.teamcode.layer.LayerSetupInfo;
+import org.firstinspires.ftc.teamcode.task.Task;
 
 /**
  * A convenience base class for layers that can compute queues of subtasks ahead of time and require
@@ -28,7 +28,7 @@ public abstract class QueuedLayer implements Layer {
     }
 
     @Override
-    public void update() {
+    public Task update() {
         return subtaskIter.next();
     }
 
