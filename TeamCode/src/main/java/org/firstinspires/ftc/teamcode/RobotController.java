@@ -16,7 +16,7 @@ import org.firstinspires.ftc.teamcode.task.Task;
  * and then delegating to subordinates.
  */
 public class RobotController {
-    private ArrayList<Consumer<Boolean>> updateListeners;
+    private final ArrayList<Consumer<Boolean>> updateListeners;
     private List<Layer> layers;
 
     /**
@@ -63,7 +63,7 @@ public class RobotController {
             return true;
         }
         int i = 0;
-        Layer layer = null;
+        Layer layer;
         ListIterator<Layer> layerIter = layers.listIterator();
         while (true) {
             layer = layerIter.next();

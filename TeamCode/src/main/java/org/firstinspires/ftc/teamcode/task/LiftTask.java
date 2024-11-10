@@ -7,11 +7,11 @@ public class LiftTask implements Task {
     /**
      * Whether the lift should be raised.
      */
-    public boolean raise;
+    public final boolean raise;
     /**
      * Whether the lift should be lowered.
      */
-    public boolean lower;
+    public final boolean lower;
 
     /**
      * Constructs a LiftTask.

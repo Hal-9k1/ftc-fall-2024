@@ -35,7 +35,7 @@ public class PathlessStrategy extends QueuedLayer {
             // Third closest
             new LinearMovementTask(Units.convert(rushDist, Units.Distance.TILE, Units.Distance.M), 0),
             new LinearMovementTask(0, Units.convert(-strafeDist, Units.Distance.TILE, Units.Distance.M)),
-            new LinearMovementTask(Units.convert(-rushDist, Units.Distance.TILE, Units.Distance.M), 0),
+            new LinearMovementTask(Units.convert(-rushDist, Units.Distance.TILE, Units.Distance.M), 0)
         ));
     }
 

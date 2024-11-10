@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.layer;
 
 import org.firstinspires.ftc.teamcode.task.Task;
+import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
 
 /**
  * A modular unit of robot functionality.

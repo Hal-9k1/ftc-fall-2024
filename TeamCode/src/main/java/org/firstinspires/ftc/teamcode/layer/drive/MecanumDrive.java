@@ -39,11 +39,11 @@ public class MecanumDrive implements Layer {
             /**
              * Whether the wheel is on the left side of the robot.
              */
-            public boolean isLeft;
+            public final boolean isLeft;
             /**
              * Whether the wheel is in the front of the robot.
              */
-            public boolean isFront;
+            public final boolean isFront;
 
             private WheelKey(boolean isLeft, boolean isFront) {
                 this.isLeft = isLeft;
