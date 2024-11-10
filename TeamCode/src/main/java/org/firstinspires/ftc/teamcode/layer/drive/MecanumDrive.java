@@ -310,9 +310,9 @@ public class MecanumDrive implements Layer {
 
     /**
      * Calculates motor deltas from axial, lateral, and yaw given in arbitrary units.
-     * @param axial - axial value
-     * @param lateral - lateral value
-     * @param yaw - yaw value
+     * @param axial - axial value, positive forward
+     * @param lateral - lateral value, positive right
+     * @param yaw - yaw value, positive counterclockwise
      * @return motor deltas calculated for each wheel.
      */
     private WheelProperty<Double> calculateAlyDeltas(double axial, double lateral, double yaw) {

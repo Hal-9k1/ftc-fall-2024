@@ -22,11 +22,11 @@ public class GamepadInputGenerator extends InputGenerator {
     public Task update() {
         return new GamepadInputTask(
             gamepad0 == null ? null : new GamepadInputTask.GamepadInput(
-                gamepad0.left_stick_x,
+                -gamepad0.left_stick_x,
                 gamepad0.left_stick_y,
                 gamepad0.left_bumper,
                 gamepad0.left_trigger,
-                gamepad0.right_stick_x,
+                -gamepad0.right_stick_x,
                 gamepad0.right_stick_y,
                 gamepad0.right_bumper,
                 gamepad0.right_trigger,
@@ -40,11 +40,11 @@ public class GamepadInputGenerator extends InputGenerator {
                 gamepad0.y
             ),
             gamepad1 == null ? null : new GamepadInputTask.GamepadInput(
-                gamepad1.left_stick_x,
+                -gamepad1.left_stick_x,
                 gamepad1.left_stick_y,
                 gamepad1.left_bumper,
                 gamepad1.left_trigger,
-                gamepad1.right_stick_x,
+                -gamepad1.right_stick_x,
                 gamepad1.right_stick_y,
                 gamepad1.right_bumper,
                 gamepad1.right_trigger,
