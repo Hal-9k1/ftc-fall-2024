@@ -7,10 +7,12 @@ public class GamepadInputTask implements Task {
     public static class Joystick {
         /**
          * The horizontal axis of the joystick.
+         * Positive values corrospond to the rightward direction.
          */
         public final float x;
         /**
          * The vertical axis of the joystick.
+         * Positive values corrospond to the upward direction.
          */
         public final float y;
 

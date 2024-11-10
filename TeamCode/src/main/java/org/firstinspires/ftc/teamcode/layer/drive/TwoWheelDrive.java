@@ -19,11 +19,11 @@ public class TwoWheelDrive implements Layer {
     /**
      * Name of the left drive motor in the robot configuration.
      */
-    private static final String LEFT_DRIVE_MOTOR_NAME = "6_spamandeggs";
+    private static final String LEFT_DRIVE_MOTOR_NAME = "left_front_drive";
     /**
      * Name of the right drive motor in the robot configuration.
      */
-    private static final String RIGHT_DRIVE_MOTOR_NAME = "6_spamandeggs";
+    private static final String RIGHT_DRIVE_MOTOR_NAME = "right_front_drive";
     /**
      * The radius of the drive wheels in meters.
      */
@@ -34,7 +34,7 @@ public class TwoWheelDrive implements Layer {
      * should cancel out. Differently teethed gears driven by the same axle require more
      * consideration.
      */
-    private static final double GEAR_RATIO = 1;
+    private static final double GEAR_RATIO = 20; // ticks per rot = 28, should get from config
     /**
      * Half the distance between the driving wheels in meters.
      */
@@ -79,7 +79,6 @@ public class TwoWheelDrive implements Layer {
 
     @Override
     public void setup(LayerSetupInfo initInfo) {
-        // Wheel class has three parameters: motor, radius, and ticks per rotation.
         leftWheel = new Wheel(
             initInfo.getHardwareMap().get(DcMotor.class, LEFT_DRIVE_MOTOR_NAME),
             WHEEL_RADIUS
@@ -148,6 +147,7 @@ public class TwoWheelDrive implements Layer {
             );
             leftWheel.setVelocity(castedTask.left / maxAbsPower);
             rightWheel.setVelocity(castedTask.right / maxAbsPower);
+            return;
         } else {
             throw new UnsupportedTaskException(this, task);
         }

@@ -80,6 +80,7 @@ public class RobotController {
                 return true;
             }
         }
+        layerIter.previous(); // Throw away current layer
         Task task;
         while (true) {
             task = layer.update();
