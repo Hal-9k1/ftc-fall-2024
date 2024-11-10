@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Base class for opmodes that use a RobotController to execute Layers.
  */
-public class LayerOpMode extends OpMode {
+public abstract class LayerOpMode extends OpMode {
     private RobotController controller;
 
     @Override
