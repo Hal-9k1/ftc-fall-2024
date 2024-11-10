@@ -34,7 +34,7 @@ public class TwoWheelDrive implements Layer {
      * should cancel out. Differently teethed gears driven by the same axle require more
      * consideration.
      */
-    private static final double GEAR_RATIO = 20; // ticks per rot = 28, should get from config
+    private static final double GEAR_RATIO = 1; // ticks per rot = 28, should get from config
     /**
      * Half the distance between the driving wheels in meters.
      */

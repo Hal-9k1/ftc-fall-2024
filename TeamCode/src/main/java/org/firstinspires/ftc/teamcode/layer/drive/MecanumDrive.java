@@ -187,11 +187,11 @@ public class MecanumDrive implements Layer {
      * should cancel out. Differently teethed gears driven by the same axle require more
      * consideration.
      */
-    private static final WheelProperty<Double> GEAR_RATIO = WheelProperty.populate((_key) -> 20.0);
+    private static final WheelProperty<Double> GEAR_RATIO = WheelProperty.populate((_key) -> 1.0);
     /**
      * Half the distance between the driving wheels in meters.
      */
-    private static final double WHEEL_SPAN_RADIUS = Units.convert(15.0, Units.Distance.IN, Units.Distance.M);
+    private static final double WHEEL_SPAN_RADIUS = Units.convert(15.0 / 2, Units.Distance.IN, Units.Distance.M);
     /**
      * Unitless, experimentally determined constant (ew) measuring lack of friction.
      * Measures lack of friction between wheels and floor material. Goal delta distances are directly
@@ -229,6 +229,11 @@ public class MecanumDrive implements Layer {
         wheelGoalDeltas = WheelProperty.populate((_key) -> 0.0);
         currentTaskDone = true;
         telemetry = initInfo.getTelemetry();
+        DRIVE_MOTOR_NAMES.forEach((key, motorName) -> {
+            telemetry.log().add("%s ticksPerRev %.2f ", key.name(),
+                    initInfo.getHardwareMap().get(DcMotor.class, motorName).getMotorType()
+                            .getTicksPerRev());
+        });
     }
 
     @Override
