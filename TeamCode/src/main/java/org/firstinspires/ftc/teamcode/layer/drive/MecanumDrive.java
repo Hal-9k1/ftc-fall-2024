@@ -170,22 +170,23 @@ public class MecanumDrive implements Layer {
      * Name of the drive motors in the robot configuration.
      */
     private static final WheelProperty<String> DRIVE_MOTOR_NAMES = new WheelProperty<>(
-        "left-front-drive-motor",
-        "right-front-drive-motor",
-        "left-back-drive-motor",
-        "right-back-drive-motor"
+        "left_front_drive",
+        "right_front_drive",
+        "left_back_drive",
+        "right_back_drive"
     );
     /**
      * The radius of the drive wheels in meters.
+     * The current value is measured from the edge, including rollers.
      */
-    private static final double WHEEL_RADIUS = 0.42;
+    private static final double WHEEL_RADIUS = Units.convert(4.25, Units.Distance.CM, Units.Distance.M);
     /**
      * The effective gear ratio of the wheels to the motor drive shafts.
      * Expressed as wheelTeeth / hubGearTeeth, ignoring all intermediate meshing gears as they
      * should cancel out. Differently teethed gears driven by the same axle require more
      * consideration.
      */
-    private static final WheelProperty<Double> GEAR_RATIO = WheelProperty.populate((_key) -> 1.0);
+    private static final WheelProperty<Double> GEAR_RATIO = WheelProperty.populate((_key) -> 20.0);
     /**
      * Half the distance between the driving wheels in meters.
      */
