@@ -38,7 +38,7 @@ public class TwoWheelDrive implements Layer {
     /**
      * Half the distance between the driving wheels in meters.
      */
-    private static final double WHEEL_SPAN_RADIUS = 0.84;
+    private static final double WHEEL_SPAN_RADIUS = Units.convert(15.0, Units.Distance.IN, Units.Distance.M);
     /**
      * Unitless, experimentally determined constant (ew) measuring lack of friction.
      * Measures lack of friction between wheels and floor material. Goal delta distances are directly
