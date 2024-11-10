@@ -18,6 +18,7 @@ import org.firstinspires.ftc.teamcode.task.Task;
 public class RobotController {
     private final ArrayList<Consumer<Boolean>> updateListeners;
     private List<Layer> layers;
+    private Telemetry telemetry;
 
     /**
      * Constructs a RobotController.
@@ -25,23 +26,26 @@ public class RobotController {
     public RobotController() {
         updateListeners = new ArrayList<>();
         layers = null;
+        telemetry = null;
     }
 
     /**
      * Initializes the controller with the given layers.
-     *
      * @param hardwareMap HardwareMap used to retrieve interfaces for robot hardware.
+     * @param telemetry Telemetry used to send logs back to the Driver Hub.
      * @param layers the layer stack to use.
      * @param gamepad0 the first connected Gamepad, or null if none is connected or available.
      * @param gamepad1 the second connected Gamepad, or null if none is connected or available.
      */
-    public void setup(HardwareMap hardwareMap, List<Layer> layers, Gamepad gamepad0,
-        Gamepad gamepad1) {
-        LayerSetupInfo setupInfo = new LayerSetupInfo(hardwareMap, this, gamepad0, gamepad1);
+    public void setup(HardwareMap hardwareMap, Telemetry telemetry, List<Layer> layers,
+        Gamepad gamepad0, Gamepad gamepad1) {
+        LayerSetupInfo setupInfo = new LayerSetupInfo(hardwareMap, telemetry, this, gamepad0,
+            gamepad1);
         for (Layer layer : layers) {
             layer.setup(setupInfo);
         }
         this.layers = layers;
+        this.telemetry = telemetry;
     }
 
     /**
@@ -103,7 +107,6 @@ public class RobotController {
      * performed. Listeners are executed in registration order and called with a single positional
      * argument of true. On the first update after the topmost layer runs out of tasks, the
      * listeners are called again with an argument of false, then unregistered.
-     *
      * @param listener the function to be registered as an update listener
      */
     public void addUpdateListener(Consumer<Boolean> listener) {

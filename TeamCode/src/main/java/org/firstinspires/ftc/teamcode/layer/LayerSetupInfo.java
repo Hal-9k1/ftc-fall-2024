@@ -10,6 +10,7 @@ import org.firstinspires.ftc.teamcode.RobotController;
  */
 public class LayerSetupInfo {
     private final HardwareMap hardwareMap;
+    private final Telemetry telemetry;
     private final RobotController robotController;
     private final Gamepad gamepad0;
     private final Gamepad gamepad1;
@@ -24,9 +25,10 @@ public class LayerSetupInfo {
      * @param gamepad1 the Gamepad connected to the second slot, or null if no such gamepad is
      * available or connected.
      */
-    public LayerSetupInfo(HardwareMap hardwareMap, RobotController robotController,
-        Gamepad gamepad0, Gamepad gamepad1) {
+    public LayerSetupInfo(HardwareMap hardwareMap, Telemetry telemetry,
+        RobotController robotController, Gamepad gamepad0, Gamepad gamepad1) {
         this.hardwareMap = hardwareMap;
+        this.telemetry = telemetry;
         this.robotController = robotController;
         this.gamepad0 = gamepad0;
         this.gamepad1 = gamepad1;
@@ -39,6 +41,13 @@ public class LayerSetupInfo {
      */
     public HardwareMap getHardwareMap() {
         return hardwareMap;
+    }
+    /**
+     * Returns the Telemetry.
+     * @return The Telemetry used to communicate with the Driver Hub.
+     */
+    public Telemetry getTelemetry() {
+        return telemetry;
     }
     /**
      * Returns the Gamepad connected to the first slot, or null if no such gamepad is available or
