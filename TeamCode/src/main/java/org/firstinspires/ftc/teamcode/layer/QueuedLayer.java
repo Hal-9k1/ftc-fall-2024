@@ -2,33 +2,41 @@ package org.firstinspires.teamcode.layer;
 
 import java.util.Iterator;
 import java.util.List;
-import org.firstinspires.teamcode.task.Task; // (Remove this comment) doesn't exist yet
-// (Remove this comment) we don't have to import the other stuff because it's in the same package
-
-// (Remove this comment) please write implementations for these methods and a javadoc for the class.
+import org.firstinspires.teamcode.layer.LayerSetupInfo;
+import org.firstinspires.teamcode.task.Task;
 
 /**
- * Javadoc goes here. For help writing javadocs: https://www.oracle.com/technical-resources/articles/java/javadoc-tool.html#:~:text=Writing%20Doc%20Comments-,Format%20of%20a%20Doc%20Comment,-A%20doc%20comment
+ * A convenience base class for layers that can compute queues of subtasks ahead of time and require
+ * no additional processing in their update method.
  */
 public abstract class QueuedLayer implements Layer {
-  /**
-   * Also describe fields, even private ones, with javadocs.
-   */
-  private Iterator<Task> subtaskIter;
+    /**
+     * An iterator over the subtasks for the current accepted task.
+     */
+    private Iterator<Task> subtaskIter;
 
-  public QueuedLayer(LayerSetupInfo info) {
-    subtaskIter = null;
-  }
+    protected QueuedLayer() {
+        subtaskIter = null;
+    }
 
-  public boolean isTaskDone() {
-    // (Remove) check if there's nothing left in subtaskIter, or if subtaskIter is null
-  }
+    @Override
+    public void setup(LayerSetupInfo setupInfo) { }
 
-  public void update() {
-    // (Remove) return the next subtask
-  }
+    @Override
+    public boolean isTaskDone() {
+        return subtaskIter == null || !subtaskIter.hasNext();
+    }
 
-  protected void setSubtasks(List<Task> subtasks) {
-    // (Remove) make an iterator out of the 'subtasks' list and assign it to subtaskIter
-  }
+    @Override
+    public void update() {
+        return subtaskIter.next();
+    }
+
+    /**
+     * Sets the current list of subtasks to delegate.
+     * @param subtasks - the list of subtasks.
+     */
+    protected void setSubtasks(List<Task> subtasks) {
+        subtaskIter = subtasks.iterator();
+    }
 }
