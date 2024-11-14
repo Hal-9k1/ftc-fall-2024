@@ -13,8 +13,7 @@ import java.util.Arrays;
 
 public class PathlessStrategy extends QueuedLayer {
     @Override
-    public void setup(LayerSetupInfo setupInfo) {
-    }
+    public void setup(LayerSetupInfo setupInfo) { }
 
     @Override
     public void acceptTask(Task task) {
@@ -32,7 +31,7 @@ public class PathlessStrategy extends QueuedLayer {
                 new LinearMovementTask(Units.convert(-rushDist + firstShortStop, Units.Distance.TILE, Units.Distance.M), 0),
                 new TurnTask(Units.convert(-firstTurnAngle, Units.Angle.REV, Units.Angle.RAD)),
                 new LinearMovementTask(Units.convert(-firstShoveDist, Units.Distance.TILE, Units.Distance.M), 0),
-                new LinearMovementTask(Units.convert(-firstShoveDist, Units.Distance.TILE, Units.Distance.M), 0),
+                new LinearMovementTask(Units.convert(firstShoveDist, Units.Distance.TILE, Units.Distance.M), 0),
                 new TurnTask(Units.convert(firstTurnAngle, Units.Angle.REV, Units.Angle.RAD)),
                 // Second closest
                 new LinearMovementTask(Units.convert(rushDist - firstShortStop, Units.Distance.TILE, Units.Distance.M), 0),

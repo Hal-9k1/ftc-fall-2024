@@ -20,9 +20,6 @@ public abstract class QueuedLayer implements Layer {
     }
 
     @Override
-    public void setup(LayerSetupInfo setupInfo) { }
-
-    @Override
     public boolean isTaskDone() {
         return subtaskIter == null || !subtaskIter.hasNext();
     }
