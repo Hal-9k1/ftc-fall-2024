@@ -10,10 +10,45 @@
 
 
 // Custom definitions may go here
+plugins {
+  id 'checkstyle'
+}
+
+ext.sourceSets = container(SourceSet) {
+  main {
+    java {
+      srcDir 'src/main/java'
+    }
+    resources {
+      srcDir 'src/main/res'
+    }
+  }
+}
+
+tasks.register('tmpdebug') {
+  println project.ext
+  println ext
+  project.ext.getProperties().entrySet().forEach {
+    println(it.getKey() + ":" + it.getValue())
+  }
+  println project.sourceSets
+  project.sourceSets.forEach {
+    println $it
+  }
+}
+
+tasks.register('javadoc', Javadoc) {
+  source = sourceSets.main.getAllJava()
+  destinationDir = layout.buildDirectory.dir('reports/docs').get().getAsFile()
+  options {
+    memberLevel = org.gradle.external.javadoc.JavadocMemberLevel.PRIVATE
+  }
+}
 
 // Include common definitions from above.
 apply from: '../build.common.gradle'
 apply from: '../build.dependencies.gradle'
+
 
 android {
     namespace = 'org.firstinspires.ftc.teamcode'
