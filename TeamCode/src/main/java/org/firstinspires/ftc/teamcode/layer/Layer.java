@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.layer;
 
 import org.firstinspires.ftc.teamcode.task.Task;
+import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
 
 /**
  * A modular unit of robot functionality.
@@ -9,6 +10,9 @@ import org.firstinspires.ftc.teamcode.task.Task;
  * and concrete ones. (A task is an instruction passed from a layer to its subordinate. Tasks range
  * widely in their concreteness and can be as vague as "win the game" or as specific as "move
  * forward 2 meters.")
+ *
+ * See {@link org.firstinspires.ftc.teamcode.RobotController} for detailed information about layer
+ * processing.
  */
 public interface Layer {
     /**
@@ -19,20 +23,21 @@ public interface Layer {
 
     /**
      * Returns whether the layer is ready to accept a new task.
-     * This method shouldbe free of any side effects; move code mutating state to update or
+     * This method should be free of any side effects; move code mutating state to update or
      * acceptTask.
      * @return true if the layer has finished processing the last accepted task, if any.
      */
     boolean isTaskDone();
 
     /**
-     * Returns the next subordinate task produced from this layer's current task.
-     * Calculates the next subordinate task that should be submitted to the below layer. The return
-     * value of a bottom layer's update function is not used.
+     * Returns the next subordinate tasks produced from this layer's current task.
+     * Calculates the next subordinate tasks that should be submitted to the below layer. If the
+     * returned iterator contains more than one task, all are offered to the below layer
+     * @param completed - an iterable of tasks completed since the last call to update.
      * @return The next task that the lower layer should run. Must not be null unless this is the
      * bottommost layer.
      */
-    Task update();
+    Iterator<Task> update(Iterator<Task> completed);
 
     /**
      * Sets the layer's current task.

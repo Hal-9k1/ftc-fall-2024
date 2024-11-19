@@ -14,6 +14,20 @@ import org.firstinspires.ftc.teamcode.task.Task;
  * Executes a Layer stack.
  * This forms the core of the robot's control logic: layers processing tasks by computing subtasks
  * and then delegating to subordinates.
+ * To process a "tick" on the layer stack, RobotController:
+ * - Finds the bottommost layer whose {@link Layer.isTaskDone} method returns false, indicating that
+ *   it has more subtasks to emit.
+ * - Requests a new subtask from it with the {@link Layer.update} method, which is then given to the
+ *   layer below it in the stack with {@link Layer.acceptTask} method. A layer may supply more than
+ *   one subtask in this step, in which case the layer below it is offered each of the emitted
+ *   subtasks while its isTaskDone method still returns true. If the lower layer's isTaskDone method
+ *   returns false while there are still tasks to be consumed, an exception is thrown.
+ * - Applies the preceeding step to each lower layer in turn, "trickling down" the new subtasks. The
+ *   return value of the bottommost layer's update method is ignored; this is assumed to be a drive
+ *   layer that does not produce any tasks to delegate.
+ * Through creative Layer implementations such as
+ * {@link org.firstinspires.ftc.teamcode.layer.MultiplexLayer}, this system enables complex logic to
+ * be described modularly and with loose coupling.
  */
 public class RobotController {
     private ArrayList<Consumer<Boolean>> updateListeners;
@@ -29,7 +43,6 @@ public class RobotController {
 
     /**
      * Initializes the controller with the given layers.
-     *
      * @param hardwareMap HardwareMap used to retrieve interfaces for robot hardware.
      * @param layers the layer stack to use.
      * @param gamepad0 the first connected Gamepad, or null if none is connected or available.
@@ -48,7 +61,6 @@ public class RobotController {
      * Performs incremental work and returns whether layers have completed all tasks.
      * Performs incremental work on the bottommost layer of the configured stack, invoking upper
      * layers as necessary when lower layers complete their current tasks.
-     *
      * @return whether the topmost layer (and by extension, the whole stack of layers) is exhausted
      * of tasks. When this happens, update listeners are notified and then unregistered.
      */
@@ -80,19 +92,31 @@ public class RobotController {
                 return true;
             }
         }
-        Task task;
+        Iterator<Task> tasks;
         while (true) {
-            task = layer.update();
-            if (!layerIter.hasPrevious()) {
-                break; // Break before null check; drive layers may return null
-            }
-            if (task == null) {
+            tasks = layer.update();
+            if (tasks == null) {
                 throw new NullPointerException("Layer '" + layer.getClass().getName()
                     + "' returned null from update.");
             }
+            if (!layerIter.hasPrevious()) {
+                break;
+            }
             layer = layerIter.previous();
-            layer.acceptTask(task);
-        }
+            while (tasks.hasNext() && layer.isTaskDone()) {
+                layer.acceptTask(tasks.next());
+            }
+            if (tasks.hasNext()) {
+                String errMsg = "Layer '" + layer.getClass().getName() + "' did not consume all"
+                    + " tasks from upper layer. Remaining tasks: ";
+                for (int i = 0; i < MAX_UNCONSUMED_REPORT_TASKS && tasks.hasNext(); ++i) {
+                    errMsg += tasks.next().getClass().getName() + (tasks.hasNext() ? ", " : "");
+                }
+                if (tasks.hasNext()) {
+                    errMsg += " (and more)";
+                }
+                throw new UnsupportedTaskException(errMsg);
+            }
         return false;
     }
 
@@ -102,7 +126,6 @@ public class RobotController {
      * performed. Listeners are executed in registration order and called with a single positional
      * argument of true. On the first update after the topmost layer runs out of tasks, the
      * listeners are called again with an argument of false, then unregistered.
-     *
      * @param listener the function to be registered as an update listener
      */
     public void addUpdateListener(Consumer<Boolean> listener) {
