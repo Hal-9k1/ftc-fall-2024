@@ -30,10 +30,11 @@ public interface Layer {
      * Returns the next subordinate task produced from this layer's current task.
      * Calculates the next subordinate task that should be submitted to the below layer. The return
      * value of a bottom layer's update function is not used.
+     * @param completed - an iterable of tasks completed since the last call to update.
      * @return The next task that the lower layer should run. Must not be null unless this is the
      * bottommost layer.
      */
-    Task update();
+    Iterator<Task> update(Iterator<Task> completed);
 
     /**
      * Sets the layer's current task.

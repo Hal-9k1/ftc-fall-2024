@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.layer;
 
+import java.util.Collections;
+
 import org.firstinspires.ftc.teamcode.task.Task;
 import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
 import org.firstinspires.ftc.teamcode.task.WinTask;
@@ -25,9 +27,9 @@ public class WinLayer implements Layer {
     }
 
     @Override
-    public Task update() {
+    public Iterator<Task> update(Iterator<Task> completed) {
         emittedWin = true;
-        return new WinTask();
+        return Collections.singleton(new WinTask()).iterator();
     }
 
     @Override

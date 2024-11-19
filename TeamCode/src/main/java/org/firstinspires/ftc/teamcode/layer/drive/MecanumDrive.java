@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.layer.drive;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
+import java.util.Collections;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
@@ -250,7 +251,7 @@ public class MecanumDrive implements Layer {
     }
 
     @Override
-    public Task update() {
+    public Iterator<Task> update(Iterator<Task> completed) {
         WheelProperty<Double> deltas = WheelProperty.populate((key) ->
             wheels.get(key).getDistance() - wheelStartPos.get(key)
         );
@@ -276,7 +277,7 @@ public class MecanumDrive implements Layer {
         if (currentTaskDone && !isTeleopTask) {
             wheels.forEach((_key, wheel) -> wheel.setVelocity(0));
         }
-        return null;
+        return Collections.emptyIterator();
     }
 
     @Override
