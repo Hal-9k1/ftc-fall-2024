@@ -34,11 +34,11 @@ public class TwoWheelDrive implements Layer {
      * should cancel out. Differently teethed gears driven by the same axle require more
      * consideration.
      */
-    private static final double GEAR_RATIO = 20; // ticks per rot = 28, should get from config
+    private static final double GEAR_RATIO = 1; // ticks per rot = 28, should get from config
     /**
      * Half the distance between the driving wheels in meters.
      */
-    private static final double WHEEL_SPAN_RADIUS = Units.convert(15.0, Units.Distance.IN, Units.Distance.M);
+    private static final double WHEEL_SPAN_RADIUS = Units.convert(15.0 / 2, Units.Distance.IN, Units.Distance.M);
     /**
      * Unitless, experimentally determined constant (ew) measuring lack of friction.
      * Measures lack of friction between wheels and floor material. Goal delta distances are directly
