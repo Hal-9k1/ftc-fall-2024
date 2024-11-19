@@ -27,7 +27,9 @@ public class LiftLayer implements Layer {
      */
     private static final double LOWER_HEIGHT = Units.convert(10, Units.Distance.CM, Units.Distance.M);
     /**
-     * Displacing the string translates the lift by the amount string displaced times this number.
+     * The factor by which the pulleys magnify the translation of the string by the motor.
+     * In other words, if the motor displaces the string by x distance the lift will be displaced by
+     * x * STRING_FAC.
      */
     private static final double STRING_FAC = 2;
     /**
