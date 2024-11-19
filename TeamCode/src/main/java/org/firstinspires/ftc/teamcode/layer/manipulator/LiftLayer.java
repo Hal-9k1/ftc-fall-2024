@@ -10,6 +10,7 @@ import org.firstinspires.ftc.teamcode.mechanism.Wheel;
 import org.firstinspires.ftc.teamcode.task.Task;
 import org.firstinspires.ftc.teamcode.task.LiftTask;
 import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
+import org.firstinspires.ftc.teamcode.Units;
 
 /**
  * Controls an extendable lift operated by a pulley.
@@ -18,13 +19,17 @@ public class LiftLayer implements Layer {
     /**
      * Height above zeroDist in meters of the lift when fully extended.
      */
-    private static final double RAISE_HEIGHT = 0.42;
+    private static final double RAISE_HEIGHT = Units.convert(46.375 - 16.875, Units.Distance.IN, Units.Distance.M);
     /**
      * Height just above zeroDist to meters of the lift to move to when lowering.
      * After lowering to this distance, the motor is disengaged and gravity lowers the lift the rest
      * of the way.
      */
-    private static final double LOWER_HEIGHT = 0.1;
+    private static final double LOWER_HEIGHT = Units.convert(10, Units.Distance.CM, Units.Distance.M);
+    /**
+     * Displacing the string translates the lift by the amount string displaced times this number.
+     */
+    private static final double STRING_FAC = 2;
     /**
      * Maximum number of pulley goal deltas to track for integral calculation.
      * Increasing this reduces the calculation's sensitivity to recent rapid changes in goal error.
@@ -99,7 +104,7 @@ public class LiftLayer implements Layer {
     public Task update() {
         pulleyMotor.setZeroPowerBehavior(raising ? DcMotor.ZeroPowerBehavior.BRAKE
             : DcMotor.ZeroPowerBehavior.FLOAT);
-        double goalDist = raising ? RAISE_HEIGHT : LOWER_HEIGHT;
+        double goalDist = (raising ? RAISE_HEIGHT : LOWER_HEIGHT) / STRING_FAC;
         double remainingDelta = goalDist - getPulleyDistance();
         double startDelta = goalDist - startDist;
         if ((remainingDelta < 0) != (startDelta < 0)) {
