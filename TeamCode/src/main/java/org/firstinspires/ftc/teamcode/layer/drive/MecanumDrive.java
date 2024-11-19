@@ -287,7 +287,7 @@ public class MecanumDrive implements Layer {
                 castedTask.right,
                 castedTask.left,
                 castedTask.right
-            )).forEach((key, velocity) -> wheels.get(key).setVelocity(velocity));
+            ), false).forEach((key, velocity) -> wheels.get(key).setVelocity(velocity));
         } else if (task instanceof HolonomicDriveTask) {
             isAuto = false;
             HolonomicDriveTask castedTask = (HolonomicDriveTask)task;
@@ -295,12 +295,12 @@ public class MecanumDrive implements Layer {
                 castedTask.axial,
                 castedTask.lateral,
                 castedTask.yaw
-            )).forEach((key, velocity) -> wheels.get(key).setVelocity(velocity));
+            ), false).forEach((key, velocity) -> wheels.get(key).setVelocity(velocity));
         } else {
             throw new UnsupportedTaskException(this, task);
         }
         if (isAuto) {
-            normalizeVelocities(wheelGoalDeltas)
+            normalizeVelocities(wheelGoalDeltas, true)
                 .forEach((key, velocity) -> wheels.get(key).setVelocity(velocity));
         } else {
             // Say teleop tasks are instantly done in isTaskDone
@@ -325,12 +325,14 @@ public class MecanumDrive implements Layer {
     }
 
     /**
-     * Scales velocities downward so the maximum absolute value is no more than 1.0 -- appropriate
+     * Scales velocities so the maximum absolute value is no more than 1.0 -- appropriate
      * for use as motor velocities.
-     * @param velocities - the velocities to scale down
+     * @param velocities - the velocities to scale.
+     * @param scaleUp - whether velocities may be scaled upwards. Should be false when handling user
+     * input so drivers may be gentle.
      * @return the scaled velocities.
      */
-    private WheelProperty<Double> normalizeVelocities(WheelProperty<Double> velocities) {
+    private WheelProperty<Double> normalizeVelocities(WheelProperty<Double> velocities, boolean scaleUp) {
         WheelProperty<Double> absolute = velocities.map((_key, velocity) -> Math.abs(velocity));
         double maxAbsVelocity = Math.max(
             Math.max(
@@ -343,7 +345,7 @@ public class MecanumDrive implements Layer {
                     absolute.rightBack
                 )
             ),
-            1.0 // Clamp to 1 to prevent upscaling
+            scaleUp ? Double.MIN_VALUE : 1.0 // Clamp to 1 when scaleUp is false to prevent upscaling
         );
         return velocities.map((_key, velocity) -> velocity / maxAbsVelocity);
     }
