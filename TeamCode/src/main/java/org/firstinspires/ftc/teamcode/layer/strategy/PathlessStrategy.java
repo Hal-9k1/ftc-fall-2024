@@ -10,6 +10,12 @@ import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
 
 import java.util.Arrays;
 
+/**
+ * Scores the alliance-neutral preset samples on our side of the field.
+ * Emits LinearMovementTasks and TurnTasks directly instead of using any pathfinding. This means it
+ * is only compatible with holonomic drive systems, subject to encoder drift, and cannot respond to
+ * obstacles.
+ */
 public class PathlessStrategy extends QueuedLayer {
     @Override
     public void setup(LayerSetupInfo setupInfo) {
