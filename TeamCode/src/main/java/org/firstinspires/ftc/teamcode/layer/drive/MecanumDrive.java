@@ -200,6 +200,10 @@ public class MecanumDrive implements Layer {
      * proportional to this.
      */
     private static final WheelProperty<Double> SLIPPING_CONSTANT = WheelProperty.populate(_key -> 1.0);
+    /**
+     * Factor to multiply velocities by before they are sent to motors in autonomous mode.
+     */
+    private static final double AUTO_SPEED_FAC = 0.5;
 
     /**
      * The robot's wheels.
@@ -314,7 +318,7 @@ public class MecanumDrive implements Layer {
         }
         if (isAuto) {
             normalizeVelocities(wheelGoalDeltas, true)
-                .forEach((key, velocity) -> wheels.get(key).setVelocity(velocity));
+                .forEach((key, velocity) -> wheels.get(key).setVelocity(velocity * AUTO_SPEED_FAC));
         } else {
             // Say teleop tasks are instantly done in isTaskDone
             wheelGoalDeltas = WheelProperty.populate((_key) -> 0.0);
