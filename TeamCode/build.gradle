@@ -14,35 +14,17 @@ plugins {
   id 'checkstyle'
 }
 
-ext.sourceSets = container(SourceSet) {
-  main {
-    java {
-      srcDir 'src/main/java'
-    }
-    resources {
-      srcDir 'src/main/res'
-    }
-  }
-}
-
-tasks.register('tmpdebug') {
-  println project.ext
-  println ext
-  project.ext.getProperties().entrySet().forEach {
-    println(it.getKey() + ":" + it.getValue())
-  }
-  println project.sourceSets
-  project.sourceSets.forEach {
-    println $it
-  }
-}
-
 tasks.register('javadoc', Javadoc) {
-  source = sourceSets.main.getAllJava()
+  source = 'src/main/java'
   destinationDir = layout.buildDirectory.dir('reports/docs').get().getAsFile()
   options {
     memberLevel = org.gradle.external.javadoc.JavadocMemberLevel.PRIVATE
   }
+  project.configurations.getByName("android-classes-directory").canBeResolved = true
+  project.configurations.getByName("android-classes-directory").forEach {
+    println it
+  }
+  failOnError = false
 }
 
 // Include common definitions from above.
