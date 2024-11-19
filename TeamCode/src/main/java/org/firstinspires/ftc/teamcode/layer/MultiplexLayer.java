@@ -1,6 +1,9 @@
 package org.firstinspires.ftc.teamcode.layer;
 
+import java.util.Iterator;
 import java.util.List;
+import java.util.Spliterators;
+import java.util.stream.StreamSupport;
 
 import org.firstinspires.ftc.teamcode.task.Task;
 import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
@@ -20,9 +23,18 @@ public class MultiplexLayer implements Layer {
     }
 
     @Override
-    public Iterable<Task> update(Iterable<Task> completed) {
-        // ??? How do we know which layer to ask for a new subtask from
-        return null;
+    public Iterator<Task> update(Iterable<Task> completed) {
+        // Concatenates results of component layer update methods into a single stream, then creates
+        // an iterator from the stream
+        return layers.stream().flatMap(layer ->
+            StreamSupport.stream(
+                Spliterators.spliteratorUnknownSize(
+                    layer.update(completed),
+                    0
+                ),
+                false
+            )
+        ).iterator();
     }
 
     @Override
