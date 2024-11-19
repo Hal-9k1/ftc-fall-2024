@@ -20,7 +20,7 @@ public class MultiplexLayer implements Layer {
     }
 
     @Override
-    public Task update() {
+    public Iterable<Task> update(Iterable<Task> completed) {
         // ??? How do we know which layer to ask for a new subtask from
         return null;
     }

@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.layer;
 
+import java.util.Iterator;
+
 import org.firstinspires.ftc.teamcode.task.Task;
 import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
 
@@ -32,12 +34,12 @@ public interface Layer {
     /**
      * Returns the next subordinate tasks produced from this layer's current task.
      * Calculates the next subordinate tasks that should be submitted to the below layer. If the
-     * returned iterator contains more than one task, all are offered to the below layer
+     * returned iterator contains more than one task, all are offered to the lower layer.
      * @param completed - an iterable of tasks completed since the last call to update.
      * @return The next task that the lower layer should run. Must not be null unless this is the
      * bottommost layer.
      */
-    Iterator<Task> update(Iterator<Task> completed);
+    Iterator<Task> update(Iterable<Task> completed);
 
     /**
      * Sets the layer's current task.

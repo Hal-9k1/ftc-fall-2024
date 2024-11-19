@@ -2,13 +2,18 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.ArrayList;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.firstinspires.ftc.teamcode.layer.Layer;
 import org.firstinspires.ftc.teamcode.layer.LayerSetupInfo;
 import org.firstinspires.ftc.teamcode.task.Task;
+import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
 
 /**
  * Executes a Layer stack.
@@ -30,8 +35,69 @@ import org.firstinspires.ftc.teamcode.task.Task;
  * be described modularly and with loose coupling.
  */
 public class RobotController {
+    /**
+     * Thinly wraps a Layer while storing its last accepted task.
+     */
+    private static class LayerInfo {
+        private Layer layer;
+        private ArrayList<Task> lastTasks;
+        private boolean lastTaskSaturated;
+
+        public LayerInfo(Layer layer) {
+            this.layer = layer;
+            lastTasks = new ArrayList<>();
+            lastTaskSaturated = true;
+        }
+
+        /**
+         * Returns the implementing class name of the contained Layer.
+         */
+        public String getName() {
+            return layer.getClass().getName();
+        }
+
+        /**
+         * Calls {@link Layer.isTaskDone} on the contained Layer.
+         */
+        public boolean isTaskDone() {
+            return layer.isTaskDone();
+        }
+
+        /**
+         * Calls {@link Layer.update} on the contained Layer.
+         */
+        public Iterator<Task> update(Iterable<Task> completed) {
+            return layer.update(completed);
+        }
+
+        /**
+         * Calls {@link Layer.acceptTask} on the contained Layer.
+         */
+        public void acceptTask(Task task) {
+            if (lastTaskSaturated) {
+                lastTasks.clear();
+            }
+            lastTasks.add(task);
+            layer.acceptTask(task);
+            lastTaskSaturated = !layer.isTaskDone();
+        }
+
+        /**
+         * Returns the layer's last accepted tasks.
+         */
+        public Iterable<Task> getLastTasks() {
+            return lastTasks;
+        }
+    }
+
+    /**
+     * The number of unconsumed tasks by a layer to report in the exception message.
+     * Prevents an infinite loop if a layer's update method returns an unterminating iterator.
+     */
+    private static final int MAX_UNCONSUMED_REPORT_TASKS = 4;
+
     private ArrayList<Consumer<Boolean>> updateListeners;
-    private List<Layer> layers;
+    private List<LayerInfo> layers;
 
     /**
      * Constructs a RobotController.
@@ -51,10 +117,10 @@ public class RobotController {
     public void setup(HardwareMap hardwareMap, List<Layer> layers, Gamepad gamepad0,
         Gamepad gamepad1) {
         LayerSetupInfo setupInfo = new LayerSetupInfo(hardwareMap, this, gamepad0, gamepad1);
-        for (Layer layer : layers) {
+        this.layers = layers.stream().map(layer -> {
             layer.setup(setupInfo);
-        }
-        this.layers = layers;
+            return new LayerInfo(layer);
+        }).collect(Collectors.toList());
     }
 
     /**
@@ -74,9 +140,8 @@ public class RobotController {
         if (layers == null) {
             return true;
         }
-        int i = 0;
-        Layer layer = null;
-        ListIterator<Layer> layerIter = layers.listIterator();
+        LayerInfo layer = null;
+        ListIterator<LayerInfo> layerIter = layers.listIterator();
         while (true) {
             layer = layerIter.next();
             if (!layer.isTaskDone()) {
@@ -94,20 +159,23 @@ public class RobotController {
         }
         Iterator<Task> tasks;
         while (true) {
-            tasks = layer.update();
-            if (tasks == null) {
-                throw new NullPointerException("Layer '" + layer.getClass().getName()
-                    + "' returned null from update.");
-            }
             if (!layerIter.hasPrevious()) {
+                // Discard bottommost layer's return value
+                layer.update(Collections.emptyList());
                 break;
             }
+            LayerInfo oldLayer = layer;
             layer = layerIter.previous();
+            tasks = oldLayer.update(layer.getLastTasks());
+            if (tasks == null) {
+                throw new NullPointerException("Layer '" + layer.getName()
+                    + "' returned null from update.");
+            }
             while (tasks.hasNext() && layer.isTaskDone()) {
                 layer.acceptTask(tasks.next());
             }
             if (tasks.hasNext()) {
-                String errMsg = "Layer '" + layer.getClass().getName() + "' did not consume all"
+                String errMsg = "Layer '" + layer.getName() + "' did not consume all"
                     + " tasks from upper layer. Remaining tasks: ";
                 for (int i = 0; i < MAX_UNCONSUMED_REPORT_TASKS && tasks.hasNext(); ++i) {
                     errMsg += tasks.next().getClass().getName() + (tasks.hasNext() ? ", " : "");
@@ -117,6 +185,7 @@ public class RobotController {
                 }
                 throw new UnsupportedTaskException(errMsg);
             }
+        }
         return false;
     }
 
