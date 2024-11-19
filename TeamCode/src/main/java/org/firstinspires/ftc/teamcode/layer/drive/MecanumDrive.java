@@ -7,6 +7,7 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
+import java.util.Iterator;
 
 import org.firstinspires.ftc.teamcode.layer.Layer;
 import org.firstinspires.ftc.teamcode.layer.LayerSetupInfo;
@@ -244,7 +245,7 @@ public class MecanumDrive implements Layer {
     }
 
     @Override
-    public Task update() {
+    public Iterator<Task> update(Iterable<Task> completed) {
         WheelProperty<Double> deltas = WheelProperty.populate((key) ->
             wheels.get(key).getDistance() - wheelStartPos.get(key)
         );
@@ -264,7 +265,6 @@ public class MecanumDrive implements Layer {
         if (currentTaskDone && !isTeleopTask) {
             wheels.forEach((_key, wheel) -> wheel.setVelocity(0));
         }
-        // Adaptive velocity control goes here.
         return null;
     }
 
