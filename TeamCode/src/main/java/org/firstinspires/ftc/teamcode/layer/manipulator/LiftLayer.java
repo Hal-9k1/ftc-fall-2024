@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.layer.manipulator;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
+import java.util.Iterator;
+
 import org.firstinspires.ftc.teamcode.CircularBuffer;
 import org.firstinspires.ftc.teamcode.layer.Layer;
 import org.firstinspires.ftc.teamcode.layer.LayerSetupInfo;
@@ -103,7 +105,7 @@ public class LiftLayer implements Layer {
     }
 
     @Override
-    public Task update() {
+    public Iterator<Task> update(Iterable<Task> completed) {
         pulleyMotor.setZeroPowerBehavior(raising ? DcMotor.ZeroPowerBehavior.BRAKE
             : DcMotor.ZeroPowerBehavior.FLOAT);
         double goalDist = (raising ? RAISE_HEIGHT : LOWER_HEIGHT) / STRING_FAC;

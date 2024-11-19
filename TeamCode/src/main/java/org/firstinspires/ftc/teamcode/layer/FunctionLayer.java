@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.layer;
 
+import java.util.Collections;
+import java.util.Iterator;
+
 import org.firstinspires.ftc.teamcode.task.Task;
 
 /**
@@ -21,9 +24,9 @@ public abstract class FunctionLayer implements Layer {
     }
 
     @Override
-    public Task update() {
+    public Iterator<Task> update(Iterable<Task> completed) {
         emittedSubtask = true;
-        return subtask;
+        return Collections.singleton(subtask).iterator();
     }
 
     @Override
