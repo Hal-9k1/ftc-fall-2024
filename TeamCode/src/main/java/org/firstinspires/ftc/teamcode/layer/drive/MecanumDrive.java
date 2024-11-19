@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.layer.drive;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -185,18 +186,24 @@ public class MecanumDrive implements Layer {
      * Expressed as wheelTeeth / hubGearTeeth, ignoring all intermediate meshing gears as they
      * should cancel out. Differently teethed gears driven by the same axle require more
      * consideration.
+     * NOTE: The ticksPerRev read from the MotorConfigurationTypes is 28 * 20, seemingly including
+     * the 20:1 gearboxes we added. Must investigate this.
      */
-    private static final WheelProperty<Double> GEAR_RATIO = WheelProperty.populate((_key) -> 20.0);
+    private static final WheelProperty<Double> GEAR_RATIO = WheelProperty.populate((_key) -> 1.0);
     /**
      * Half the distance between the driving wheels in meters.
      */
-    private static final double WHEEL_SPAN_RADIUS = 0.84;
+    private static final double WHEEL_SPAN_RADIUS = Units.convert(15.0 / 2, Units.Distance.IN, Units.Distance.M);
     /**
      * Unitless, experimentally determined constant (ew) measuring lack of friction.
      * Measures lack of friction between wheels and floor material. Goal delta distances are directly
      * proportional to this.
      */
-    private static final double SLIPPING_CONSTANT = 1;
+    private static final WheelProperty<Double> SLIPPING_CONSTANT = WheelProperty.populate(_key -> 1.0);
+    /**
+     * Factor to multiply velocities by before they are sent to motors in autonomous mode.
+     */
+    private static final double AUTO_SPEED_FAC = 0.5;
 
     /**
      * The robot's wheels.
@@ -218,10 +225,14 @@ public class MecanumDrive implements Layer {
 
     @Override
     public void setup(LayerSetupInfo initInfo) {
-        wheels = DRIVE_MOTOR_NAMES.map((key, motorName) -> new Wheel(
-            initInfo.getHardwareMap().get(DcMotor.class, motorName),
-            WHEEL_RADIUS
-        ));
+        wheels = DRIVE_MOTOR_NAMES.map((key, motorName) -> {
+            DcMotor motor = initInfo.getHardwareMap().get(DcMotor.class, motorName);
+            motor.setDirection(DcMotorSimple.Direction.REVERSE);
+            return new Wheel(
+                motor,
+                WHEEL_RADIUS
+            );
+        });
         wheelStartPos = WheelProperty.populate((_key) -> 0.0);
         wheelGoalDeltas = WheelProperty.populate((_key) -> 0.0);
         currentTaskDone = true;
@@ -265,15 +276,15 @@ public class MecanumDrive implements Layer {
         if (task instanceof AxialMovementTask) {
             isAuto = true;
             AxialMovementTask castedTask = (AxialMovementTask)task;
-            wheelGoalDeltas = GEAR_RATIO.map((_key, gearRatio) ->
-                castedTask.distance * gearRatio * SLIPPING_CONSTANT
+            wheelGoalDeltas = GEAR_RATIO.map((key, gearRatio) ->
+                castedTask.distance * gearRatio * SLIPPING_CONSTANT.get(key)
             );
         } else if (task instanceof TurnTask) {
             isAuto = true;
             TurnTask castedTask = (TurnTask)task;
             wheelGoalDeltas = GEAR_RATIO.map((key, gearRatio) ->
                 (key.isLeft ? -1 : 1) * castedTask.angle * WHEEL_SPAN_RADIUS * gearRatio
-                    * SLIPPING_CONSTANT
+                    * SLIPPING_CONSTANT.get(key)
             );
         } else if (task instanceof LinearMovementTask) {
             isAuto = true;
@@ -282,26 +293,32 @@ public class MecanumDrive implements Layer {
         } else if (task instanceof TankDriveTask) {
             isAuto = false;
             TankDriveTask castedTask = (TankDriveTask)task;
-            normalizeVelocities(new WheelProperty<>(
-                castedTask.left,
-                castedTask.right,
-                castedTask.left,
-                castedTask.right
-            )).forEach((key, velocity) -> wheels.get(key).setVelocity(velocity));
+            normalizeVelocities(
+                new WheelProperty<>(
+                    castedTask.left,
+                    castedTask.right,
+                    castedTask.left,
+                    castedTask.right
+                ).map((key, velocity) -> velocity * SLIPPING_CONSTANT.get(key)),
+                false
+            ).forEach((key, velocity) -> wheels.get(key).setVelocity(velocity));
         } else if (task instanceof HolonomicDriveTask) {
             isAuto = false;
             HolonomicDriveTask castedTask = (HolonomicDriveTask)task;
-            normalizeVelocities(calculateAlyDeltas(
-                castedTask.axial,
-                castedTask.lateral,
-                castedTask.yaw
-            )).forEach((key, velocity) -> wheels.get(key).setVelocity(velocity));
+            normalizeVelocities(
+                calculateAlyDeltas(
+                    castedTask.axial,
+                    castedTask.lateral,
+                    castedTask.yaw
+                ).map((key, velocity) -> velocity * SLIPPING_CONSTANT.get(key)),
+                false
+            ).forEach((key, velocity) -> wheels.get(key).setVelocity(velocity));
         } else {
             throw new UnsupportedTaskException(this, task);
         }
         if (isAuto) {
-            normalizeVelocities(wheelGoalDeltas)
-                .forEach((key, velocity) -> wheels.get(key).setVelocity(velocity));
+            normalizeVelocities(wheelGoalDeltas, true)
+                .forEach((key, velocity) -> wheels.get(key).setVelocity(velocity * AUTO_SPEED_FAC));
         } else {
             // Say teleop tasks are instantly done in isTaskDone
             wheelGoalDeltas = WheelProperty.populate((_key) -> 0.0);
@@ -325,12 +342,14 @@ public class MecanumDrive implements Layer {
     }
 
     /**
-     * Scales velocities downward so the maximum absolute value is no more than 1.0 -- appropriate
+     * Scales velocities so the maximum absolute value is no more than 1.0 -- appropriate
      * for use as motor velocities.
-     * @param velocities - the velocities to scale down
+     * @param velocities - the velocities to scale.
+     * @param scaleUp - whether velocities may be scaled upwards. Should be false when handling user
+     * input so drivers may be gentle.
      * @return the scaled velocities.
      */
-    private WheelProperty<Double> normalizeVelocities(WheelProperty<Double> velocities) {
+    private WheelProperty<Double> normalizeVelocities(WheelProperty<Double> velocities, boolean scaleUp) {
         WheelProperty<Double> absolute = velocities.map((_key, velocity) -> Math.abs(velocity));
         double maxAbsVelocity = Math.max(
             Math.max(
@@ -343,7 +362,7 @@ public class MecanumDrive implements Layer {
                     absolute.rightBack
                 )
             ),
-            1.0 // Clamp to 1 to prevent upscaling
+            scaleUp ? Double.MIN_VALUE : 1.0 // Clamp to 1 when scaleUp is false to prevent upscaling
         );
         return velocities.map((_key, velocity) -> velocity / maxAbsVelocity);
     }
