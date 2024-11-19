@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.layer.drive;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -185,6 +186,8 @@ public class MecanumDrive implements Layer {
      * Expressed as wheelTeeth / hubGearTeeth, ignoring all intermediate meshing gears as they
      * should cancel out. Differently teethed gears driven by the same axle require more
      * consideration.
+     * NOTE: The ticksPerRev read from the MotorConfigurationTypes is 28 * 20, seemingly including
+     * the 20:1 gearboxes we added. Must investigate this.
      */
     private static final WheelProperty<Double> GEAR_RATIO = WheelProperty.populate((_key) -> 1.0);
     /**
@@ -196,7 +199,7 @@ public class MecanumDrive implements Layer {
      * Measures lack of friction between wheels and floor material. Goal delta distances are directly
      * proportional to this.
      */
-    private static final double SLIPPING_CONSTANT = 1;
+    private static final WheelProperty<Double> SLIPPING_CONSTANT = WheelProperty.populate(_key -> 1.0);
 
     /**
      * The robot's wheels.
@@ -218,10 +221,14 @@ public class MecanumDrive implements Layer {
 
     @Override
     public void setup(LayerSetupInfo initInfo) {
-        wheels = DRIVE_MOTOR_NAMES.map((key, motorName) -> new Wheel(
-            initInfo.getHardwareMap().get(DcMotor.class, motorName),
-            WHEEL_RADIUS
-        ));
+        wheels = DRIVE_MOTOR_NAMES.map((key, motorName) -> {
+            DcMotor motor = initInfo.getHardwareMap().get(DcMotor.class, motorName);
+            motor.setDirection(DcMotorSimple.Direction.REVERSE);
+            return new Wheel(
+                motor,
+                WHEEL_RADIUS
+            );
+        });
         wheelStartPos = WheelProperty.populate((_key) -> 0.0);
         wheelGoalDeltas = WheelProperty.populate((_key) -> 0.0);
         currentTaskDone = true;
@@ -265,15 +272,15 @@ public class MecanumDrive implements Layer {
         if (task instanceof AxialMovementTask) {
             isAuto = true;
             AxialMovementTask castedTask = (AxialMovementTask)task;
-            wheelGoalDeltas = GEAR_RATIO.map((_key, gearRatio) ->
-                castedTask.distance * gearRatio * SLIPPING_CONSTANT
+            wheelGoalDeltas = GEAR_RATIO.map((key, gearRatio) ->
+                castedTask.distance * gearRatio * SLIPPING_CONSTANT.get(key)
             );
         } else if (task instanceof TurnTask) {
             isAuto = true;
             TurnTask castedTask = (TurnTask)task;
             wheelGoalDeltas = GEAR_RATIO.map((key, gearRatio) ->
                 (key.isLeft ? -1 : 1) * castedTask.angle * WHEEL_SPAN_RADIUS * gearRatio
-                    * SLIPPING_CONSTANT
+                    * SLIPPING_CONSTANT.get(key)
             );
         } else if (task instanceof LinearMovementTask) {
             isAuto = true;
@@ -282,20 +289,26 @@ public class MecanumDrive implements Layer {
         } else if (task instanceof TankDriveTask) {
             isAuto = false;
             TankDriveTask castedTask = (TankDriveTask)task;
-            normalizeVelocities(new WheelProperty<>(
-                castedTask.left,
-                castedTask.right,
-                castedTask.left,
-                castedTask.right
-            ), false).forEach((key, velocity) -> wheels.get(key).setVelocity(velocity));
+            normalizeVelocities(
+                new WheelProperty<>(
+                    castedTask.left,
+                    castedTask.right,
+                    castedTask.left,
+                    castedTask.right
+                ).map((key, velocity) -> velocity * SLIPPING_CONSTANT.get(key)),
+                false
+            ).forEach((key, velocity) -> wheels.get(key).setVelocity(velocity));
         } else if (task instanceof HolonomicDriveTask) {
             isAuto = false;
             HolonomicDriveTask castedTask = (HolonomicDriveTask)task;
-            normalizeVelocities(calculateAlyDeltas(
-                castedTask.axial,
-                castedTask.lateral,
-                castedTask.yaw
-            ), false).forEach((key, velocity) -> wheels.get(key).setVelocity(velocity));
+            normalizeVelocities(
+                calculateAlyDeltas(
+                    castedTask.axial,
+                    castedTask.lateral,
+                    castedTask.yaw
+                ).map((key, velocity) -> velocity * SLIPPING_CONSTANT.get(key)),
+                false
+            ).forEach((key, velocity) -> wheels.get(key).setVelocity(velocity));
         } else {
             throw new UnsupportedTaskException(this, task);
         }
