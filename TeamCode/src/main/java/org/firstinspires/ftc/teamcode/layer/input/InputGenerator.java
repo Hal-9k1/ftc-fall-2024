@@ -12,10 +12,12 @@ import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
  * in the likely case that the input generator is the top layer.
  */
 public abstract class InputGenerator implements Layer {
+    @Override
     public boolean isTaskDone() {
         return false;
     }
 
+    @Override
     public void acceptTask(Task task) {
         throw new UnsupportedTaskException(this, task);
     }

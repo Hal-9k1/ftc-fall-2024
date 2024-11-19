@@ -2,22 +2,102 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.ArrayList;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.firstinspires.ftc.teamcode.layer.Layer;
 import org.firstinspires.ftc.teamcode.layer.LayerSetupInfo;
 import org.firstinspires.ftc.teamcode.task.Task;
+import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
 
 /**
  * Executes a Layer stack.
  * This forms the core of the robot's control logic: layers processing tasks by computing subtasks
  * and then delegating to subordinates.
+ * To process a "tick" on the layer stack, RobotController:
+ * - Finds the bottommost layer whose {@link Layer.isTaskDone} method returns false, indicating that
+ *   it has more subtasks to emit.
+ * - Requests a new subtask from it with the {@link Layer.update} method, which is then given to the
+ *   layer below it in the stack with {@link Layer.acceptTask} method. A layer may supply more than
+ *   one subtask in this step, in which case the layer below it is offered each of the emitted
+ *   subtasks while its isTaskDone method still returns true. If the lower layer's isTaskDone method
+ *   returns false while there are still tasks to be consumed, an exception is thrown.
+ * - Applies the preceeding step to each lower layer in turn, "trickling down" the new subtasks. The
+ *   return value of the bottommost layer's update method is ignored; this is assumed to be a drive
+ *   layer that does not produce any tasks to delegate.
+ * Through creative Layer implementations such as
+ * {@link org.firstinspires.ftc.teamcode.layer.MultiplexLayer}, this system enables complex logic to
+ * be described modularly and with loose coupling.
  */
 public class RobotController {
+    /**
+     * Thinly wraps a Layer while storing its last accepted task.
+     */
+    private static class LayerInfo {
+        private Layer layer;
+        private ArrayList<Task> lastTasks;
+        private boolean lastTaskSaturated;
+
+        public LayerInfo(Layer layer) {
+            this.layer = layer;
+            lastTasks = new ArrayList<>();
+            lastTaskSaturated = true;
+        }
+
+        /**
+         * Returns the implementing class name of the contained Layer.
+         */
+        public String getName() {
+            return layer.getClass().getName();
+        }
+
+        /**
+         * Calls {@link Layer.isTaskDone} on the contained Layer.
+         */
+        public boolean isTaskDone() {
+            return layer.isTaskDone();
+        }
+
+        /**
+         * Calls {@link Layer.update} on the contained Layer.
+         */
+        public Iterator<Task> update(Iterable<Task> completed) {
+            return layer.update(completed);
+        }
+
+        /**
+         * Calls {@link Layer.acceptTask} on the contained Layer.
+         */
+        public void acceptTask(Task task) {
+            if (lastTaskSaturated) {
+                lastTasks.clear();
+            }
+            lastTasks.add(task);
+            layer.acceptTask(task);
+            lastTaskSaturated = !layer.isTaskDone();
+        }
+
+        /**
+         * Returns the layer's last accepted tasks.
+         */
+        public Iterable<Task> getLastTasks() {
+            return lastTasks;
+        }
+    }
+
+    /**
+     * The number of unconsumed tasks by a layer to report in the exception message.
+     * Prevents an infinite loop if a layer's update method returns an unterminating iterator.
+     */
+    private static final int MAX_UNCONSUMED_REPORT_TASKS = 4;
+
     private ArrayList<Consumer<Boolean>> updateListeners;
-    private List<Layer> layers;
+    private List<LayerInfo> layers;
 
     /**
      * Constructs a RobotController.
@@ -29,7 +109,6 @@ public class RobotController {
 
     /**
      * Initializes the controller with the given layers.
-     *
      * @param hardwareMap HardwareMap used to retrieve interfaces for robot hardware.
      * @param layers the layer stack to use.
      * @param gamepad0 the first connected Gamepad, or null if none is connected or available.
@@ -38,17 +117,16 @@ public class RobotController {
     public void setup(HardwareMap hardwareMap, List<Layer> layers, Gamepad gamepad0,
         Gamepad gamepad1) {
         LayerSetupInfo setupInfo = new LayerSetupInfo(hardwareMap, this, gamepad0, gamepad1);
-        for (Layer layer : layers) {
+        this.layers = layers.stream().map(layer -> {
             layer.setup(setupInfo);
-        }
-        this.layers = layers;
+            return new LayerInfo(layer);
+        }).collect(Collectors.toList());
     }
 
     /**
      * Performs incremental work and returns whether layers have completed all tasks.
      * Performs incremental work on the bottommost layer of the configured stack, invoking upper
      * layers as necessary when lower layers complete their current tasks.
-     *
      * @return whether the topmost layer (and by extension, the whole stack of layers) is exhausted
      * of tasks. When this happens, update listeners are notified and then unregistered.
      */
@@ -62,9 +140,8 @@ public class RobotController {
         if (layers == null) {
             return true;
         }
-        int i = 0;
-        Layer layer = null;
-        ListIterator<Layer> layerIter = layers.listIterator();
+        LayerInfo layer = null;
+        ListIterator<LayerInfo> layerIter = layers.listIterator();
         while (true) {
             layer = layerIter.next();
             if (!layer.isTaskDone()) {
@@ -81,18 +158,34 @@ public class RobotController {
             }
         }
         layerIter.previous(); // Throw away current layer
-        Task task;
+        Iterator<Task> tasks;
         while (true) {
-            task = layer.update();
             if (!layerIter.hasPrevious()) {
-                break; // Break before null check; drive layers may return null
+                // Discard bottommost layer's return value
+                layer.update(Collections.emptyList());
+                break;
             }
-            if (task == null) {
-                throw new NullPointerException("Layer '" + layer.getClass().getName()
+            LayerInfo oldLayer = layer;
+            layer = layerIter.previous();
+            tasks = oldLayer.update(layer.getLastTasks());
+            if (tasks == null) {
+                throw new NullPointerException("Layer '" + layer.getName()
                     + "' returned null from update.");
             }
-            layer = layerIter.previous();
-            layer.acceptTask(task);
+            while (tasks.hasNext() && layer.isTaskDone()) {
+                layer.acceptTask(tasks.next());
+            }
+            if (tasks.hasNext()) {
+                String errMsg = "Layer '" + layer.getName() + "' did not consume all"
+                    + " tasks from upper layer. Remaining tasks: ";
+                for (int i = 0; i < MAX_UNCONSUMED_REPORT_TASKS && tasks.hasNext(); ++i) {
+                    errMsg += tasks.next().getClass().getName() + (tasks.hasNext() ? ", " : "");
+                }
+                if (tasks.hasNext()) {
+                    errMsg += " (and more)";
+                }
+                throw new UnsupportedTaskException(errMsg);
+            }
         }
         return false;
     }
@@ -103,7 +196,6 @@ public class RobotController {
      * performed. Listeners are executed in registration order and called with a single positional
      * argument of true. On the first update after the topmost layer runs out of tasks, the
      * listeners are called again with an argument of false, then unregistered.
-     *
      * @param listener the function to be registered as an update listener
      */
     public void addUpdateListener(Consumer<Boolean> listener) {
