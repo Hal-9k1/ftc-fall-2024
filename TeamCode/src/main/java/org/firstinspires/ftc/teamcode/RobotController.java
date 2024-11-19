@@ -157,6 +157,7 @@ public class RobotController {
                 return true;
             }
         }
+        layerIter.previous(); // Throw away current layer
         Iterator<Task> tasks;
         while (true) {
             if (!layerIter.hasPrevious()) {
