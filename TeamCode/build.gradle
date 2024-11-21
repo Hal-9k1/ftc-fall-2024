@@ -16,15 +16,27 @@ plugins {
 
 tasks.register('javadoc', Javadoc) {
   source = 'src/main/java'
+  classpath = configurations.releaseCompileClasspath
+  Configuration baseConf = configurations.releaseCompileClasspath
+  //classpath = configurations.create('resolvableReleaseCompileClasspath')
+  baseConf.allDependencies.forEach {
+    if (it instanceof ProjectDependency) {
+      evaluationDependsOn(it.dependencyProject.path)
+    } else {
+      classpath.dependencies.add(it)
+    }
+  }
+  //classpath.attributes {
+    //attribute(ArtifactTypeDefinition.ARTIFACT_TYPE_ATTRIBUTE, 'jar')
+    //attribute(BuildTypeAttr.ATTRIBUTE, 'release')
+  //}
+  classpath.resolutionStrategy {
+
+  }
   destinationDir = layout.buildDirectory.dir('reports/docs').get().getAsFile()
   options {
     memberLevel = org.gradle.external.javadoc.JavadocMemberLevel.PRIVATE
   }
-  project.configurations.getByName("android-classes-directory").canBeResolved = true
-  project.configurations.getByName("android-classes-directory").forEach {
-    println it
-  }
-  failOnError = false
 }
 
 // Include common definitions from above.
