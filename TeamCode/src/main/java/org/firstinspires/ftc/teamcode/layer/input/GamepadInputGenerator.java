@@ -1,10 +1,13 @@
 package org.firstinspires.ftc.teamcode.layer.input;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
+
+import java.util.Collections;
+import java.util.Iterator;
+
 import org.firstinspires.ftc.teamcode.layer.LayerSetupInfo;
 import org.firstinspires.ftc.teamcode.task.GamepadInputTask;
 import org.firstinspires.ftc.teamcode.task.Task;
-import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
 
 public class GamepadInputGenerator extends InputGenerator {
     private Gamepad gamepad0;
@@ -19,8 +22,8 @@ public class GamepadInputGenerator extends InputGenerator {
         }
     }
 
-    public Task update() {
-        return new GamepadInputTask(
+    public Iterator<Task> update(Iterable<Task> completed) {
+        return Collections.singleton((Task)(new GamepadInputTask(
             gamepad0 == null ? null : new GamepadInputTask.GamepadInput(
                 -gamepad0.left_stick_x,
                 gamepad0.left_stick_y,
@@ -57,6 +60,6 @@ public class GamepadInputGenerator extends InputGenerator {
                 gamepad1.x,
                 gamepad1.y
             )
-        );
+        ))).iterator();
     }
 }

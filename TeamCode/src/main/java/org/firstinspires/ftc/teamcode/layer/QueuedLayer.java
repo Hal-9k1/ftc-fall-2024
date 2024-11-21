@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.layer;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import org.firstinspires.ftc.teamcode.layer.LayerSetupInfo;
@@ -28,8 +29,8 @@ public abstract class QueuedLayer implements Layer {
     }
 
     @Override
-    public Task update() {
-        return subtaskIter.next();
+    public Iterator<Task> update(Iterable<Task> completed) {
+        return Collections.singleton(subtaskIter.next()).iterator();
     }
 
     /**

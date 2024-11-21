@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.layer.drive;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import java.util.Iterator;
+
 import org.firstinspires.ftc.teamcode.layer.Layer;
 import org.firstinspires.ftc.teamcode.layer.LayerSetupInfo;
 import org.firstinspires.ftc.teamcode.mechanism.Wheel;
@@ -34,11 +36,11 @@ public class TwoWheelDrive implements Layer {
      * should cancel out. Differently teethed gears driven by the same axle require more
      * consideration.
      */
-    private static final double GEAR_RATIO = 20; // ticks per rot = 28, should get from config
+    private static final double GEAR_RATIO = 1; // ticks per rot = 28, should get from config
     /**
      * Half the distance between the driving wheels in meters.
      */
-    private static final double WHEEL_SPAN_RADIUS = 0.84;
+    private static final double WHEEL_SPAN_RADIUS = Units.convert(15.0 / 2, Units.Distance.IN, Units.Distance.M);
     /**
      * Unitless, experimentally determined constant (ew) measuring lack of friction.
      * Measures lack of friction between wheels and floor material. Goal delta distances are directly
@@ -101,7 +103,7 @@ public class TwoWheelDrive implements Layer {
     }
 
     @Override
-    public Task update() {
+    public Iterator<Task> update(Iterable<Task> completed) {
         double leftDelta = leftWheel.getDistance() - leftStartPos;
         boolean leftDeltaSignsMatch = (leftDelta < 0) == (leftGoalDelta < 0);
         boolean leftGoalDeltaExceeded = Math.abs(leftDelta) >= Math.abs(leftGoalDelta);
@@ -124,18 +126,14 @@ public class TwoWheelDrive implements Layer {
 
     @Override
     public void acceptTask(Task task) {
-        currentTaskDone = false;
-        leftStartPos = leftWheel.getDistance();
-        rightStartPos = rightWheel.getDistance();
-        double deltaFac = GEAR_RATIO * SLIPPING_CONSTANT;
         if (task instanceof AxialMovementTask) {
             AxialMovementTask castedTask = (AxialMovementTask)task;
-            leftGoalDelta = castedTask.distance * deltaFac;
-            rightGoalDelta = castedTask.distance * deltaFac;
+            leftGoalDelta = castedTask.distance * GEAR_RATIO * SLIPPING_CONSTANT;
+            rightGoalDelta = castedTask.distance * GEAR_RATIO * SLIPPING_CONSTANT;
         } else if (task instanceof TurnTask) {
             TurnTask castedTask = (TurnTask)task;
-            leftGoalDelta = -castedTask.angle * WHEEL_SPAN_RADIUS * deltaFac;
-            rightGoalDelta = castedTask.angle * WHEEL_SPAN_RADIUS * deltaFac;
+            leftGoalDelta = -castedTask.angle * WHEEL_SPAN_RADIUS * GEAR_RATIO * SLIPPING_CONSTANT;
+            rightGoalDelta = castedTask.angle * WHEEL_SPAN_RADIUS * GEAR_RATIO * SLIPPING_CONSTANT;
         } else if (task instanceof TankDriveTask) {
             // Teleop, set deltas to 0 to pretend we're done
             leftGoalDelta = 0;
@@ -151,6 +149,9 @@ public class TwoWheelDrive implements Layer {
         } else {
             throw new UnsupportedTaskException(this, task);
         }
+        currentTaskDone = false;
+        leftStartPos = leftWheel.getDistance();
+        rightStartPos = rightWheel.getDistance();
         leftWheel.setVelocity(Math.signum(leftGoalDelta));
         rightWheel.setVelocity(Math.signum(rightGoalDelta));
     }
