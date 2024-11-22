@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.task;
 
 /**
- * Raises or lowers the lift.
+ * extends or retracts the lift.
  */
 public class LiftTask implements Task {
     /**
@@ -9,26 +9,26 @@ public class LiftTask implements Task {
      */
     public final double swing;
     /**
-     * Whether the lift should be raised.
+     * Whether the lift should be extended.
      */
-    public final boolean raise;
+    public final boolean extend;
     /**
-     * Whether the lift should be lowered.
+     * Whether the lift should be retracted.
      */
-    public final boolean lower;
+    public final boolean retract;
 
     /**
      * Constructs a LiftTask.
      * @param swing - the rotation of the arm in radians.
-     * @param raise - whether the lift should be raised.
-     * @param lower - whether the lift should be lowered.
+     * @param extend - whether the lift should be extended.
+     * @param retract - whether the lift should be retracted.
      */
-    public LiftTask(double swing, boolean raise, boolean lower) {
+    public LiftTask(double swing, boolean extend, boolean retract) {
         this.swing = swing;
-        this.raise = raise;
-        this.lower = lower;
-        if (raise && lower) {
-            throw new IllegalArgumentException("Cannot simultaneously raise and lower the lift.");
+        this.extend = extend;
+        this.retract = retract;
+        if (extend && retract) {
+            throw new IllegalArgumentException("Cannot simultaneously extend and retract the lift.");
         }
     }
 }

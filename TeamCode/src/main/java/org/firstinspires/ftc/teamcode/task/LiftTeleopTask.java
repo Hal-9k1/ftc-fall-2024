@@ -1,18 +1,34 @@
 package org.firstinspires.ftc.teamcode.task;
 
+/**
+ * extends or retracts the lift but in teleop.
+ */
 public class LiftTeleopTask implements Task {
-
-     // Unsure of what unit extend is supposed to be, is it linear distance the arm extends? or is it something to do with the motor rotations that make
-     // the arm extend? Need to add comment later.
+    /**
+     * rotation of the arm/lift in radians.
+     * holds value inbetween interval [-1, 1] once normalized.
+     */
     public final double swing;
+    /**
+     * some proportional value related to motor powers. (need better explanation later.)
+     * holds value inbetween interval [-1, 1] once normalized.
+     */
     public final double extend;
+    /**
+     * some proportional value related to motor powers.
+     * holds value inbetween interval [-1, 1] once normalized.
+     */
+    public final double retract;
     
     /**
-     * @param swing - the rotation of the arm in radians.
-     * 
+     * LiftTeleopTask constructor.
+     * @param swing - the rotation of the arm/lift in radians.
+     * @param extend - some proportional value related to motor powers. (need better explanation later.)
+     * @param retract - some proportional value related to motor powers. 
      */
-    public LiftTeleopTask(double swing, double extend) {
+    public LiftTeleopTask(double swing, double extend, double retract) {
         this.swing = swing;
         this.extend = extend;
+        this.retract = retract;
     }
 }
