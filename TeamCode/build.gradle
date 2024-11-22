@@ -14,27 +14,40 @@ plugins {
   id 'checkstyle'
 }
 
-tasks.register('javadoc', Javadoc) {
-  source = 'src/main/java'
-  classpath = configurations.releaseCompileClasspath
-  Configuration baseConf = configurations.releaseCompileClasspath
-  //classpath = configurations.create('resolvableReleaseCompileClasspath')
-  baseConf.allDependencies.forEach {
-    if (it instanceof ProjectDependency) {
-      evaluationDependsOn(it.dependencyProject.path)
-    } else {
-      classpath.dependencies.add(it)
+tasks.register('createResolvableReleaseCompileClasspath') {
+  configurations.create('resolvableReleaseCompileClasspath') {
+    configurations.releaseCompileClasspath.allDependencies.forEach {
+      if (it instanceof ProjectDependency) {
+        evaluationDependsOn(it.dependencyProject.path)
+      } else {
+        dependencies.add(it)
+      }
     }
   }
-  //classpath.attributes {
-    //attribute(ArtifactTypeDefinition.ARTIFACT_TYPE_ATTRIBUTE, 'jar')
-    //attribute(BuildTypeAttr.ATTRIBUTE, 'release')
-  //}
-  classpath.resolutionStrategy {
-
+}
+FileCollection javadocClasspath = files()
+tasks.register('createJavadocClasspath') {
+  dependsOn(tasks.createResolvableReleaseCompileClasspath)
+    configurations.resolvableReleaseCompileClasspath.forEach {
+    String path = it.getPath()
+    if (path.endsWith('aar')) {
+      javadocClasspath = (javadocClasspath
+        + zipTree(path).matching(new PatternSet().include('classes.jar')))
+    } else if (path.endsWith('jar')) {
+      javadocClasspath = javadocClasspath + files(it)
+    } else {
+      throw new RuntimeException("Can't handle artifact type: '" + path + "'")
+    }
   }
+}
+tasks.register('javadoc', Javadoc) {
+  dependsOn(tasks.createJavadocClasspath)
+  source = 'src/main/java'
+  classpath = javadocClasspath
+  title = '22047 TeamCode'
   destinationDir = layout.buildDirectory.dir('reports/docs').get().getAsFile()
   options {
+    header = 'FTC 22047 "Tell-Tale Parts"'
     memberLevel = org.gradle.external.javadoc.JavadocMemberLevel.PRIVATE
   }
 }
