@@ -15,23 +15,32 @@ plugins {
 }
 
 tasks.register('createResolvableReleaseCompileClasspath') {
-  configurations.create('resolvableReleaseCompileClasspath') {
-    configurations.releaseCompileClasspath.allDependencies.forEach {
-      if (it instanceof ProjectDependency) {
-        evaluationDependsOn(it.dependencyProject.path)
-      } else {
-        dependencies.add(it)
+  description = ("Creates a copy of the releaseCompileClasspath configuration"
+    + "because the original can't be resolved for some reason.")
+  doLast {
+    // Just copy all the dependencies into a new configuration
+    configurations.create('resolvableReleaseCompileClasspath') {
+      configurations.releaseCompileClasspath.allDependencies.forEach {
+        if (it instanceof ProjectDependency) {
+          evaluationDependsOn(it.dependencyProject.path)
+        } else {
+          dependencies.add(it)
+        }
       }
     }
   }
 }
-FileCollection javadocClasspath = files()
+// Populated by createJavadocClasspath, consumed by javadoc
+ext.javadocClasspath = files()
 tasks.register('createJavadocClasspath') {
-  dependsOn(tasks.createResolvableReleaseCompileClasspath)
+  dependsOn('createResolvableReleaseCompileClasspath')
+  description = ('Creates a list of dependency jar files, unpacking aar files'
+    + 'as needed, that can be used as the classpath given to javadoc.')
   doLast {
     configurations.resolvableReleaseCompileClasspath.forEach {
       String path = it.getPath()
       if (path.endsWith('aar')) {
+        // Grab classes.jar from inside aar file because javadoc can't read aar on the classpath
         javadocClasspath = (javadocClasspath
           + zipTree(path).matching(new PatternSet().include('classes.jar')))
       } else if (path.endsWith('jar')) {
@@ -43,21 +52,40 @@ tasks.register('createJavadocClasspath') {
   }
 }
 tasks.register('javadoc', Javadoc) {
-  dependsOn(tasks.createJavadocClasspath)
+  dependsOn('createJavadocClasspath')
+  description = 'Creates javadocs for the TeamCode subproject'
+  group = 'build'
   source = 'src/main/java'
   doFirst {
-    classpath = javadocClasspath
+    // The setter for classpath seems to copy the argument by value, so we have
+    // to wait until createJavadocClasspath runs to set it
+    classpath = project.ext.javadocClasspath
   }
   title = 'TeamCode'
   destinationDir = layout.buildDirectory.dir('reports/docs').get().getAsFile()
   options {
     header = 'FTC 22047 "Tell-Tale Parts"'
+    // Document everything because we're not writing an API; these docs are for
+    // our own benefit.
     memberLevel = org.gradle.external.javadoc.JavadocMemberLevel.PRIVATE
+    // Makes all javadoc warnings errors, should be enabled:
     //addBooleanOption('Werror', true)
+    // Adds a 'USE' tab that finds usage of the symbol whose documentation is
+    // currently being viewed:
     addBooleanOption('use', true)
+    // Includes source code of documented symbols in javadoc. This nearly
+    // doubles the size of the generated documentation and is possibly a
+    // security risk, but this project is open source anyway and it's useful to
+    // have it handy as reference:
     //addBooleanOption('linksource', true)
+    // Lints javadoc comments. Might be enabled by default.
     addBooleanOption('Xdoclint', true)
+    // Adds links to the javadocs for RobotCore classes
     addStringOption('link', 'https://javadoc.io/doc/org.firstinspires.ftc/RobotCore/10.1.1/')
+  }
+  doLast {
+    println 'Javadoc generated at ' + destinationDir.getPath()
+    println 'Homepage: ' + destinationDir.getPath() + File.separator + 'index.html'
   }
 }
 
@@ -76,4 +104,9 @@ android {
 
 dependencies {
     implementation project(':FtcRobotController')
+}
+
+// More custom definitions!
+tasks.named('build') {
+  dependsOn('javadoc')
 }
