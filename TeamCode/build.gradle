@@ -37,6 +37,8 @@ tasks.register('createJavadocClasspath') {
   description = ('Creates a list of dependency jar files, unpacking aar files'
     + 'as needed, that can be used as the classpath given to javadoc.')
   doLast {
+    // Find jar path from each file of resolvableReleaseCompileClasspath, nontrivial because they
+    // might not all be jars.
     configurations.resolvableReleaseCompileClasspath.forEach {
       String path = it.getPath()
       if (path.endsWith('aar')) {
@@ -57,26 +59,24 @@ tasks.register('javadoc', Javadoc) {
   group = 'build'
   source = 'src/main/java'
   doFirst {
-    // The setter for classpath seems to copy the argument by value, so we have
-    // to wait until createJavadocClasspath runs to set it
+    // The setter for classpath seems to copy the argument by value, so we have to wait until
+    // createJavadocClasspath runs to set it
     classpath = project.ext.javadocClasspath
   }
   title = 'TeamCode'
   destinationDir = layout.buildDirectory.dir('reports/docs').get().getAsFile()
   options {
     header = 'FTC 22047 "Tell-Tale Parts"'
-    // Document everything because we're not writing an API; these docs are for
-    // our own benefit.
+    // Document everything because we're not writing an API; these docs are for our own benefit.
     memberLevel = org.gradle.external.javadoc.JavadocMemberLevel.PRIVATE
-    // Makes all javadoc warnings errors, should be enabled:
+    // Makes all javadoc warnings errors, should be enabled
     //addBooleanOption('Werror', true)
-    // Adds a 'USE' tab that finds usage of the symbol whose documentation is
-    // currently being viewed:
+    // Adds a 'USE' tab that finds usage of the symbol whose documentation is currently being
+    // viewed
     addBooleanOption('use', true)
-    // Includes source code of documented symbols in javadoc. This nearly
-    // doubles the size of the generated documentation and is possibly a
-    // security risk, but this project is open source anyway and it's useful to
-    // have it handy as reference:
+    // Includes source code of documented symbols in javadoc. This nearly doubles the size of the
+    // generated documentation and is possibly a security risk, but this project is open source
+    // anyway and it's useful to have it handy as reference:
     //addBooleanOption('linksource', true)
     // Lints javadoc comments. Might be enabled by default.
     addBooleanOption('Xdoclint', true)
