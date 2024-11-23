@@ -53,8 +53,16 @@ tasks.register('createJavadocClasspath') {
     }
   }
 }
+tasks.register('getJavadocPackageLists') {
+  description = ("Fetches package-list files of dependencies' javadocs so they can be linked to"
+    + " from ours.")
+  doLast {
+
+  }
+}
 tasks.register('javadoc', Javadoc) {
   dependsOn('createJavadocClasspath')
+  dependsOn('getJavadocPackageLists')
   description = 'Creates javadocs for the TeamCode subproject'
   group = 'build'
   source = 'src/main/java'
@@ -63,9 +71,11 @@ tasks.register('javadoc', Javadoc) {
     // createJavadocClasspath runs to set it
     classpath = project.ext.javadocClasspath
   }
+  // Controls the name of the index file
   title = 'TeamCode'
   destinationDir = layout.buildDirectory.dir('reports/docs').get().getAsFile()
   options {
+    // Small text in the top-right corner of the screen
     header = 'FTC 22047 "Tell-Tale Parts"'
     // Document everything because we're not writing an API; these docs are for our own benefit.
     memberLevel = org.gradle.external.javadoc.JavadocMemberLevel.PRIVATE
@@ -80,7 +90,7 @@ tasks.register('javadoc', Javadoc) {
     //addBooleanOption('linksource', true)
     // Lints javadoc comments. Might be enabled by default.
     addBooleanOption('Xdoclint', true)
-    // Adds links to the javadocs for RobotCore classes
+    // Adds links to the javadocs for RobotCore classes. TODO: use linkoffline instead
     addStringOption('link', 'https://javadoc.io/doc/org.firstinspires.ftc/RobotCore/10.1.1/')
   }
   doLast {
