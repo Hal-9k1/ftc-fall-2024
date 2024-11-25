@@ -71,7 +71,7 @@ public class RobotController {
         }
 
         /**
-         * Calls {@link Layer.isTaskDone} on the contained Layer.
+         * Calls {@link Layer#isTaskDone} on the contained Layer.
          * @return whether the contained Layer is finished processing its last accepted task.
          */
         public boolean isTaskDone() {

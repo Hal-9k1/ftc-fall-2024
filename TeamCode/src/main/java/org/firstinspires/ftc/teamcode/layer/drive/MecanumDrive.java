@@ -61,8 +61,10 @@ public class MecanumDrive implements Layer {
 
             /**
              * Constructs a WheelKey enum member.
-             * @param isLeft - whether the WheelKey represents a left wheel.
-             * @param isRight - whether the WheelKey represents a right wheel.
+             * @param isLeft - whether the WheelKey represents a left wheel. Right is the only
+             * alternative.
+             * @param isFront - whether the WheelKey represents a front wheel. Back is the only
+             * alternative.
              */
             private WheelKey(boolean isLeft, boolean isFront) {
                 this.isLeft = isLeft;
@@ -114,7 +116,7 @@ public class MecanumDrive implements Layer {
         }
         /**
          * Creates a WheelProperty by applying a function to each wheel.
-         * @param R - the type of WheelProperty to create.
+         * @param <R> - the type of WheelProperty to create.
          * @param populator - the function to apply to each WheelKey to get property values.
          * @return the created WheelProperty.
          */
@@ -169,7 +171,7 @@ public class MecanumDrive implements Layer {
         /**
          * Returns a new WheelProperty populated with the results of calling a mapper function with
          * the keys and values of this property.
-         * @param R - the type of WheelProprety that will be returned.
+         * @param <R> - the type of WheelProprety that will be returned.
          * @param mapper - the function used to map old values to new values.
          * @return the created WheelProperty.
          */
