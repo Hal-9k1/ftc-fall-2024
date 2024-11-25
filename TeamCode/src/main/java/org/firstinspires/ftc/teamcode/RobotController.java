@@ -20,10 +20,10 @@ import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
  * This forms the core of the robot's control logic: layers processing tasks by computing subtasks
  * and then delegating to subordinates.
  * To process a "tick" on the layer stack, RobotController:
- * - Finds the bottommost layer whose {@link Layer.isTaskDone} method returns false, indicating that
+ * - Finds the bottommost layer whose {@link Layer#isTaskDone} method returns false, indicating that
  *   it has more subtasks to emit.
- * - Requests a new subtask from it with the {@link Layer.update} method, which is then given to the
- *   layer below it in the stack with {@link Layer.acceptTask} method. A layer may supply more than
+ * - Requests a new subtask from it with the {@link Layer#update} method, which is then given to the
+ *   layer below it in the stack with {@link Layer#acceptTask} method. A layer may supply more than
  *   one subtask in this step, in which case the layer below it is offered each of the emitted
  *   subtasks while its isTaskDone method still returns true. If the lower layer's isTaskDone method
  *   returns false while there are still tasks to be consumed, an exception is thrown.
@@ -39,10 +39,23 @@ public class RobotController {
      * Thinly wraps a Layer while storing its last accepted task.
      */
     private static class LayerInfo {
+        /**
+         * The contained Layer.
+         */
         private Layer layer;
+        /**
+         * The last tasks the contained Layer accepted at once.
+         */
         private ArrayList<Task> lastTasks;
+        /**
+         * Whether the previous accepted task satisfied the Layer's need for new tasks.
+         */
         private boolean lastTaskSaturated;
 
+        /**
+         * Constructs a LayerInfo.
+         * @param layer - the Layer to contain.
+         */
         public LayerInfo(Layer layer) {
             this.layer = layer;
             lastTasks = new ArrayList<>();
@@ -51,27 +64,34 @@ public class RobotController {
 
         /**
          * Returns the implementing class name of the contained Layer.
+         * @return the contained Layer's concrete class name.
          */
         public String getName() {
             return layer.getClass().getName();
         }
 
         /**
-         * Calls {@link Layer.isTaskDone} on the contained Layer.
+         * Calls {@link Layer#isTaskDone} on the contained Layer.
+         * @return whether the contained Layer is finished processing its last accepted task.
          */
         public boolean isTaskDone() {
             return layer.isTaskDone();
         }
 
         /**
-         * Calls {@link Layer.update} on the contained Layer.
+         * Calls {@link Layer#update} on the contained Layer.
+         * @param completed - an iterable of the tasks emitted by this Layer that have been
+         * completed since the last call to this method.
+         * @return an iterator of the tasks for the layer below to accept.
          */
         public Iterator<Task> update(Iterable<Task> completed) {
             return layer.update(completed);
         }
 
         /**
-         * Calls {@link Layer.acceptTask} on the contained Layer.
+         * Calls {@link Layer#acceptTask} on the contained Layer.
+         * Must not be called if {@link #isTaskDone} returns false.
+         * @param task - the task the contained layer should be offered.
          */
         public void acceptTask(Task task) {
             if (lastTaskSaturated) {
@@ -84,6 +104,8 @@ public class RobotController {
 
         /**
          * Returns the layer's last accepted tasks.
+         * @return an iterable of the tasks last accepted by the layer.
+         * @see #acceptTask
          */
         public Iterable<Task> getLastTasks() {
             return lastTasks;
@@ -92,11 +114,18 @@ public class RobotController {
 
     /**
      * The number of unconsumed tasks by a layer to report in the exception message.
-     * Prevents an infinite loop if a layer's update method returns an unterminating iterator.
+     * Prevents an infinite loop if a layer's update method returns an non-terminating iterator.
      */
     private static final int MAX_UNCONSUMED_REPORT_TASKS = 4;
 
+    /**
+     * Listeners to fire at the start of each {@link #update} as well as after the stack has
+     * finished executing.
+     */
     private ArrayList<Consumer<Boolean>> updateListeners;
+    /**
+     * The current stack of layers and some metadata needed to execute them.
+     */
     private List<LayerInfo> layers;
 
     /**

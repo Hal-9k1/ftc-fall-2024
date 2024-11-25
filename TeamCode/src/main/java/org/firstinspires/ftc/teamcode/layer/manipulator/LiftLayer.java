@@ -150,7 +150,8 @@ public class LiftLayer implements Layer {
     }
 
     /**
-     * Calculates the current distance from the base to the top of the lift.
+     * Calculates the current distance from the base to the tip of the lift.
+     * @return the distance in meters from the base to the tip of the lift.
      */
     private double getPulleyDistance() {
         return pulley.getDistance() - zeroDist;

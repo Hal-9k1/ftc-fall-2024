@@ -13,8 +13,14 @@ import org.firstinspires.ftc.teamcode.task.WinTask;
  * stacks to tell the strategy layers to emit something.
  */
 public class WinLayer implements Layer {
+    /**
+     * Whether the single WinTask has been emitted yet.
+     */
     private boolean emittedWin;
 
+    /**
+     * Constructs a WinLayer.
+     */
     public WinLayer() {
         emittedWin = false;
     }

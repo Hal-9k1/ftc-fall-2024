@@ -129,7 +129,7 @@ tasks.register('getJavadocPackageLists') {
     }
   }
 }
-tasks.register('javadoc', Javadoc) {
+def configureJavadocTask =  {
   dependsOn 'getJavadocPackageLists'
   description = 'Generates javadocs for the TeamCode subproject'
   group = 'build'
@@ -145,8 +145,6 @@ tasks.register('javadoc', Javadoc) {
     header = 'FTC 22047 "Tell-Tale Parts"'
     // Document everything because we're not writing an API; these docs are for our own benefit.
     showFromPrivate()
-    // Makes all javadoc warnings errors, should be enabled
-    //addBooleanOption 'Werror', true
     // Adds a 'USE' tab that finds usage of the symbol whose documentation is currently being
     // viewed
     addBooleanOption 'use', true
@@ -175,6 +173,14 @@ tasks.register('javadoc', Javadoc) {
   }
 }
 
+tasks.register('javadoc', Javadoc).configure(configureJavadocTask)
+tasks.register('javadocWerror', Javadoc).configure(configureJavadocTask.andThen {
+  description += ', failing on any doclint warnings'
+  options {
+    // Makes all javadoc warnings errors
+    addBooleanOption 'Werror', true
+  }
+})
 // Include common definitions from above.
 apply from: '../build.common.gradle'
 apply from: '../build.dependencies.gradle'
@@ -195,4 +201,7 @@ dependencies {
 // More custom definitions!
 tasks.named('build') {
   dependsOn 'javadoc'
+}
+tasks.named('check') {
+  dependsOn 'javadocWerror'
 }

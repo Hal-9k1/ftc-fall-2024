@@ -9,10 +9,20 @@ import org.firstinspires.ftc.teamcode.layer.LayerSetupInfo;
 import org.firstinspires.ftc.teamcode.task.GamepadInputTask;
 import org.firstinspires.ftc.teamcode.task.Task;
 
+/**
+ * Generates {@link GamepadInputTask}s from snapshots of the gamepad inputs.
+ */
 public class GamepadInputGenerator extends InputGenerator {
+    /**
+     * The gamepad connected to the first port, or null if none is connected there.
+     */
     private Gamepad gamepad0;
+    /**
+     * The gamepad connected to the first port, or null if none is connected there.
+     */
     private Gamepad gamepad1;
 
+    @Override
     public void setup(LayerSetupInfo setupInfo) {
         gamepad0 = setupInfo.getGamepad0();
         gamepad1 = setupInfo.getGamepad1();
@@ -22,6 +32,7 @@ public class GamepadInputGenerator extends InputGenerator {
         }
     }
 
+    @Override
     public Iterator<Task> update(Iterable<Task> completed) {
         return Collections.singleton((Task)(new GamepadInputTask(
             gamepad0 == null ? null : new GamepadInputTask.GamepadInput(

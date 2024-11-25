@@ -9,10 +9,23 @@ import java.util.Iterator;
  * If the maximum size is reached, adding an element overwrites the oldest in the collection.
  */
 public class CircularBuffer<E> implements Collection<E> {
+    /**
+     * The maximum size the buffer will expand to before overwriting old elements.
+     */
     private final int maxSize;
+    /**
+     * The buffer that stores elements.
+     */
     private final ArrayList<E> buffer;
+    /**
+     * The next position to write to in the buffer.
+     */
     private int idx;
 
+    /**
+     * Constructs a CircularBuffer.
+     * @param maxSize - the maximum size the buffer will expand to before overwriting old elements.
+     */
     public CircularBuffer(int maxSize) {
         this.maxSize = maxSize;
         buffer = new ArrayList<>(maxSize);

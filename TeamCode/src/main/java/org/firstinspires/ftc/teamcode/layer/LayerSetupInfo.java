@@ -9,9 +9,23 @@ import org.firstinspires.ftc.teamcode.RobotController;
  * Contains the information needed to initialize a layer.
  */
 public class LayerSetupInfo {
+    /**
+     * The HardwareMap for the robot, where peripheral interfaces can be retrieved.
+     */
     private final HardwareMap hardwareMap;
+    /**
+     * The RobotController setting up the layer.
+     */
     private final RobotController robotController;
+    /**
+     * The gamepad connected to the first port.
+     * Null if none is connected or available (e.g. we're in teleop).
+     */
     private final Gamepad gamepad0;
+    /**
+     * The gamepad connected to the second port.
+     * Null if none is connected or available (e.g. we're in teleop).
+     */
     private final Gamepad gamepad1;
 
     /**

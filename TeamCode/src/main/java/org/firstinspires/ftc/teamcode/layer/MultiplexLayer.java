@@ -8,9 +8,21 @@ import java.util.stream.StreamSupport;
 import org.firstinspires.ftc.teamcode.task.Task;
 import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
 
+/**
+ * Acts on behalf on multiple component layers to handle multiple unrelated kinds of tasks from the
+ * layers above.
+ * Needed because the RobotController reads layers as a stack, not a tree.
+ */
 public class MultiplexLayer implements Layer {
+    /**
+     * The list of component layers.
+     */
     private final List<Layer> layers;
 
+    /**
+     * Constructs a MultiplexLayer.
+     * @param layers - the layers this MultiplexLayer will contain.
+     */
     public MultiplexLayer(List<Layer> layers) {
         this.layers = layers;
     }
