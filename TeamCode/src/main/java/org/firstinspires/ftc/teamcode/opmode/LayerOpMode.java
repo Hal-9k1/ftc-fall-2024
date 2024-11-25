@@ -11,6 +11,9 @@ import java.util.List;
  * Base class for opmodes that use a RobotController to execute Layers.
  */
 public abstract class LayerOpMode extends OpMode {
+    /**
+     * The RobotController used to execute the layer stack.
+     */
     private RobotController controller;
 
     @Override
@@ -25,7 +28,8 @@ public abstract class LayerOpMode extends OpMode {
     }
 
     /**
-     * Returns the list of layers to execute, in order from lowest to highest.
+     * Gets the list of layers to execute for this opmode.
+     * @return The list of layers to execute, in order from lowest to highest.
      */
     protected abstract List<Layer> getLayers();
 }

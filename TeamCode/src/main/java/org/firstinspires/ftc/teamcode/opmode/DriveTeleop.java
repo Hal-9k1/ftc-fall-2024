@@ -10,6 +10,10 @@ import org.firstinspires.ftc.teamcode.layer.input.mapping.JoystickHoloDriveMappi
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Teleop opmode that just drives the robot.
+ * No manipulators or anything else at all are initialized.
+ */
 @TeleOp(name="Drive")
 public class DriveTeleop extends LayerOpMode {
     @Override

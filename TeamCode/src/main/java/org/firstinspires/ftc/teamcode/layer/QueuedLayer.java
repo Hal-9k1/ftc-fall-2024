@@ -16,6 +16,9 @@ public abstract class QueuedLayer implements Layer {
      */
     private Iterator<Task> subtaskIter;
 
+    /**
+     * Constructs a QueuedLayer.
+     */
     protected QueuedLayer() {
         subtaskIter = null;
     }

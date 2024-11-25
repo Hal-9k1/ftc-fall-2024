@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.task;
 
+/**
+ * Holds a snapshot of input from all connected gamepads.
+ */
 public class GamepadInputTask implements Task {
     /**
      * Carries information about the axes of a joystick on a gamepad.
@@ -16,6 +19,11 @@ public class GamepadInputTask implements Task {
          */
         public final float y;
 
+        /**
+         * Constructs a Joystick.
+         * @param x - the joystick's horizontal axis input.
+         * @param y - the joystick's vertical axis input.
+         */
         private Joystick(float x, float y) {
             this.x = x;
             this.y = y;
@@ -35,6 +43,11 @@ public class GamepadInputTask implements Task {
          */
         public final Joystick right;
 
+        /**
+         * Constructs a Joysticks.
+         * @param left - the object representing the left joystick.
+         * @param right - the object representing the right joystick.
+         */
         private Joysticks(Joystick left, Joystick right) {
             this.left = left;
             this.right = right;
@@ -55,6 +68,11 @@ public class GamepadInputTask implements Task {
          */
         public final boolean right;
 
+        /**
+         * Constructs a ButtonPair.
+         * @param left - whether the left button of the pair is pressed.
+         * @param right - whether the right button of the pair is pressed.
+         */
         private ButtonPair(boolean left, boolean right) {
             this.left = left;
             this.right = right;
@@ -83,6 +101,13 @@ public class GamepadInputTask implements Task {
          */
         public final boolean left;
 
+        /**
+         * Constructs a DirectionalPad.
+         * @param up - whether the up button of the dpad is pressed.
+         * @param right - whether the right button of the dpad is pressed.
+         * @param down - whether the down button of the dpad is pressed.
+         * @param left - whether the left button of the dpad is pressed.
+         */
         private DirectionalPad(boolean up, boolean right, boolean down, boolean left) {
             this.up = up;
             this.right = right;
@@ -112,6 +137,13 @@ public class GamepadInputTask implements Task {
          */
         public final boolean y;
 
+        /**
+         * Constructs a Buttons.
+         * @param a - whether the A gamepad button is pressed.
+         * @param b - whether the B gamepad button is pressed.
+         * @param x - whether the X gamepad button is pressed.
+         * @param y - whether the Y gamepad button is pressed.
+         */
         private Buttons(boolean a, boolean b, boolean x, boolean y) {
             this.a = a;
             this.b = b;
@@ -145,8 +177,32 @@ public class GamepadInputTask implements Task {
          */
         public final Buttons buttons;
 
+        /**
+         * The minimum value reported by the trigger for it to be considered "pressed".
+         * For the sake of symmetry with the PiE API, triggers are considered digital buttons
+         * and not as real-valued inputs.
+         */
         private static final float TRIGGER_MIN = 0.3f;
 
+        /**
+         * Constructs a GamepadInput.
+         * @param joystickLeftX - the horizontal axis of the left joystick.
+         * @param joystickLeftY - the vertical axis of the left joystick.
+         * @param bumperLeft - whether the left bumper is pressed.
+         * @param triggerLeft - the value of the left trigger.
+         * @param joystickRightX - the horizontal axis of the right joystick.
+         * @param joystickRightY - the vertical axis of the right joystick.
+         * @param bumperRight - whether the right bumper is pressed.
+         * @param triggerRight - the value of the right trigger.
+         * @param dpadUp - whether the up dpad button is pressed.
+         * @param dpadRight - whether the right dpad button is pressed.
+         * @param dpadDown - whether the down dpad button is pressed.
+         * @param dpadLeft - whether the left dpad button is pressed.
+         * @param buttonA - whether the A gamepad button is pressed.
+         * @param buttonB - whether the B gamepad button is pressed.
+         * @param buttonX - whether the X gamepad button is pressed.
+         * @param buttonY - whether the Y gamepad button is pressed.
+         */
         public GamepadInput(
             float joystickLeftX,
             float joystickLeftY,

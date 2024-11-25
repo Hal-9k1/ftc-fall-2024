@@ -33,9 +33,21 @@ public class MecanumDrive implements Layer {
          * Denotes a wheel.
          */
         public static enum WheelKey {
+            /**
+             * Represents the left front wheel.
+             */
             LEFT_FRONT(true, true),
+            /**
+             * Represents the right front wheel.
+             */
             RIGHT_FRONT(false, true),
+            /**
+             * Represents the left back wheel.
+             */
             LEFT_BACK(true, false),
+            /**
+             * Represents the right back wheel.
+             */
             RIGHT_BACK(false, false);
 
             /**
@@ -47,6 +59,11 @@ public class MecanumDrive implements Layer {
              */
             public boolean isFront;
 
+            /**
+             * Constructs a WheelKey enum member.
+             * @param isLeft - whether the WheelKey represents a left wheel.
+             * @param isRight - whether the WheelKey represents a right wheel.
+             */
             private WheelKey(boolean isLeft, boolean isFront) {
                 this.isLeft = isLeft;
                 this.isFront = isFront;
@@ -97,6 +114,9 @@ public class MecanumDrive implements Layer {
         }
         /**
          * Creates a WheelProperty by applying a function to each wheel.
+         * @param R - the type of WheelProperty to create.
+         * @param populator - the function to apply to each WheelKey to get property values.
+         * @return the created WheelProperty.
          */
         public static <R> WheelProperty<R> populate(Function<WheelKey, R> populator) {
             return NULL_PROP.map((key, _null) -> populator.apply(key));
@@ -149,7 +169,9 @@ public class MecanumDrive implements Layer {
         /**
          * Returns a new WheelProperty populated with the results of calling a mapper function with
          * the keys and values of this property.
-         * @param mapper - the function used to map old values to new values
+         * @param R - the type of WheelProprety that will be returned.
+         * @param mapper - the function used to map old values to new values.
+         * @return the created WheelProperty.
          */
         public <R> WheelProperty<R> map(BiFunction<WheelKey, T, R> mapper) {
             WheelProperty<R> mapped = new WheelProperty<>();
