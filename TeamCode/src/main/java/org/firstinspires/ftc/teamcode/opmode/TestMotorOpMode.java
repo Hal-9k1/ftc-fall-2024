@@ -156,6 +156,8 @@ public class TestMotorOpMode extends LinearOpMode {
   }
   /**
    * Resets encoder readings.
+   * Does not actually fill any arrays with zeroes; by setting recordedEncoderReadings to 0 the old
+   * measurements are disregarded.
    */
   private void resetEncoderReadings() {
     recordedEncoderReadings = 0;
