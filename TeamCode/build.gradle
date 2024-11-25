@@ -10,19 +10,189 @@
 
 
 // Custom definitions may go here
+plugins {
+  id 'checkstyle'
+}
+
+// Creates a copy of the releaseCompileClasspath configuration because the original can't be
+// resolved for some reason.
+def getJavadocConfig() {
+  // maybeCreate doesn't allow conditional registration
+  if (configurations.findByName('unextractedJavadocConfig') == null) {
+    // Just copy all the dependencies into a new configuration
+    configurations.create('unextractedJavadocConfig') {
+      configurations.releaseCompileClasspath.allDependencies.forEach {
+        if (it instanceof ProjectDependency) {
+          evaluationDependsOn it.dependencyProject.path
+        } else {
+          dependencies.add it
+        }
+      }
+    }
+  }
+  return configurations.unextractedJavadocConfig
+}
+// Creates a list of dependency jar files, unpacking aar files as needed, that can be used as the
+// classpath given to javadoc.
+def resolveJavadocConfig() {
+  // Find jar path from each file of javadocConfig, nontrivial because they might not all be
+  // jars.
+  FileCollection classpath = files()
+  getJavadocConfig().forEach {
+    String path = it.getPath()
+    if (path.endsWith('aar')) {
+      // Grab classes.jar from inside aar file because javadoc can't read aar on the classpath
+      classpath = (classpath
+        + zipTree(path).matching(new PatternSet().include('classes.jar')))
+    } else if (path.endsWith('jar')) {
+      classpath = classpath + files(it)
+    } else {
+      throw new RuntimeException("Can't handle artifact type: '" + path + "'")
+    }
+  }
+  return classpath
+}
+def getDependencyJavadocURL(Dependency dep) {
+  return 'https://javadoc.io/doc/' + dep.group + '/' + dep.name + '/' + dep.version
+}
+def getPackageListDir() {
+  return (layout.buildDirectory
+    .dir('intermediates/javadoc/package-lists')
+    .get())
+}
+def getDownloadedPackageList(Dependency dep) {
+  return (getPackageListDir()
+    .dir(dep.group + '_' + dep.name + '_' + dep.version)
+    .file('package-list')
+    .getAsFile())
+}
+tasks.register('getJavadocPackageLists') {
+  description = ("Fetches package-list files of dependencies' javadocs from javadoc.io so they can"
+    + " be linked to from ours.")
+  configure(outputs) {
+    dir getPackageListDir()
+    upToDateWhen {
+      getJavadocConfig().dependencies.every {
+        getDownloadedPackageList(it).exists()
+      }
+    }
+  }
+  doLast {
+    getJavadocConfig().dependencies.forEach {
+      File packageList = getDownloadedPackageList it
+      if (!packageList.exists()) {
+        try {
+          packageList.getParentFile().mkdirs()
+          packageList.createNewFile()
+          packageList.withOutputStream {output ->
+            boolean success = false
+            // Are we using element-list as a backup package-list in case we can't fetch it from
+            // javadoc.io? Yes, we are.
+            // Is it incorrect to use them as substitutes for each other because they're different
+            // things? Yes, it is.
+            // Does Javadoc still correctly link the external packages anyway? Yes, it does.
+            // Do we care about correctness if it works? No, we don't.
+            List<String> errs = ['/package-list', '/element-list'].stream().map(pkgListPath -> {
+              if (success) {
+                return
+              }
+              try {
+                // Download package-list for dependency
+                new URL(getDependencyJavadocURL(it) + pkgListPath).withInputStream {input ->
+                  // Synchronously pipe, then close both
+                  output << input
+                }
+                success = true
+              } catch (MalformedURLException e) {
+                throw new RuntimeException('HTTPS protocol not supported by URL constructor.')
+              } catch (IOException e) {
+                return '  Tried ' + pkgListPath + ' -- ' + e.toString()
+              } finally {
+                if (!success) {
+                  packageList.delete()
+                }
+              }
+              return "  Success. If you can see this message, file a bug report."
+            }).toList()
+            if (!success) {
+              println 'Failed to download package-list for ' + it.name + '.\n' + String.join(
+                '\n',
+                errs
+              )
+            }
+          }
+        } catch (IOException e) {
+          throw new RuntimeException('Failed to open ' + packageList + ' for writing. '
+            + e.getMessage())
+        }
+      }
+    }
+  }
+}
+tasks.register('javadoc', Javadoc) {
+  dependsOn 'getJavadocPackageLists'
+  description = 'Generates javadocs for the TeamCode subproject'
+  group = 'build'
+  source = 'src/main/java'
+  doFirst {
+    classpath = resolveJavadocConfig()
+  }
+  // Controls the name of the index file
+  title = 'TeamCode'
+  destinationDir = layout.buildDirectory.dir('reports/docs').get().getAsFile()
+  options {
+    // Small text in the top-right corner of the screen
+    header = 'FTC 22047 "Tell-Tale Parts"'
+    // Document everything because we're not writing an API; these docs are for our own benefit.
+    showFromPrivate()
+    // Makes all javadoc warnings errors, should be enabled
+    //addBooleanOption 'Werror', true
+    // Adds a 'USE' tab that finds usage of the symbol whose documentation is currently being
+    // viewed
+    addBooleanOption 'use', true
+    // Includes source code of documented symbols in javadoc. This nearly doubles the size of the
+    // generated documentation and is possibly a security risk, but this project is open source
+    // anyway and it's useful to have it handy as reference
+    //addBooleanOption 'linksource', true
+    // Lints javadoc comments. Might be enabled by default.
+    addBooleanOption 'Xdoclint', true
+  }
+  doFirst {
+    options {
+      // Adds links to the javadocs for RobotCore classes.
+      addMultilineMultiValueOption('linkoffline').setValue(
+        getJavadocConfig().dependencies.stream().filter(dep ->
+          getDownloadedPackageList(dep).exists()
+        ).map(dep ->
+          [getDependencyJavadocURL(dep), getDownloadedPackageList(dep).getParent()]
+        ).toList()
+      )
+    }
+  }
+  doLast {
+    println 'Javadoc generated at ' + destinationDir.getPath()
+    println 'Homepage: ' + destinationDir.getPath() + File.separator + 'index.html'
+  }
+}
 
 // Include common definitions from above.
 apply from: '../build.common.gradle'
 apply from: '../build.dependencies.gradle'
 
-android {
-    namespace = 'org.firstinspires.ftc.teamcode'
 
-    packagingOptions {
-        jniLibs.useLegacyPackaging true
-    }
+android {
+  namespace = 'org.firstinspires.ftc.teamcode'
+
+  packagingOptions {
+    jniLibs.useLegacyPackaging true
+  }
 }
 
 dependencies {
-    implementation project(':FtcRobotController')
+  implementation project(':FtcRobotController')
+}
+
+// More custom definitions!
+tasks.named('build') {
+  dependsOn 'javadoc'
 }
