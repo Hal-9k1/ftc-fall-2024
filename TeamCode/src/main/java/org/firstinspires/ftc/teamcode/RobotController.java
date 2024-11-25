@@ -114,7 +114,7 @@ public class RobotController {
 
     /**
      * The number of unconsumed tasks by a layer to report in the exception message.
-     * Prevents an infinite loop if a layer's update method returns an unterminating iterator.
+     * Prevents an infinite loop if a layer's update method returns an non-terminating iterator.
      */
     private static final int MAX_UNCONSUMED_REPORT_TASKS = 4;
 

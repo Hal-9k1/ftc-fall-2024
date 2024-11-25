@@ -50,7 +50,7 @@ public class Wheel {
 
     /**
      * Sets the power of the underlying motor.
-     * "Power" is used interchangably with "velocity" for symmetry with the PiE API, though FTC
+     * "Power" is used interchangeably with "velocity" for symmetry with the PiE API, though FTC
      * makes a distinction between the two (see
      * {@link com.qualcomm.robotcore.hardware.DcMotorEx#setVelocity} vs
      * {@link com.qualcomm.robotcore.hardware.DcMotor#setPower}).

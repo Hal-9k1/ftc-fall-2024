@@ -47,7 +47,7 @@ public abstract class FunctionLayer implements Layer {
     /**
      * Maps an accepted task to a subtask.
      * @param task The accepted task.
-     * @return The supertask generated from the accepted task.
+     * @return The subtask generated from the accepted task.
      */
     protected abstract Task map(Task task);
 }

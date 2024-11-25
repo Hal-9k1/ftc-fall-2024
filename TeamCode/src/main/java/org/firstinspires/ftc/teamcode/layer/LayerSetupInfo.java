@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.RobotController;
  */
 public class LayerSetupInfo {
     /**
-     * The HardwareMap for the robot, where peripheral interfaces can be retrived.
+     * The HardwareMap for the robot, where peripheral interfaces can be retrieved.
      */
     private final HardwareMap hardwareMap;
     /**

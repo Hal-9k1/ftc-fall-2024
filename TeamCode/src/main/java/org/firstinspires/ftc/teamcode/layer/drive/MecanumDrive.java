@@ -22,7 +22,7 @@ import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
 import org.firstinspires.ftc.teamcode.Units;
 
 /**
- * Drive layer for a robot using four properly-oriented mecanum wheels.
+ * Drive layer for a robot using four properly-oriented Mecanum wheels.
  */
 public class MecanumDrive implements Layer {
     /**
