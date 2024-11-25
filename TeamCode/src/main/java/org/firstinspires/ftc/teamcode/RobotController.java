@@ -39,10 +39,23 @@ public class RobotController {
      * Thinly wraps a Layer while storing its last accepted task.
      */
     private static class LayerInfo {
+        /**
+         * The contained Layer.
+         */
         private Layer layer;
+        /**
+         * The last tasks the contained Layer accepted at once.
+         */
         private ArrayList<Task> lastTasks;
+        /**
+         * Whether the previous accepted task satisfied the Layer's need for new tasks.
+         */
         private boolean lastTaskSaturated;
 
+        /**
+         * Constructs a LayerInfo.
+         * @param layer - the Layer to contain.
+         */
         public LayerInfo(Layer layer) {
             this.layer = layer;
             lastTasks = new ArrayList<>();
@@ -77,6 +90,7 @@ public class RobotController {
 
         /**
          * Calls {@link Layer#acceptTask} on the contained Layer.
+         * Must not be called if {@link #isTaskDone} returns false.
          * @param task - the task the contained layer should be offered.
          */
         public void acceptTask(Task task) {
