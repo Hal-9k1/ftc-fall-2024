@@ -133,7 +133,7 @@ def configureJavadocTask =  {
   dependsOn 'getJavadocPackageLists'
   description = 'Generates javadocs for the TeamCode subproject'
   group = 'build'
-  source = 'src/main/java'
+  source = fileTree('src/main/java').include('**/*.java')
   doFirst {
     classpath = resolveJavadocConfig()
   }
@@ -169,7 +169,17 @@ def configureJavadocTask =  {
   }
   doLast {
     println 'Javadoc generated at ' + destinationDir.getPath()
-    println 'Homepage: ' + destinationDir.getPath() + File.separator + 'index.html'
+    File homepage = new File(destinationDir, 'index.html')
+    URI uri = homepage.toURI()
+    try {
+      // File.toURI uses null for the authority segment instead of empty string, making the URI look
+      // like "file:/C:/path/to/file...". Windows command prompt doesn't recognize this as a link
+      // for the ctrl-click feature, so we have to fix the URI ourselves.
+      println 'Homepage: ' + new URI(uri.scheme, '', uri.path, uri.query, uri.fragment)
+    } catch (URISyntaxException e) {
+      // This shouldn't happen, but just print the file path as a fallback
+      println 'Homepage: ' + homepage
+    }
   }
 }
 
