@@ -12,23 +12,17 @@ public class LiftTeleopTask implements Task {
     /**
      * some proportional value related to motor powers. (need better explanation later.)
      * holds value inbetween interval [-1, 1] once normalized.
+     * This is used for both extend and retract. Negative value is retract, positive is extend.
      */
-    public final double extend;
-    /**
-     * some proportional value related to motor powers.
-     * holds value inbetween interval [-1, 1] once normalized.
-     */
-    public final double retract;
+    public final double extension;
     
     /**
      * LiftTeleopTask constructor.
      * @param swing - the rotation of the arm/lift in radians.
-     * @param extend - some proportional value related to motor powers. (need better explanation later.)
-     * @param retract - some proportional value related to motor powers. 
+     * @param extension - some proportional value related to motor powers. (need better explanation later.)
      */
-    public LiftTeleopTask(double swing, double extend, double retract) {
+    public LiftTeleopTask(double swing, double extension) {
         this.swing = swing;
-        this.extend = extend;
-        this.retract = retract;
+        this.extension = extension;
     }
 }

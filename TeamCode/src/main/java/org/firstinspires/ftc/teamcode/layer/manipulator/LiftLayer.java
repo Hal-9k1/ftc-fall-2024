@@ -11,6 +11,7 @@ import org.firstinspires.ftc.teamcode.layer.LayerSetupInfo;
 import org.firstinspires.ftc.teamcode.mechanism.Wheel;
 import org.firstinspires.ftc.teamcode.task.Task;
 import org.firstinspires.ftc.teamcode.task.LiftTask;
+import org.firstinspires.ftc.teamcode.task.LiftTeleopTask;
 import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
 import org.firstinspires.ftc.teamcode.Units;
 
@@ -51,7 +52,10 @@ public class LiftLayer implements Layer {
      * Radius of the pulley in meters.
      */
     private static final double PULLEY_RADIUS = 0.42;
-
+    /**
+     * The motor used to swing the lift, zero power behavior is only brake.
+     */
+    private DcMotor swingMotor;
     /**
      * The motor used to power the lift, only retained to change zero power behavior.
      */
@@ -69,9 +73,15 @@ public class LiftLayer implements Layer {
      */
     private double startDist;
     /**
-     * Whether the lift was last set to raise.
+     * Whether the lift was last set to extend.
+     * This is used for fullExtend and fullRetract
      */
-    private boolean raising;
+    private boolean extensionLift;
+    /**
+     * Whether the lift was last set to raise.
+     * This is used for raiseLift and lowerLift
+     */
+    private boolean raisingLift;
     /**
      * Whether the goal set for the current task has been achieved.
      */
@@ -85,11 +95,12 @@ public class LiftLayer implements Layer {
     public void setup(LayerSetupInfo setupInfo) {
         pulleyMotor = setupInfo.getHardwareMap().get(DcMotor.class, "lift_motor");
         pulley = new Wheel(pulleyMotor, PULLEY_RADIUS);
+        swingMotor = setupInfo.getHardwareMap().get(DcMotor.class, "swing_motor");
         TouchSensor zeroSwitch = setupInfo.getHardwareMap().get(TouchSensor.class,
             "lift_zero_switch");
         zeroDist = pulley.getDistance();
         startDist = zeroDist;
-        raising = false;
+        extensionLift = false;
         goalAchieved = true;
         deltaHistory = new CircularBuffer<>(DELTA_HISTORY_COUNT);
         setupInfo.addUpdateListener((isTeardown) -> {
@@ -106,17 +117,18 @@ public class LiftLayer implements Layer {
 
     @Override
     public Iterator<Task> update(Iterable<Task> completed) {
-        pulleyMotor.setZeroPowerBehavior(raising ? DcMotor.ZeroPowerBehavior.BRAKE
+        pulleyMotor.setZeroPowerBehavior(extensionLift ? DcMotor.ZeroPowerBehavior.BRAKE
             : DcMotor.ZeroPowerBehavior.FLOAT);
-        double goalDist = (raising ? RAISE_HEIGHT : LOWER_HEIGHT) / STRING_FAC;
+        swingMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        double goalDist = (extensionLift ? RAISE_HEIGHT : LOWER_HEIGHT) / STRING_FAC;
         double remainingDelta = goalDist - getPulleyDistance();
         double startDelta = goalDist - startDist;
         if ((remainingDelta < 0) != (startDelta < 0)) {
             goalAchieved = true;
         }
-        if (!raising && goalAchieved) {
+        if (!extensionLift && goalAchieved) {
             pulley.setVelocity(0);
-        } else if (!raising) {
+        } else if (!extensionLift) {
             pulley.setVelocity(-1);
         } else {
             double proportional = PULLEY_P_COEFF * remainingDelta;
@@ -135,20 +147,30 @@ public class LiftLayer implements Layer {
     @Override
     public void acceptTask(Task task) {
         if (task instanceof LiftTask) {
-            LiftTask castedTask = (LiftTask)task;
+            LiftTask castedLiftTask = (LiftTask)task;
             goalAchieved = false;
             startDist = getPulleyDistance();
             deltaHistory.clear();
-            if (castedTask.raise) {
-                raising = true;
-            } else if (castedTask.lower) {
-                raising = false;
+            if (castedLiftTask.fullExtend) {
+                extensionLift = true;
+            } else if (castedLiftTask.fullRetract) {
+                extensionLift = false;
+            } else if (castedLiftTask.raiseLift) {
+                raisingLift = true;
+            } else if (castedLiftTask.lowerLift) {
+                raisingLift = false;
             }
-        } else {
+        }
+        else if (task instanceof LiftTeleopTask) {
+            LiftTeleopTask castedLiftTeleopTask = (LiftTeleopTask)task;
+            goalAchieved = true;
+            pulleyMotor.setPower(castedLiftTeleopTask.extension);
+            swingMotor.setPower(castedLiftTeleopTask.swing);
+        }
+        else {
             throw new UnsupportedTaskException(this, task);
         }
     }
-
     /**
      * Calculates the current distance from the base to the top of the lift.
      */
