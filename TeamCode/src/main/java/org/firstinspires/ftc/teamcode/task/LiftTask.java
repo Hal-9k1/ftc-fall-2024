@@ -39,6 +39,7 @@ public class LiftTask implements Task {
         this.fullRetract = fullRetract;
         this.raiseLift = raiseLift;
         this.lowerLift = lowerLift;
+        
         if (fullExtend && fullRetract) {
             throw new IllegalArgumentException("Cannot simultaneously fully extend and fully retract the lift.");
         } 
