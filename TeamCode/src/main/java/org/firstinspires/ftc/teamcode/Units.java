@@ -95,7 +95,7 @@ public class Units {
          */
         private final double unitsPerSecond;
 
-        time(double unitsPerSecond) {
+        Time(double unitsPerSecond) {
             this.unitsPerSecond = unitsPerSecond;
         }
     }

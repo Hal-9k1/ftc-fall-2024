@@ -14,6 +14,7 @@ public class IntakeLayer implements Layer {
         EJECTING,
         IDLE
     }
+
     /**
      * Duration in nanoseconds of ejection.
      */
@@ -32,21 +33,21 @@ public class IntakeLayer implements Layer {
     @Override
     public void setup(LayerSetupInfo setupInfo) {
         intake = setupInfo.getHardwareMap().get(DcMotor.class, "intake");
-        state = IDLE;
+        state = State.IDLE;
         TouchSensor loadSensor = setupInfo.getHardwareMap().get(TouchSensor.class, "intake_load_sensor");
         setup.addUpdateListener(() -> {
-            //boolean intakeDone = state == INTAKING && loadSensor.isPressed();
-            boolean intakeDone = state == INTAKING && (System.nanoTime() - intakeStart) > INTAKE_DURATION;
-            boolean ejectDone = state == EJECTING && (System.nanoTime() - ejectStart) > EJECT_DURATION;
+            //boolean intakeDone = state == State.INTAKING && loadSensor.isPressed();
+            boolean intakeDone = state == State.INTAKING && (System.nanoTime() - intakeStart) > INTAKE_DURATION;
+            boolean ejectDone = state == State.EJECTING && (System.nanoTime() - ejectStart) > EJECT_DURATION;
             if (intakeDone || ejectDone) {
-                state = IDLE;
+                state = State.IDLE;
                 intake.setPower(0);
             }
         });
     }
     @Override
     public boolean isTaskDone() {
-        return state == IDLE;
+        return state == State.IDLE;
     }
     @Override
     public Iterator<Task> update(Iterable<Task> completed) {
@@ -57,26 +58,26 @@ public class IntakeLayer implements Layer {
         if (task instanceof IntakeTask) {
             IntakeTask castedTask = (IntakeTask)task;
             if (castedTask.acquire) {
-                state = INTAKING;
+                state = State.INTAKING;
                 intake.setPower(-INTAKE_SPEED);
                 intakeStart = System.nanoTime();
             } else if (castedTask.eject) {
-                state = EJECTING;
+                state = State.EJECTING;
                 intake.setPower(INTAKE_SPEED);
                 ejectStart = System.nanoTime();
             }
         } else if (task instanceof IntakeTeleopTask) {
             IntakeTeleopTask castedTask = (IntakeTeleopTask)task;
             if (castedTask.acquire) {
-                state = INTAKING;
+                state = State.INTAKING;
                 intake.setPower(-INTAKE_SPEED);
                 intakeStart = System.nanoTime();
             } else if (castedTask.timedEject) {
-                state = EJECTING;
+                state = State.EJECTING;
                 intake.setPower(INTAKE_SPEED);
                 ejectStart = System.nanoTime();
             } else {
-                state = IDLE;
+                state = State.IDLE;
                 intakeStart = 0;
                 ejectStart = 0;
                 intake.setPower(castedTask.intakePower);
