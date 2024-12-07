@@ -9,6 +9,7 @@ import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.Iterator;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.layer.Layer;
 import org.firstinspires.ftc.teamcode.layer.LayerSetupInfo;
 import org.firstinspires.ftc.teamcode.mechanism.Wheel;
@@ -191,6 +192,15 @@ public class MecanumDrive implements Layer {
                 && predicate.test(WheelKey.LEFT_BACK, leftBack)
                 && predicate.test(WheelKey.RIGHT_BACK, rightBack);
         }
+
+        @Override
+        public String toString() {
+            return "WheelProperty<lf: " + leftFront.toString()
+                + ", rf: " + rightFront.toString()
+                + ", lb: " + leftBack.toString()
+                + ", rb: " + rightBack.toString()
+                + ">";
+        }
     }
     /**
      * Name of the drive motors in the robot configuration.
@@ -248,11 +258,18 @@ public class MecanumDrive implements Layer {
      */
     private boolean currentTaskDone;
 
+    private Telemetry telemetry;
+
     @Override
     public void setup(LayerSetupInfo initInfo) {
+        telemetry = initInfo.getTelemetry();
         wheels = DRIVE_MOTOR_NAMES.map((key, motorName) -> {
             DcMotor motor = initInfo.getHardwareMap().get(DcMotor.class, motorName);
-            motor.setDirection(DcMotorSimple.Direction.REVERSE);
+            if (key == WheelProperty.WheelKey.LEFT_BACK) {
+                motor.setDirection(DcMotorSimple.Direction.FORWARD);
+            } else {
+                motor.setDirection(DcMotorSimple.Direction.REVERSE);
+            }
             return new Wheel(
                 motor,
                 WHEEL_RADIUS
@@ -283,6 +300,9 @@ public class MecanumDrive implements Layer {
             (deltaSignsMatch.get(key) && goalDeltaExceeded.get(key))
                 || wheelGoalDeltas.get(key) == 0
         );
+        telemetry.addData("deltas", deltas);
+        telemetry.addData("wheelGoalDeltas", wheelGoalDeltas);
+        telemetry.addData("wheelDone", wheelDone);
 
         boolean isTeleopTask = wheelGoalDeltas.all((_key, goalDelta) -> goalDelta == 0);
         currentTaskDone = wheelDone.all((_key, done) -> done);

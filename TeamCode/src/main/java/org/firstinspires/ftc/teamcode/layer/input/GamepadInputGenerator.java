@@ -36,12 +36,12 @@ public class GamepadInputGenerator extends InputGenerator {
     public Iterator<Task> update(Iterable<Task> completed) {
         return Collections.singleton((Task)(new GamepadInputTask(
             gamepad0 == null ? null : new GamepadInputTask.GamepadInput(
-                -gamepad0.left_stick_x,
-                gamepad0.left_stick_y,
+                gamepad0.left_stick_x,
+                -gamepad0.left_stick_y,
                 gamepad0.left_bumper,
                 gamepad0.left_trigger,
-                -gamepad0.right_stick_x,
-                gamepad0.right_stick_y,
+                gamepad0.right_stick_x,
+                -gamepad0.right_stick_y,
                 gamepad0.right_bumper,
                 gamepad0.right_trigger,
                 gamepad0.dpad_up,
