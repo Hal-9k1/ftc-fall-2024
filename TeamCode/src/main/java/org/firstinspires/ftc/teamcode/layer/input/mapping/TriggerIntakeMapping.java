@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.layer.input.mapping;
 
-package org.firstinspires.ftc.teamcode.layer.FunctionLayer;
-package org.firstinspires.ftc.teamcode.task.IntakeTeleopTask;
+import org.firstinspires.ftc.teamcode.layer.FunctionLayer;
+import org.firstinspires.ftc.teamcode.task.IntakeTeleopTask;
 
 public class TriggerIntakeMapping extends FunctionLayer {
     @Override
