@@ -85,6 +85,21 @@ public class Units {
         }
     }
 
+    public static enum Time {
+        SEC(1),
+        NANO(Math.pow(10, 9)),
+        MSEC(1000);
+
+        /**
+         * The number of this unit that is equivalent to one second.
+         */
+        private final double unitsPerSecond;
+
+        time(double unitsPerSecond) {
+            this.unitsPerSecond = unitsPerSecond;
+        }
+    }
+
     /**
      * Converts between distance units.
      * @param value - the value in fromUnit units to convert.
@@ -104,5 +119,9 @@ public class Units {
      */
     public static double convert(double value, Angle fromUnit, Angle toUnit) {
         return value * toUnit.unitsPerRadian / fromUnit.unitsPerRadian;
+    }
+
+    public static double convert(double value, Time fromUnit, Time toUnit) {
+        return value * toUnit.unitsPerSecond / fromUnit.unitsPerSecond;
     }
 }
