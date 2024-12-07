@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.RobotController;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 /**
  * Contains the information needed to initialize a layer.
@@ -31,6 +32,8 @@ public class LayerSetupInfo {
      */
     private final Gamepad gamepad1;
 
+    private final Telemetry telemetry;
+
     /**
      * Creates a LayerSetupInfo.
      *
@@ -43,10 +46,11 @@ public class LayerSetupInfo {
      * available or connected.
      */
     public LayerSetupInfo(HardwareMap hardwareMap, RobotController robotController,
-        Gamepad gamepad0, Gamepad gamepad1
+        Telemetry telemetry, Gamepad gamepad0, Gamepad gamepad1
     ) {
         this.hardwareMap = hardwareMap;
         this.robotController = robotController;
+        this.telemetry = telemetry;
         this.gamepad0 = gamepad0;
         this.gamepad1 = gamepad1;
     }
@@ -59,6 +63,14 @@ public class LayerSetupInfo {
      */
     public HardwareMap getHardwareMap() {
         return hardwareMap;
+    }
+
+    /**
+     * Gets the Telemetry.
+     * @return the Telemetry.
+     */
+    public Telemetry getTelemetry() {
+        return telemetry;
     }
 
     /**

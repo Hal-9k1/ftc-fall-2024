@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 import org.firstinspires.ftc.teamcode.layer.Layer;
 import org.firstinspires.ftc.teamcode.layer.LayerSetupInfo;
@@ -74,10 +75,10 @@ public class RobotController {
      * @param gamepad0 - the first connected Gamepad, or null if none is connected or available.
      * @param gamepad1 - the second connected Gamepad, or null if none is connected or available.
      */
-    public void setup(HardwareMap hardwareMap, List<Layer> layerStack, Gamepad gamepad0,
-        Gamepad gamepad1
-    ) {
-        LayerSetupInfo setupInfo = new LayerSetupInfo(hardwareMap, this, gamepad0, gamepad1);
+    public void setup(HardwareMap hardwareMap, List<Layer> layerStack, Telemetry telemetry,
+        Gamepad gamepad0, Gamepad gamepad1) {
+        LayerSetupInfo setupInfo = new LayerSetupInfo(hardwareMap, this, telemetry,
+            gamepad0, gamepad1);
         this.layers = layerStack.stream().map(layer -> {
             layer.setup(setupInfo);
             return new LayerInfo(layer);
