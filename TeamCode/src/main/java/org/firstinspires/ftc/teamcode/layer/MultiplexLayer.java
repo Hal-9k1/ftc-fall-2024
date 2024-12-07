@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.layer;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Spliterators;
 import java.util.stream.StreamSupport;
 
@@ -38,15 +39,25 @@ public class MultiplexLayer implements Layer {
     public Iterator<Task> update(Iterable<Task> completed) {
         // Concatenates results of component layer update methods into a single stream, then creates
         // an iterator from the stream
-        return layers.stream().flatMap(layer ->
-            StreamSupport.stream(
+        return layers.stream().flatMap(layer -> {
+            Iterator<Task> tasks = layer.update(completed);
+            if (tasks == null) {
+                throw new NullPointerException("tasks from layer " + layer.getClass().getName() + " is null");
+            }
+            List<Task> taskList = new ArrayList<>();
+            tasks.forEachRemaining(taskList::add);
+            if (taskList.contains(null)) {
+                throw new NullPointerException("tasks from layer " + layer.getClass().getName() + " contains null");
+            }
+
+            return StreamSupport.stream(
                 Spliterators.spliteratorUnknownSize(
-                    layer.update(completed),
+                    taskList.iterator(),//layer.update(completed),
                     0
                 ),
                 false
-            )
-        ).iterator();
+            );
+        }).iterator();
     }
 
     @Override
