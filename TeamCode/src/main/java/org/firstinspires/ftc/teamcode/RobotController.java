@@ -7,7 +7,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.ArrayList;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.firstinspires.ftc.teamcode.layer.Layer;
@@ -164,7 +163,7 @@ public class RobotController {
      */
     public boolean update() {
         // Call all update listeners
-        for (Consumer<Boolean> listener : updateListeners) {
+        for (Runnable listener : updateListeners) {
             listener.run();
         }
 
@@ -181,7 +180,7 @@ public class RobotController {
             }
             if (!layerIter.hasNext()) {
                 // No tasks left in any layer, inform all listeners of completion
-                for (Consumer<Boolean> listener : teardownListeners) {
+                for (Runnable listener : teardownListeners) {
                     listener.run();
                 }
                 updateListeners.clear();
@@ -229,7 +228,7 @@ public class RobotController {
      * listeners are unregistered.
      * @param listener the function to be registered as an update listener
      */
-    public void addUpdateListener(Consumer<Boolean> listener) {
+    public void addUpdateListener(Runnable listener) {
         updateListeners.add(listener);
     }
     /**

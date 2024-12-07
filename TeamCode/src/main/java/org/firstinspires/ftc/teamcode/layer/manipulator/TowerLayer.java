@@ -31,20 +31,24 @@ public class TowerLayer implements Layer {
      */
     private Servo claw;
     private boolean isInit;
+    private boolean towerWorking;
     private double forearmZero;
     private double towerZero;
+    private double towerStartPos;
+    private double towerGoalAngle;
     private long clawStartTime;
 
     @Override
     public void setup(LayerSetupInfo setupInfo) {
         isInit = false;
         tower = setupInfo.getHardwareMap().get(DcMotor.class, "tower_swing");
-        tower.setZeroPowerBehavior(DcMotorSimple.ZeroPowerBehavior.BRAKE);
+        tower.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         towerZero = forearm.getCurrentPosition();
         forearm = setupInfo.getHardwareMap().get(DcMotor.class, "forearm_swing");
-        forearm.setZeroPowerBehavior(DcMotorSimple.ZeroPowerBehavior.BRAKE);
+        forearm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         forearmZero = forearm.getCurrentPosition();
         claw = setupInfo.getHardwareMap().get(Servo.class, "claw");
+        clawStartTime = 0;
     }
     @Override
     public boolean isTaskDone() {
@@ -53,7 +57,7 @@ public class TowerLayer implements Layer {
         } else if (towerWorking) {
             return checkTowerDone();
         } else {
-            return System.nano() - clawStartTime() >= CLAW_TOGGLE_DURATION;
+            return System.nanoTime() - clawStartTime >= CLAW_TOGGLE_DURATION;
         }
     }
     @Override
@@ -69,7 +73,7 @@ public class TowerLayer implements Layer {
             TowerTask castedTask = (TowerTask)task;
 
         } else if (task instanceof TowerTeleopTask) {
-            TowerTeleopTask castedTask = (TowerTeleopTask)castedTask;
+            TowerTeleopTask castedTask = (TowerTeleopTask)task;
             tower.setPower(castedTask.towerSwingPower);
             return;
         } else {
@@ -78,8 +82,8 @@ public class TowerLayer implements Layer {
         towerStartPos = tower.getCurrentPosition();
     }
     private boolean checkDelta(double delta, double goalDelta) {
-        boolean magExceeded = Math.abs(rads) > Math.abs(FOREARM_INIT_ANGLE);
-        boolean signMatches = (rads > 0) == (FOREARM_INIT_ANGLE > 0);
+        boolean magExceeded = Math.abs(delta) > Math.abs(goalDelta);
+        boolean signMatches = (delta > 0) == (goalDelta > 0);
         return magExceeded && signMatches;
     }
     private double getForearmAngle() {
@@ -87,7 +91,7 @@ public class TowerLayer implements Layer {
             / forearm.getMotorType().getTicksPerRev();
         return Units.convert(revs, Units.Angle.REV, Units.Angle.RAD);
     }
-    private double checkTowerDone() {
+    private boolean checkTowerDone() {
         double revs = (tower.getCurrentPosition() - towerStartPos)
             / tower.getMotorType().getTicksPerRev();
         double deltaAngle = Units.convert(revs, Units.Angle.REV, Units.Angle.RAD);
