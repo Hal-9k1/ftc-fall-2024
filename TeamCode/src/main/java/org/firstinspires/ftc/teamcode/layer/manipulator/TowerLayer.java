@@ -1,5 +1,18 @@
 package org.firstinspires.ftc.teamcode.layer.manipulator;
 
+import org.firstinspires.ftc.teamcode.layer.Layer;
+import org.firstinspires.ftc.teamcode.Units;
+import org.firstinspires.ftc.teamcode.layer.LayerSetupInfo;
+import org.firstinspires.ftc.teamcode.task.TowerInitTask;
+import org.firstinspires.ftc.teamcode.task.Task;
+import org.firstinspires.ftc.teamcode.task.TowerTeleopTask;
+import org.firstinspires.ftc.teamcode.task.TowerTask;
+import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
+import java.util.Iterator;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
+
 public class TowerLayer implements Layer {
     private final double FOREARM_INIT_ANGLE = Units.convert(
         0.25,
@@ -72,12 +85,12 @@ public class TowerLayer implements Layer {
     private double getForearmAngle() {
         double revs = (forearm.getCurrentPosition() - forearmZero)
             / forearm.getMotorType().getTicksPerRev();
-        return Units.convert(revs, Units.REV, Units.RAD);
+        return Units.convert(revs, Units.Angle.REV, Units.Angle.RAD);
     }
     private double checkTowerDone() {
         double revs = (tower.getCurrentPosition() - towerStartPos)
             / tower.getMotorType().getTicksPerRev();
-        double deltaAngle = Units.convert(revs, Units.REV, Units.RAD);
+        double deltaAngle = Units.convert(revs, Units.Angle.REV, Units.Angle.RAD);
         double startAngle = towerStartPos / tower.getMotorType().getTicksPerRev();
         double goalDeltaAngle = towerGoalAngle - startAngle;
         return checkDelta(deltaAngle, goalDeltaAngle);
