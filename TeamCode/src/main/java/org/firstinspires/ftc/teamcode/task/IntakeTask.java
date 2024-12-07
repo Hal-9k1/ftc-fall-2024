@@ -11,5 +11,6 @@ public class IntakeTask {
             throw new IllegalArgumentException(
                 "Cannot direct the intake to simultaneously acquire a sample and eject one."
             );
+        }
     }
 }
