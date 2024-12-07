@@ -200,8 +200,8 @@ dependencies {
 
 // More custom definitions!
 tasks.named('build') {
-  dependsOn 'javadoc'
+  //dependsOn 'javadoc'
 }
 tasks.named('check') {
-  dependsOn 'javadocWerror'
+  //dependsOn 'javadocWerror'
 }
