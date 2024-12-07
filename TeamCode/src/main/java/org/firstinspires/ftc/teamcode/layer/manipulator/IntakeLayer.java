@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.layer.manipulator;
 
-import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import java.util.Iterator;
 import org.firstinspires.ftc.teamcode.layer.Layer;
@@ -30,18 +30,18 @@ public class IntakeLayer implements Layer {
     private final double INTAKE_SPEED = 1.0;
 
     /**
-     * Motor spinning the intake mechanism.
+     * Servo spinning the intake mechanism.
      */
-    private DcMotor intake;
+    private CRServo intake;
     private State state;
     private long intakeStart;
     private long ejectStart;
 
     @Override
     public void setup(LayerSetupInfo setupInfo) {
-        intake = setupInfo.getHardwareMap().get(DcMotor.class, "intake");
+        intake = setupInfo.getHardwareMap().get(CRServo.class, "intake");
         state = State.IDLE;
-        TouchSensor loadSensor = setupInfo.getHardwareMap().get(TouchSensor.class, "intake_load_sensor");
+        //TouchSensor loadSensor = setupInfo.getHardwareMap().get(TouchSensor.class, "intake_load_sensor");
         setupInfo.addUpdateListener(() -> {
             //boolean intakeDone = state == State.INTAKING && loadSensor.isPressed();
             boolean intakeDone = state == State.INTAKING && (System.nanoTime() - intakeStart) > INTAKE_DURATION;

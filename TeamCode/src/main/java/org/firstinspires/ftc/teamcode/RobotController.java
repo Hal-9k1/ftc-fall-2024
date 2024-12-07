@@ -202,11 +202,16 @@ public class RobotController {
             layer = layerIter.previous();
             tasks = oldLayer.update(layer.getLastTasks());
             if (tasks == null) {
-                throw new NullPointerException("Layer '" + layer.getName()
+                throw new NullPointerException("Layer '" + oldLayer.getName()
                     + "' returned null from update.");
             }
             while (tasks.hasNext() && layer.isTaskDone()) {
-                layer.acceptTask(tasks.next());
+                Task task = tasks.next();
+                if (task == null) {
+                    throw new NullPointerException("Layer '" + oldLayer.getName()
+                        + "' returned null as a subtask.");
+                }
+                layer.acceptTask(task);
             }
             if (tasks.hasNext()) {
                 String errMsg = "Layer '" + layer.getName() + "' did not consume all"

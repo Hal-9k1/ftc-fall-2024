@@ -12,6 +12,7 @@ import java.util.Iterator;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class TowerLayer implements Layer {
     private final double FOREARM_INIT_ANGLE = Units.convert(
@@ -37,17 +38,20 @@ public class TowerLayer implements Layer {
     private double towerStartPos;
     private double towerGoalAngle;
     private long clawStartTime;
+    private Telemetry telemetry;
+
 
     @Override
     public void setup(LayerSetupInfo setupInfo) {
+        telemetry = setupInfo.getTelemetry();
         isInit = false;
         tower = setupInfo.getHardwareMap().get(DcMotor.class, "tower_swing");
         tower.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        towerZero = forearm.getCurrentPosition();
+        towerZero = tower.getCurrentPosition();
         forearm = setupInfo.getHardwareMap().get(DcMotor.class, "forearm_swing");
         forearm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         forearmZero = forearm.getCurrentPosition();
-        claw = setupInfo.getHardwareMap().get(Servo.class, "claw");
+        //claw = setupInfo.getHardwareMap().get(Servo.class, "claw");
         clawStartTime = 0;
     }
     @Override
@@ -74,6 +78,7 @@ public class TowerLayer implements Layer {
 
         } else if (task instanceof TowerTeleopTask) {
             TowerTeleopTask castedTask = (TowerTeleopTask)task;
+            telemetry.addData("tower", castedTask.towerSwingPower);
             tower.setPower(castedTask.towerSwingPower);
             return;
         } else {
