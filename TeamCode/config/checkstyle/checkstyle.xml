@@ -4,5 +4,9 @@
   "https://checkstyle.org/dtds/configuration_1_3.dtd">
 <module name="Checker">
   <property name="basedir" value="${basedir}" />
+  <property name="cacheFile" value="${cachefile}" />
+  <property name="tabWidth" value="4" />
   <module name="JavadocPackage" />
+  <module name="TreeWalker">
+  </module>
 </module>
