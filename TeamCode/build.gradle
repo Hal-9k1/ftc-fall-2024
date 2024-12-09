@@ -129,11 +129,12 @@ tasks.register('getJavadocPackageLists') {
     }
   }
 }
-def configureJavadocTask =  {
+def configureJavadocTask = {
   dependsOn 'getJavadocPackageLists'
   description = 'Generates javadocs for the TeamCode subproject'
   group = 'build'
-  source = fileTree('src/main/java').include('**/*.java')
+  source = 'src/main/java'
+  include '**/*.java'
   doFirst {
     classpath = resolveJavadocConfig()
   }
@@ -191,6 +192,34 @@ tasks.register('javadocWerror', Javadoc).configure(configureJavadocTask.andThen 
     addBooleanOption 'Werror', true
   }
 })
+def registerCheckstyle(String name) {
+  tasks.register("checkstyle${name.substring(0, 1).toUpperCase() + name.substring(1)}", Checkstyle) {
+    source = "src/${name}/java"
+    include '**/*.java'
+    classpath = files()
+    configFile = new File('config/checkstyle/checkstyle.xml')
+    getConfigProperties()['basedir'] = "src/${name}/java"
+  }
+}
+registerCheckstyle('main')
+registerCheckstyle('test')
+tasks.register('checkstyle') {
+  dependsOn 'checkstyleMain'
+  dependsOn 'checkstyleTest'
+}
+
+afterEvaluate {
+  tasks.named('build') {
+    dependsOn 'javadoc'
+    //dependsOn -= 'check'
+  }
+  tasks.named('check') {
+    dependsOn 'javadocWerror'
+    dependsOn 'checkstyle'
+  }
+}
+
+
 // Include common definitions from above.
 apply from: '../build.common.gradle'
 apply from: '../build.dependencies.gradle'
@@ -208,10 +237,3 @@ dependencies {
   implementation project(':FtcRobotController')
 }
 
-// More custom definitions!
-tasks.named('build') {
-  dependsOn 'javadoc'
-}
-tasks.named('check') {
-  dependsOn 'javadocWerror'
-}
