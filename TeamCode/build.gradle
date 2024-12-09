@@ -198,7 +198,7 @@ def registerCheckstyle(String name) {
     include '**/*.java'
     classpath = files()
     configFile = new File('config/checkstyle/checkstyle.xml')
-    getConfigProperties()['basedir'] = "src/${name}/java"
+    getConfigProperties()['basedir'] = new File(projectDir, "src/${name}/java").getPath()
   }
 }
 registerCheckstyle('main')
