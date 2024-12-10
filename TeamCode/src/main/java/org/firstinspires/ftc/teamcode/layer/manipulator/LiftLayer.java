@@ -74,12 +74,12 @@ public class LiftLayer implements Layer {
     private double startDist;
     /**
      * Whether the lift was last set to extend.
-     * This is used for fullExtend and fullRetract
+     * This is used for fullExtend and fullRetract.
      */
     private boolean extensionLift;
     /**
      * Whether the lift was last set to raise.
-     * This is used for raiseLift and lowerLift
+     * This is used for raiseLift and lowerLift.
      */
     private boolean raisingLift;
     /**
@@ -160,14 +160,12 @@ public class LiftLayer implements Layer {
             } else if (castedLiftTask.lowerLift) {
                 raisingLift = false;
             }
-        }
-        else if (task instanceof LiftTeleopTask) {
+        } else if (task instanceof LiftTeleopTask) {
             LiftTeleopTask castedLiftTeleopTask = (LiftTeleopTask)task;
             goalAchieved = true;
             pulleyMotor.setPower(castedLiftTeleopTask.extension);
             swingMotor.setPower(castedLiftTeleopTask.swing);
-        }
-        else {
+        } else {
             throw new UnsupportedTaskException(this, task);
         }
     }

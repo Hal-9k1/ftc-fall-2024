@@ -28,8 +28,8 @@ public class LiftTask implements Task {
     /**
      * Constructs a LiftTask.
      * @param swing - the rotation of the arm in radians.
-     * @param fullExtend- Whether the lift should be fully extended.
-     * @param fullRetract- Whether the lift should be fully retracted.
+     * @param fullExtend - Whether the lift should be fully extended.
+     * @param fullRetract - Whether the lift should be fully retracted.
      * @param raiseLift - Whether the lift should be fully raised in an arc.
      * @param lowerLift - Whether the lift should be fully lowered in an arc.
      */
@@ -39,11 +39,10 @@ public class LiftTask implements Task {
         this.fullRetract = fullRetract;
         this.raiseLift = raiseLift;
         this.lowerLift = lowerLift;
-        
+
         if (fullExtend && fullRetract) {
             throw new IllegalArgumentException("Cannot simultaneously fully extend and fully retract the lift.");
-        } 
-        else if (raiseLift && lowerLift) {
+        } else if (raiseLift && lowerLift) {
             throw new IllegalArgumentException("Cannot simultaneously fully raise and lower the lift in an arc.");
         }
     }

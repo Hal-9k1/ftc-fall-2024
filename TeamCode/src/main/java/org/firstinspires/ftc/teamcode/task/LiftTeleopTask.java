@@ -15,7 +15,7 @@ public class LiftTeleopTask implements Task {
      * This is used for both extend and retract. Negative value is retract, positive is extend.
      */
     public final double extension;
-    
+
     /**
      * LiftTeleopTask constructor.
      * @param swing - the rotation of the arm/lift in radians.

@@ -17,14 +17,15 @@ public class RightLiftMapping extends FunctionLayer {
 
     @Override
     public Task map(Task task) {
-        if (task instanceof LiftTeleopTask) {
-            LiftTeleopTask castedTask = (LiftTeleopTask)task;
-            boolean raise = castedTask.gamepad0.bumpers.right;
-            boolean lower = castedTask.gamepad0.triggers.right;
-            boolean valid = !(raise && lower);
-            return new LiftTask(
-                valid && raise,
-                valid && lower
+        if (task instanceof GamepadInputTask) {
+            GamepadInputTask castedTask = (GamepadInputTask)task;
+            boolean raiseSwing = castedTask.gamepad0.bumpers.right;
+            boolean lowerSwing = castedTask.gamepad0.triggers.right;
+            boolean extend = castedTask.gamepad0.bumpers.left;
+            boolean retract = castedTask.gamepad0.triggers.left;
+            return new LiftTeleopTask(
+                (raiseSwing ? 1 : 0) - (lowerSwing ? 1 : 0),
+                (extend ? 1 : 0) - (retract ? 1 : 0)
             );
         } else {
             throw new UnsupportedTaskException(this, task);
