@@ -43,11 +43,11 @@ public class TowerLayer implements Layer {
         isInit = false;
         tower = setupInfo.getHardwareMap().get(DcMotor.class, "tower_swing");
         tower.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        towerZero = forearm.getCurrentPosition();
+        towerZero = tower.getCurrentPosition();
         forearm = setupInfo.getHardwareMap().get(DcMotor.class, "forearm_swing");
         forearm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         forearmZero = forearm.getCurrentPosition();
-        claw = setupInfo.getHardwareMap().get(Servo.class, "claw");
+        //claw = setupInfo.getHardwareMap().get(Servo.class, "claw");
         clawStartTime = 0;
     }
     @Override
