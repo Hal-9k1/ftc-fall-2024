@@ -1,12 +1,15 @@
 package org.firstinspires.ftc.teamcode.layer.manipulator;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
-import java.util.Iterable;
+import com.qualcomm.robotcore.hardware.TouchSensor;
+import java.util.Iterator;
 import org.firstinspires.ftc.teamcode.layer.Layer;
 import org.firstinspires.ftc.teamcode.layer.LayerSetupInfo;
 import org.firstinspires.ftc.teamcode.task.IntakeTask;
 import org.firstinspires.ftc.teamcode.task.IntakeTeleopTask;
 import org.firstinspires.ftc.teamcode.task.Task;
+import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
+import org.firstinspires.ftc.teamcode.Units;
 
 public class IntakeLayer implements Layer {
     private static enum State {
@@ -15,6 +18,10 @@ public class IntakeLayer implements Layer {
         IDLE
     }
 
+    /**
+     * Duration in nanoseconds of intake.
+     */
+    private final double INTAKE_DURATION = Units.convert(1.5, Units.Time.SEC, Units.Time.NANO);
     /**
      * Duration in nanoseconds of ejection.
      */
@@ -35,7 +42,7 @@ public class IntakeLayer implements Layer {
         intake = setupInfo.getHardwareMap().get(DcMotor.class, "intake");
         state = State.IDLE;
         TouchSensor loadSensor = setupInfo.getHardwareMap().get(TouchSensor.class, "intake_load_sensor");
-        setup.addUpdateListener(() -> {
+        setupInfo.addUpdateListener(() -> {
             //boolean intakeDone = state == State.INTAKING && loadSensor.isPressed();
             boolean intakeDone = state == State.INTAKING && (System.nanoTime() - intakeStart) > INTAKE_DURATION;
             boolean ejectDone = state == State.EJECTING && (System.nanoTime() - ejectStart) > EJECT_DURATION;

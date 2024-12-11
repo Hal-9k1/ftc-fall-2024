@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.task;
 
-public class IntakeTeleopTask {
+public class IntakeTeleopTask implements Task {
     public final boolean acquire;
     public final boolean timedEject;
     public final double intakePower;
