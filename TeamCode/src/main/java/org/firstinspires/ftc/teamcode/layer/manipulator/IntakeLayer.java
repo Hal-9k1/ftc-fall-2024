@@ -11,10 +11,25 @@ import org.firstinspires.ftc.teamcode.task.Task;
 import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
 import org.firstinspires.ftc.teamcode.Units;
 
+/**
+ * Controls a roller intake that can acquire, hold, and eject samples.
+ */
 public class IntakeLayer implements Layer {
+    /**
+     * An action the layer can take.
+     */
     private static enum State {
+        /**
+         * The intake is currently attempting to acquire a sample.
+         */
         INTAKING,
+        /**
+         * The intake is currently ejecting a sample.
+         */
         EJECTING,
+        /**
+         * The intake is idle.
+         */
         IDLE
     }
 
@@ -26,15 +41,27 @@ public class IntakeLayer implements Layer {
      * Duration in nanoseconds of ejection.
      */
     private final double EJECT_DURATION = Units.convert(1.5, Units.Time.SEC, Units.Time.NANO);
-
+    /**
+     * Multiplier for intake actuator power.
+     * Should be in the range [-1.0, 1.0].
+     */
     private final double INTAKE_SPEED = 1.0;
 
     /**
      * Servo spinning the intake mechanism.
      */
     private CRServo intake;
+    /**
+     * The current action the layer is taking.
+     */
     private State state;
+    /**
+     * The nanosecond timestamp of the start of the last intake action.
+     */
     private long intakeStart;
+    /**
+     * The nanosecond timestamp of the start of the last eject action.
+     */
     private long ejectStart;
 
     @Override

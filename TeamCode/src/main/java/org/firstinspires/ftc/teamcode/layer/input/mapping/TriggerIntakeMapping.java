@@ -7,6 +7,10 @@ import org.firstinspires.ftc.teamcode.task.GamepadInputTask;
 import org.firstinspires.ftc.teamcode.task.Task;
 import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
 
+/**
+ * Mapping for gamepad input that uses the left and right triggers to acquire and eject samples from
+ * the intake.
+ */
 public class TriggerIntakeMapping extends FunctionLayer {
     @Override
     public void setup(LayerSetupInfo setupInfo) { }
