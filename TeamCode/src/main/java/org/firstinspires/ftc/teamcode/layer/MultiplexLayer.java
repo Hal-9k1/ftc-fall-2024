@@ -8,6 +8,7 @@ import java.util.stream.StreamSupport;
 
 import org.firstinspires.ftc.teamcode.task.Task;
 import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 /**
  * Acts on behalf on multiple component layers to handle multiple unrelated kinds of tasks from the
@@ -19,6 +20,8 @@ public class MultiplexLayer implements Layer {
      * The list of component layers.
      */
     private final List<Layer> layers;
+
+    private Telemetry telemetry;
 
     /**
      * Constructs a MultiplexLayer.
@@ -33,6 +36,7 @@ public class MultiplexLayer implements Layer {
         for (Layer layer : layers) {
             layer.setup(setupInfo);
         }
+        telemetry = setupInfo.getTelemetry();
     }
 
     @Override
@@ -67,14 +71,14 @@ public class MultiplexLayer implements Layer {
 
     @Override
     public void acceptTask(Task task) {
-        boolean anyAccepted = layers.stream().anyMatch((layer) -> {
+        boolean anyAccepted = layers.stream().map((layer) -> {
             try {
                 layer.acceptTask(task);
             } catch (UnsupportedTaskException e) {
                 return false;
             }
             return true;
-        });
+        }).reduce(false, (a, b) -> a || b); // Prevent short circuiting
         if (!anyAccepted) {
             // Should list component layers, not say MultiplexLayer
             throw new UnsupportedTaskException(this, task);
