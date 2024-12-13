@@ -101,9 +101,19 @@
     </module>
     <module name="RedundantImport" />
     <module name="UnusedImports" />
-    <!-- Javadocs -->
+    <!-- Javadocs (tag presence is checked by javadocWerror, not checkstyle) -->
     <module name="AtclauseOrder" />
     <module name="InvalidJavadocPosition" />
     <module name="JavadocBlockTagLocation" />
+    <module name="JavadocContentLocation" />
+    <module name="JavadocLeadingAsteriskAlign" />
+    <module name="JavadocMissingLeadingAsterisk" />
+    <module name="JavadocMissingWhitespaceAfterAsterisk" />
+    <module name="JavadocPackage" />
+    <module name="JavadocParagraph" />
+    <module name="JavadocStyle" />
+    <module name="NonEmptyAtclausDescription" />
+    <module name="RequireEmptyLineBeforeBlockTagGroup" />
+    <module name="SummaryJavadoc" />
   </module>
 </module>
