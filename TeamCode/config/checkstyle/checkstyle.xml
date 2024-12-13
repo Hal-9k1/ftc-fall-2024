@@ -8,5 +8,102 @@
   <property name="tabWidth" value="4" />
   <module name="JavadocPackage" />
   <module name="TreeWalker">
+    <!-- Annotations -->
+    <module name="AnnotationLocation" />
+    <module name="AnnotationUseStyle" />
+    <module name="MissingDeprecated" />
+    <module name="MissingOverride" />
+    <!-- Blocks -->
+    <module name="EmptyBlock">
+      <property name="id" value="blocksContainCommentOrStatement" />
+      <property name="option" value="text" />
+      <property name="type" value="LITERAL_WHILE" />
+      <property name="type" value="LITERAL_TRY" />
+      <property name="type" value="LITERAL_CATCH" />
+      <property name="type" value="LITERAL_FINALLY" />
+      <property name="type" value="LITERAL_FOR" />
+      <property name="type" value="INSTANCE_INIT" />
+      <property name="type" value="STATIC_INIT" />
+      <property name="type" value="LITERAL_SWITCH" />
+      <property name="type" value="LITERAL_SYNCHRONIZED" />
+      <property name="type" value="LITERAL_CASE" />
+      <property name="type" value="LITERAL_DEFAULT" />
+      <property name="type" value="ARRAY_INIT" />
+    </module>
+    <module name="EmptyBlock">
+      <property name="id" value="blocksContainStatement" />
+      <property name="option" value="statement" />
+      <property name="option" value="LITERAL_DO" />
+      <property name="option" value="LITERAL_IF" />
+      <property name="option" value="LITERAL_ELSE" />
+    </module>
+    <module name="LeftCurly">
+      <property name="option" value="nlow" />
+      <property name="ignoreEnums" value="false" />
+    </module>
+    <module name="NeedBraces" />
+    <module name="RightCurly" />
+    <!-- Class design -->
+    <module name="DesignForExtension" />
+    <module name="FinalClass" />
+    <module name="HideUtilityClassConstructor" />
+    <module name="InnerTypeLast" />
+    <module name="InterfaceIsType" />
+    <module name="MutableException" />
+    <module name="OneTopLevelClass" />
+    <module name="SealedShouldHavePermitsList" />
+    <module name="VisibilityModifier">
+      <property name="allowPublicFinalFields" value="true" />
+    </module>
+    <!-- Coding -->
+    <module name="AvoidDoubleBraceInitialization" />
+    <module name="AvoidNoArgumentSuperConstructorCall" />
+    <module name="CovariantEquals" />
+    <module name="DeclarationOrder" />
+    <module name="DefaultComesLast" />
+    <module name="EmptyStatement" />
+    <module name="EqualsAvoidNull" />
+    <module name="EqualsHashCode" />
+    <module name="FallThrough" />
+    <module name="HiddenField" />
+    <module name="IllegalToken" />
+    <module name="InnerAssignment" />
+    <module name="MagicNumber" />
+    <module name="MissingCtor" />
+    <module name="MissingSwitchDefault" />
+    <module name="ModifiedControlVariable" />
+    <module name="MultipleStringLiterals" />
+    <module name="MultipleVariableDeclarations" />
+    <module name="NoArrayTrailingComma" />
+    <module name="NoClone" />
+    <module name="NoEnumTrailingComma" />
+    <module name="NoFinalizer" />
+    <module name="OneStatementPerLine" />
+    <module name="OverloadMethodsDeclarationOrder" />
+    <module name="PackageDeclaration" />
+    <module name="ParameterAssignment" />
+    <module name="SimplifyBooleanExpression" />
+    <module name="SimplifyBooleanReturn" />
+    <module name="StringLiteralEquality" />
+    <module name="UnnecessarySemicolonAfterOuterTypeDeclaration" />
+    <module name="UnnecessarySemicolonAfterTypeMemberDeclaration" />
+    <module name="UnnecessarySemicolonInEnumeration" />
+    <module name="UnnecessarySemicolonInTryWithResources" />
+    <module name="UnusedLocalVariable" />
+    <!-- Imports -->
+    <module name="AvoidStarImport" />
+    <module name="AvoidStaticImport" />
+    <module name="ImportOrder">
+      <property name="separated" value="true" />
+      <property name="groups" value="java" />
+      <property name="groups" value="/robotcore/" />
+      <property name="groups" value="org.firstinspires.ftc.teamcode" />
+    </module>
+    <module name="RedundantImport" />
+    <module name="UnusedImports" />
+    <!-- Javadocs -->
+    <module name="AtclauseOrder" />
+    <module name="InvalidJavadocPosition" />
+    <module name="JavadocBlockTagLocation" />
   </module>
 </module>
