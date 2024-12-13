@@ -1,28 +1,49 @@
 package org.firstinspires.ftc.teamcode.task;
 
 /**
- * Raises or lowers the lift.
+ * extends or retracts the lift.
  */
 public class LiftTask implements Task {
     /**
-     * Whether the lift should be raised.
+     * The rotation of the arm in radians.
      */
-    public boolean raise;
+    public final double swing;
     /**
-     * Whether the lift should be lowered.
+     * Whether the lift should be fully extended.
      */
-    public boolean lower;
+    public final boolean fullExtend;
+    /**
+     * Whether the lift should be fully retracted.
+     */
+    public final boolean fullRetract;
+    /**
+     * Whether the lift should be fully raised in an arc.
+     */
+    public final boolean raiseLift;
+    /**
+     * Whether the lift should be fully lowered in an arc.
+     */
+    public final boolean lowerLift;
 
     /**
      * Constructs a LiftTask.
-     * @param raise - whether the lift should be raised.
-     * @param lower - whether the lift should be lowered.
+     * @param swing - the rotation of the arm in radians.
+     * @param fullExtend - Whether the lift should be fully extended.
+     * @param fullRetract - Whether the lift should be fully retracted.
+     * @param raiseLift - Whether the lift should be fully raised in an arc.
+     * @param lowerLift - Whether the lift should be fully lowered in an arc.
      */
-    public LiftTask(boolean raise, boolean lower) {
-        this.raise = raise;
-        this.lower = lower;
-        if (raise && lower) {
-            throw new IllegalArgumentException("Cannot simultaneously raise and lower the lift.");
+    public LiftTask(double swing, boolean fullExtend, boolean fullRetract, boolean raiseLift, boolean lowerLift) {
+        this.swing = swing;
+        this.fullExtend = fullExtend;
+        this.fullRetract = fullRetract;
+        this.raiseLift = raiseLift;
+        this.lowerLift = lowerLift;
+
+        if (fullExtend && fullRetract) {
+            throw new IllegalArgumentException("Cannot simultaneously fully extend and fully retract the lift.");
+        } else if (raiseLift && lowerLift) {
+            throw new IllegalArgumentException("Cannot simultaneously fully raise and lower the lift in an arc.");
         }
     }
 }

@@ -6,6 +6,7 @@ import org.firstinspires.ftc.teamcode.task.GamepadInputTask;
 import org.firstinspires.ftc.teamcode.task.Task;
 import org.firstinspires.ftc.teamcode.task.LiftTask;
 import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
+import org.firstinspires.ftc.teamcode.task.LiftTeleopTask;
 
 /**
  * Mapping for gamepad input that uses the right bumper and trigger to control a lift.
@@ -18,12 +19,13 @@ public class RightLiftMapping extends FunctionLayer {
     public Task map(Task task) {
         if (task instanceof GamepadInputTask) {
             GamepadInputTask castedTask = (GamepadInputTask)task;
-            boolean raise = castedTask.gamepad0.bumpers.right;
-            boolean lower = castedTask.gamepad0.triggers.right;
-            boolean valid = !(raise && lower);
-            return new LiftTask(
-                valid && raise,
-                valid && lower
+            boolean raiseSwing = castedTask.gamepad0.bumpers.right;
+            boolean lowerSwing = castedTask.gamepad0.triggers.right;
+            boolean extend = castedTask.gamepad0.bumpers.left;
+            boolean retract = castedTask.gamepad0.triggers.left;
+            return new LiftTeleopTask(
+                (raiseSwing ? 1 : 0) - (lowerSwing ? 1 : 0),
+                (extend ? 1 : 0) - (retract ? 1 : 0)
             );
         } else {
             throw new UnsupportedTaskException(this, task);
