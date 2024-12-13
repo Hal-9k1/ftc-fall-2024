@@ -129,11 +129,12 @@ tasks.register('getJavadocPackageLists') {
     }
   }
 }
-def configureJavadocTask =  {
+def configureJavadocTask = {
   dependsOn 'getJavadocPackageLists'
   description = 'Generates javadocs for the TeamCode subproject'
   group = 'build'
   source = 'src/main/java'
+  include '**/*.java'
   doFirst {
     classpath = resolveJavadocConfig()
   }
@@ -169,7 +170,17 @@ def configureJavadocTask =  {
   }
   doLast {
     println 'Javadoc generated at ' + destinationDir.getPath()
-    println 'Homepage: ' + destinationDir.getPath() + File.separator + 'index.html'
+    File homepage = new File(destinationDir, 'index.html')
+    URI uri = homepage.toURI()
+    try {
+      // File.toURI uses null for the authority segment instead of empty string, making the URI look
+      // like "file:/C:/path/to/file...". Windows command prompt doesn't recognize this as a link
+      // for the ctrl-click feature, so we have to fix the URI ourselves.
+      println 'Homepage: ' + new URI(uri.scheme, '', uri.path, uri.query, uri.fragment)
+    } catch (URISyntaxException e) {
+      // This shouldn't happen, but just print the file path as a fallback
+      println 'Homepage: ' + homepage
+    }
   }
 }
 
@@ -181,6 +192,34 @@ tasks.register('javadocWerror', Javadoc).configure(configureJavadocTask.andThen 
     addBooleanOption 'Werror', true
   }
 })
+def registerCheckstyle(String name) {
+  tasks.register("checkstyle${name.substring(0, 1).toUpperCase() + name.substring(1)}", Checkstyle) {
+    source = "src/${name}/java"
+    include '**/*.java'
+    classpath = files()
+    configFile = new File('config/checkstyle/checkstyle.xml')
+    getConfigProperties()['basedir'] = new File(projectDir, "src/${name}/java").getPath()
+  }
+}
+registerCheckstyle('main')
+registerCheckstyle('test')
+tasks.register('checkstyle') {
+  dependsOn 'checkstyleMain'
+  dependsOn 'checkstyleTest'
+}
+
+afterEvaluate {
+  tasks.named('build') {
+    dependsOn 'javadoc'
+    //dependsOn -= 'check'
+  }
+  tasks.named('check') {
+    dependsOn 'javadocWerror'
+    dependsOn 'checkstyle'
+  }
+}
+
+
 // Include common definitions from above.
 apply from: '../build.common.gradle'
 apply from: '../build.dependencies.gradle'
@@ -198,10 +237,3 @@ dependencies {
   implementation project(':FtcRobotController')
 }
 
-// More custom definitions!
-tasks.named('build') {
-  dependsOn 'javadoc'
-}
-tasks.named('check') {
-  dependsOn 'javadocWerror'
-}
