@@ -7,6 +7,8 @@
   <property name="cacheFile" value="${cachefile}" />
   <property name="tabWidth" value="4" />
   <module name="JavadocPackage" />
+  <module name="NewlineAtEndOfFile" />
+  <module name="FileTabCharacter" />
   <module name="TreeWalker">
     <!-- Annotations -->
     <module name="AnnotationLocation" />
@@ -17,25 +19,25 @@
     <module name="EmptyBlock">
       <property name="id" value="blocksContainCommentOrStatement" />
       <property name="option" value="text" />
-      <property name="type" value="LITERAL_WHILE" />
-      <property name="type" value="LITERAL_TRY" />
-      <property name="type" value="LITERAL_CATCH" />
-      <property name="type" value="LITERAL_FINALLY" />
-      <property name="type" value="LITERAL_FOR" />
-      <property name="type" value="INSTANCE_INIT" />
-      <property name="type" value="STATIC_INIT" />
-      <property name="type" value="LITERAL_SWITCH" />
-      <property name="type" value="LITERAL_SYNCHRONIZED" />
-      <property name="type" value="LITERAL_CASE" />
-      <property name="type" value="LITERAL_DEFAULT" />
-      <property name="type" value="ARRAY_INIT" />
+      <property name="tokens" value="LITERAL_WHILE" />
+      <property name="tokens" value="LITERAL_TRY" />
+      <property name="tokens" value="LITERAL_CATCH" />
+      <property name="tokens" value="LITERAL_FINALLY" />
+      <property name="tokens" value="LITERAL_FOR" />
+      <property name="tokens" value="INSTANCE_INIT" />
+      <property name="tokens" value="STATIC_INIT" />
+      <property name="tokens" value="LITERAL_SWITCH" />
+      <property name="tokens" value="LITERAL_SYNCHRONIZED" />
+      <property name="tokens" value="LITERAL_CASE" />
+      <property name="tokens" value="LITERAL_DEFAULT" />
+      <property name="tokens" value="ARRAY_INIT" />
     </module>
     <module name="EmptyBlock">
       <property name="id" value="blocksContainStatement" />
       <property name="option" value="statement" />
-      <property name="option" value="LITERAL_DO" />
-      <property name="option" value="LITERAL_IF" />
-      <property name="option" value="LITERAL_ELSE" />
+      <property name="tokens" value="LITERAL_DO" />
+      <property name="tokens" value="LITERAL_IF" />
+      <property name="tokens" value="LITERAL_ELSE" />
     </module>
     <module name="LeftCurly">
       <property name="option" value="nlow" />
@@ -51,7 +53,7 @@
     <module name="InterfaceIsType" />
     <module name="MutableException" />
     <module name="OneTopLevelClass" />
-    <module name="SealedShouldHavePermitsList" />
+    <!--<module name="SealedShouldHavePermitsList" />-->
     <module name="VisibilityModifier">
       <property name="allowPublicFinalFields" value="true" />
     </module>
@@ -89,7 +91,7 @@
     <module name="UnnecessarySemicolonAfterTypeMemberDeclaration" />
     <module name="UnnecessarySemicolonInEnumeration" />
     <module name="UnnecessarySemicolonInTryWithResources" />
-    <module name="UnusedLocalVariable" />
+    <!--<module name="UnusedLocalVariable" />-->
     <!-- Imports -->
     <module name="AvoidStarImport" />
     <module name="AvoidStaticImport" />
@@ -106,25 +108,25 @@
     <module name="InvalidJavadocPosition" />
     <module name="JavadocBlockTagLocation" />
     <module name="JavadocContentLocation" />
-    <module name="JavadocLeadingAsteriskAlign" />
-    <module name="JavadocMissingLeadingAsterisk" />
+    <!--<module name="JavadocLeadingAsteriskAlign" />-->
+    <!--<module name="JavadocMissingLeadingAsterisk" />-->
     <module name="JavadocMissingWhitespaceAfterAsterisk" />
-    <module name="JavadocPackage" />
     <module name="JavadocParagraph" />
     <module name="JavadocStyle" />
-    <module name="NonEmptyAtclausDescription" />
+    <module name="NonEmptyAtclauseDescription" />
     <module name="RequireEmptyLineBeforeBlockTagGroup" />
     <module name="SummaryJavadoc" />
     <!-- Miscellaneous -->
     <module name="ArrayTypeStyle" />
+    <!--
     <module name="AvoidUnescapedUnicodeCharacter">
       <property name="allowByTailComment" value="true" />
     </module>
+    -->
     <module name="CommentsIndentation" />
     <module name="Indentation">
       <property name="forceStrictCondition" value="true" />
     </module>
-    <module name="NewlineAtEndOfFile" />
     <module name="NoCodeInFile" />
     <module name="OuterTypeFilename" />
     <module name="TodoComment">
@@ -151,8 +153,8 @@
     <module name="PackageName" />
     <module name="ParameterName" />
     <module name="PatternVariableName" />
-    <module name="RecordComponentName" />
-    <module name="RecordTypeParameterName" />
+    <!--<module name="RecordComponentName" />-->
+    <!--<module name="RecordTypeParameterName" />-->
     <module name="StaticVariableName" />
     <module name="TypeName" />
     <!-- Whitespace -->
@@ -162,7 +164,6 @@
       <property name="allowMultipleEmptyLines" value="false" />
       <property name="allowMultipleEmptyLinesInsideClassMembers" value="false" />
     </module>
-    <module name="FileTabCharacter" />
     <module name="GenericWhitespace" />
     <module name="MethodParamPad" />
     <module name="NoLineWrap">
@@ -179,7 +180,7 @@
     </module>
     <module name="NoWhitespaceAfter" />
     <module name="NoWhitespaceBefore" />
-    <module name="NoWhitespaceBeforeCaseDefaultColon" />
+    <!--<module name="NoWhitespaceBeforeCaseDefaultColon" />-->
     <module name="OperatorWrap" />
     <module name="ParenPad" />
     <module name="SeparatorWrap" />
@@ -189,3 +190,4 @@
     <module name="WhitespaceAround" />
   </module>
 </module>
+
