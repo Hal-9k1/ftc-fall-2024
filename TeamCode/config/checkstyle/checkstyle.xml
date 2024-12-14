@@ -115,5 +115,77 @@
     <module name="NonEmptyAtclausDescription" />
     <module name="RequireEmptyLineBeforeBlockTagGroup" />
     <module name="SummaryJavadoc" />
+    <!-- Miscellaneous -->
+    <module name="ArrayTypeStyle" />
+    <module name="AvoidUnescapedUnicodeCharacter">
+      <property name="allowByTailComment" value="true" />
+    </module>
+    <module name="CommentsIndentation" />
+    <module name="Indentation">
+      <property name="forceStrictCondition" value="true" />
+    </module>
+    <module name="NewlineAtEndOfFile" />
+    <module name="NoCodeInFile" />
+    <module name="OuterTypeFilename" />
+    <module name="TodoComment">
+      <property name="severity" value="info" />
+    </module>
+    <module name="UpperEll" />
+    <!-- Modifiers -->
+    <module name="ModifierOrder" />
+    <module name="RedundantModifier" />
+    <!-- Naming conventions -->
+    <module name="AbbreviationAsWordInName" />
+    <module name="AbstractClassName" />
+    <module name="CatchParameterName" />
+    <module name="ClassTypeParameterName" />
+    <module name="ConstantName" />
+    <module name="IllegalIdentifierName" />
+    <module name="InterfaceTypeParameterName" />
+    <module name="LambdaParameterName" />
+    <module name="LocalFinalVariableName" />
+    <module name="LocalVariableName" />
+    <module name="MemberName" />
+    <module name="MethodName" />
+    <module name="MethodTypeParameterName" />
+    <module name="PackageName" />
+    <module name="ParameterName" />
+    <module name="PatternVariableName" />
+    <module name="RecordComponentName" />
+    <module name="RecordTypeParameterName" />
+    <module name="StaticVariableName" />
+    <module name="TypeName" />
+    <!-- Whitespace -->
+    <module name="EmptyForInitializerPad" />
+    <module name="EmptyForIteratorPad" />
+    <module name="EmptyLineSeparator">
+      <property name="allowMultipleEmptyLines" value="false" />
+      <property name="allowMultipleEmptyLinesInsideClassMembers" value="false" />
+    </module>
+    <module name="FileTabCharacter" />
+    <module name="GenericWhitespace" />
+    <module name="MethodParamPad" />
+    <module name="NoLineWrap">
+      <property name="tokens" value="IMPORT" />
+      <property name="tokens" value="PACKAGE_DEF" />
+      <property name="tokens" value="CLASS_DEF" />
+      <property name="tokens" value="METHOD_DEF" />
+      <property name="tokens" value="CTOR_DEF" />
+      <property name="tokens" value="ENUM_DEF" />
+      <property name="tokens" value="INTERFACE_DEF" />
+      <property name="tokens" value="METHOD_DEF" />
+      <property name="tokens" value="RECORD_DEF" />
+      <property name="tokens" value="COMPACT_CTOR_DEF" />
+    </module>
+    <module name="NoWhitespaceAfter" />
+    <module name="NoWhitespaceBefore" />
+    <module name="NoWhitespaceBeforeCaseDefaultColon" />
+    <module name="OperatorWrap" />
+    <module name="ParenPad" />
+    <module name="SeparatorWrap" />
+    <module name="SingleSpaceSeparator" />
+    <module name="TypecastParenPad" />
+    <module name="WhitespaceAfter" />
+    <module name="WhitespaceAround" />
   </module>
 </module>
