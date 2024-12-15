@@ -87,8 +87,10 @@ public class TowerLayer implements Layer {
      */
     private boolean raisingTower;
     /**
-     * 
+     * The recent history of goal deltas.
      */
+    private CircularBuffer<Double> deltaHistory;
+
 
     @Override
     public void setup(LayerSetupInfo setupInfo) {

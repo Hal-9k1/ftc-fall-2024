@@ -5,24 +5,24 @@ package org.firstinspires.ftc.teamcode.task;
  */
 public class TowerTask implements Task {
     /**
-     * Whether the tower should be fully lifted in an arc.
+     * Whether the tower should be fully raised in an arc.
      */
-    public boolean raise;
+    public boolean fullRaise;
     /**
      * Whether the tower should be fully lowered in an arc.
      */
-    public boolean lower;
+    public boolean fullLower;
 
     /**
      * Constructor for TowerTask
-     * @param raise - Whether the tower should be fully lifted in an arc.
-     * @param lower - Whether the tower should be fully lowered in an arc.
+     * @param fullRaise - Whether the tower should be fully raised in an arc.
+     * @param fullLower - Whether the tower should be fully lowered in an arc.
      */
-    public TowerTask(boolean raise, boolean lower) {
-        this.raise = raise;
-        this.lower = lower;
-        if (raise && lower) {
-            throw new IllegalArgumentException("The arm can't be both raised and lowered");
+    public TowerTask(boolean fullRaise, boolean fullLower) {
+        this.fullRaise = fullRaise;
+        this.fullLower = fullLower;
+        if (fullRaise && fullLower) {
+            throw new IllegalArgumentException("The arm can't be both fully raised and fully lowered");
         }
     }
 }
