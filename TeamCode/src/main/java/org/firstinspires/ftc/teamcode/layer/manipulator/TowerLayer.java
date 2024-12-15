@@ -7,7 +7,9 @@ import org.firstinspires.ftc.teamcode.task.TowerInitTask;
 import org.firstinspires.ftc.teamcode.task.Task;
 import org.firstinspires.ftc.teamcode.task.TowerTeleopTask;
 import org.firstinspires.ftc.teamcode.task.TowerTask;
+import org.firstinspires.ftc.teamcode.task.TowerForearmTask;
 import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
+import org.firstinspires.ftc.teamcode.CircularBuffer;
 import java.util.Iterator;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -24,19 +26,69 @@ public class TowerLayer implements Layer {
         Units.Time.SEC,
         Units.Time.NANO
     );
+    /**
+     * Motor used to swing the tower, zero power behavior is only brake.
+     */
     private DcMotor tower;
+    /**
+     * Motor used to swing the forearm, zero power behavior is only brake.
+     */
     private DcMotor forearm;
     /**
      * Claw for specimens.
      */
     private Servo claw;
+    /**
+     * Maximum number of pulley goal deltas to track for integral calculation.
+     * Increasing this reduces the calculation's sensitivity to recent rapid changes in goal error.
+     */
+    private static final int DELTA_HISTORY_COUNT = 2000;
+    /**
+     * Weight of proportional component in pulley velocity calculation.
+     */
+    private static final double TOWER_P_COEFF = 0.05;
+    /**
+     * Weight of integral component in pulley velocity calculation.
+     */
+    private static final double TOWER_I_COEFF = 0.05;
+    /**
+     * TODO: add description
+     */
     private boolean isInit;
+    /**
+     * Assumed to be the same as goalAchieved but for TowerTask
+     * TODO: need confirmation on if this is right.
+     */
     private boolean towerWorking;
+    /**
+     * The distance reported by the forearm at minimum height.
+     */
     private double forearmZero;
+    /**
+     * The "distance" reported by the tower when it is at minimum height.
+     */
     private double towerZero;
+    /**
+     * Tower distance measured at the beginning of the current task.
+     */
     private double towerStartPos;
+    /**
+     * TODO: add description
+     */
     private double towerGoalAngle;
+    /**
+     * TODO: add description
+     */
     private long clawStartTime;
+    /**
+     * Whether the lift was last set to raise.
+     * This is used for raiseTower and lowerTower.
+     * True if fullRaise, false if fullLower.
+     */
+    private boolean raisingTower;
+    /**
+     * 
+     */
 
     @Override
     public void setup(LayerSetupInfo setupInfo) {
@@ -70,8 +122,13 @@ public class TowerLayer implements Layer {
             forearm.setPower(1);
             isInit = true;
         } else if (task instanceof TowerTask) {
-            TowerTask castedTask = (TowerTask)task;
-            
+            TowerTask castedTowerTask = (TowerTask)task;
+            towerWorking = false;
+            if (castedTowerTask.fullRaise) {
+                raisingTower = true;
+            } else if (castedTowerTask.fullLower){
+                raisingTower = false;
+            }
 
         } else if (task instanceof TowerTeleopTask) {
             TowerTeleopTask castedTask = (TowerTeleopTask)task;
