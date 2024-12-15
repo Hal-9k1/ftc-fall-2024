@@ -66,11 +66,12 @@ public class TowerLayer implements Layer {
     }
     @Override
     public void acceptTask(Task task) {
-        if (task instanceof TowerInitTask) {
+        if (task instanceof TowerForearmTask) {
             forearm.setPower(1);
             isInit = true;
         } else if (task instanceof TowerTask) {
             TowerTask castedTask = (TowerTask)task;
+            
 
         } else if (task instanceof TowerTeleopTask) {
             TowerTeleopTask castedTask = (TowerTeleopTask)task;
