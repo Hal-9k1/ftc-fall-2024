@@ -194,7 +194,7 @@ public class TowerLayer implements Layer {
             towerStartPos = tower.getCurrentPosition();
         } else if (task instanceof TowerTeleopTask) {
             TowerTeleopTask castedTask = (TowerTeleopTask)task;
-            boolean isUnsafe = getForearmAngle() > MAX_FOREARM_SAFE_ANGLE
+            boolean isUnsafe = getForearmAngle() > FOREARM_MAX_SAFE_ANGLE
                 && castedTask.towerSwingPower > 1;
             tower.setPower(isUnsafe ? 0 : castedTask.towerSwingPower);
         } else {
