@@ -1,24 +1,26 @@
 package org.firstinspires.ftc.teamcode.layer.manipulator;
 
+import java.util.Iterator;
+
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
-import java.util.Iterator;
+
+import org.firstinspires.ftc.teamcode.Units;
 import org.firstinspires.ftc.teamcode.layer.Layer;
 import org.firstinspires.ftc.teamcode.layer.LayerSetupInfo;
 import org.firstinspires.ftc.teamcode.task.IntakeTask;
 import org.firstinspires.ftc.teamcode.task.IntakeTeleopTask;
 import org.firstinspires.ftc.teamcode.task.Task;
 import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
-import org.firstinspires.ftc.teamcode.Units;
 
 /**
  * Controls a roller intake that can acquire, hold, and eject samples.
  */
-public class IntakeLayer implements Layer {
+public final class IntakeLayer implements Layer {
     /**
      * An action the layer can take.
      */
-    private static enum State {
+    private enum State {
         /**
          * The intake is currently attempting to acquire a sample.
          */
@@ -37,10 +39,12 @@ public class IntakeLayer implements Layer {
      * Duration in nanoseconds of intake.
      */
     private final double INTAKE_DURATION = Units.convert(1.5, Units.Time.SEC, Units.Time.NANO);
+
     /**
      * Duration in nanoseconds of ejection.
      */
     private final double EJECT_DURATION = Units.convert(1.5, Units.Time.SEC, Units.Time.NANO);
+
     /**
      * Multiplier for intake actuator power.
      * Should be in the range [-1.0, 1.0].
@@ -51,14 +55,17 @@ public class IntakeLayer implements Layer {
      * Servo spinning the intake mechanism.
      */
     private CRServo intake;
+
     /**
      * The current action the layer is taking.
      */
     private State state;
+
     /**
      * The nanosecond timestamp of the start of the last intake action.
      */
     private long intakeStart;
+
     /**
      * The nanosecond timestamp of the start of the last eject action.
      */
@@ -79,14 +86,17 @@ public class IntakeLayer implements Layer {
             }
         });
     }
+
     @Override
     public boolean isTaskDone() {
         return state == State.IDLE;
     }
+
     @Override
     public Iterator<Task> update(Iterable<Task> completed) {
         return null;
     }
+
     @Override
     public void acceptTask(Task task) {
         if (task instanceof IntakeTask) {
