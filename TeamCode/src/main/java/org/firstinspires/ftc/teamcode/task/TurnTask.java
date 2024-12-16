@@ -8,7 +8,7 @@ public class TurnTask implements Task {
      * The angle in radians to turn the robot counterclockwise.
      * Negative values indicate clockwise turns.
      */
-    public double angle;
+    private double angle;
 
     /**
      * Constructs a TurnTask.
@@ -17,5 +17,15 @@ public class TurnTask implements Task {
      */
     public TurnTask(double angle) {
         this.angle = angle;
+    }
+
+    /**
+     * Returns the angle in radians to turn the robot counterclockwise.
+     *
+     * @return the angle in radians to turn the robot counterclockwise. Negative values indicate
+     * clockwise turns.
+     */
+    public double getAngle() {
+        return angle;
     }
 }

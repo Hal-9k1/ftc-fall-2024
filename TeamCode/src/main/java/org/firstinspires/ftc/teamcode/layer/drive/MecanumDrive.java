@@ -264,12 +264,12 @@ public final class MecanumDrive implements Layer {
             /**
              * Whether the wheel is on the left side of the robot.
              */
-            public boolean isLeft;
+            private boolean isLeft;
 
             /**
              * Whether the wheel is in the front of the robot.
              */
-            public boolean isFront;
+            private boolean isFront;
 
             /**
              * Constructs a WheelKey enum member.
@@ -282,6 +282,24 @@ public final class MecanumDrive implements Layer {
             WheelKey(boolean isLeft, boolean isFront) {
                 this.isLeft = isLeft;
                 this.isFront = isFront;
+            }
+
+            /**
+             * Returns whether the wheel is on the left side of the robot.
+             *
+             * @return Whether the wheel is on the left side of the robot.
+             */
+            public boolean getIsLeft() {
+                return isLeft;
+            }
+
+            /**
+             * Returns whether the wheel is in the front of the robot.
+             *
+             * @return Whether the wheel is in the front of the robot.
+             */
+            private boolean getIsFront() {
+                return isFront;
             }
         }
 

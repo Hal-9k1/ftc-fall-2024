@@ -9,20 +9,20 @@ public class HolonomicDriveTask implements Task {
      * The relative acceleration to apply in the direction the robot is facing.
      * Positive values indicate forward movement and negative values indicate backward.
      */
-    public double axial;
+    private double axial;
 
     /**
      * The relative acceleration to apply in the perpendicular direction to the one the robot is
      * facing.
      * Positive values indicate rightward movement and negative values indicate leftward.
      */
-    public double lateral;
+    private double lateral;
 
     /**
      * The relative acceleration to use to turn the robot.
      * Positive values indicate counterclockwise turning and negative values indicate clockwise.
      */
-    public double yaw;
+    private double yaw;
 
     /**
      * Constructs a HolonomicDriveTask.
@@ -36,5 +36,38 @@ public class HolonomicDriveTask implements Task {
         this.axial = axial;
         this.lateral = lateral;
         this.yaw = yaw;
+    }
+
+    /**
+     * Returns the relative acceleration to apply in the direction the robot is facing.
+     *
+     * @return the relative acceleration to apply in the direction the robot is facing. Positive
+     * values indicate forward movement and negative values indicate backward.
+     */
+    public double getAxial() {
+        return axial;
+    }
+
+    /**
+     * Returns he relative acceleration to apply in the perpendicular direction to the one the robot
+     * is facing.
+     *
+     * @return the relative acceleration to apply in the perpendicular direction to the one the
+     * robot is facing. Positive values indicate rightward movement and negative values indicate
+     * leftward.
+     */
+    public double getLateral() {
+        return lateral;
+    }
+
+    /**
+     * Returns the relative acceleration to use to turn the robot.
+     * Positive values indicate counterclockwise turning and negative values indicate clockwise.
+     *
+     * @return the relative acceleration to use to turn the robot. Positive values indicate
+     * counterclockwise turning and negative values indicate clockwise.
+     */
+    public double getYaw() {
+        return yaw;
     }
 }

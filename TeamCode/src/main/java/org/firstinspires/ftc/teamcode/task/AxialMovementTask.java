@@ -8,7 +8,7 @@ public class AxialMovementTask implements Task {
      * The distance in meters to move the robot forward.
      * Negative values indicate backward movement.
      */
-    public double distance;
+    private double distance;
 
     /**
      * Constructs an AxialMovementTask.
@@ -17,5 +17,15 @@ public class AxialMovementTask implements Task {
      */
     public AxialMovementTask(double distance) {
         this.distance = distance;
+    }
+
+    /**
+     * Returns the distance to move the robot forward.
+     *
+     * @return the distance in meters to move the robot forward. Negative values indicate backward
+     * movement.
+     */
+    public double getDistance() {
+        return distance;
     }
 }
