@@ -1,9 +1,10 @@
 package org.firstinspires.ftc.teamcode.layer.drive;
 
-import com.qualcomm.robotcore.hardware.DcMotor;
-
 import java.util.Iterator;
 
+import com.qualcomm.robotcore.hardware.DcMotor;
+
+import org.firstinspires.ftc.teamcode.Units;
 import org.firstinspires.ftc.teamcode.layer.Layer;
 import org.firstinspires.ftc.teamcode.layer.LayerSetupInfo;
 import org.firstinspires.ftc.teamcode.mechanism.Wheel;
@@ -12,24 +13,26 @@ import org.firstinspires.ftc.teamcode.task.TankDriveTask;
 import org.firstinspires.ftc.teamcode.task.Task;
 import org.firstinspires.ftc.teamcode.task.TurnTask;
 import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
-import org.firstinspires.ftc.teamcode.Units;
 
 /**
  * Drive layer for a two-wheel drive robot.
  */
-public class TwoWheelDrive implements Layer {
+public final class TwoWheelDrive implements Layer {
     /**
      * Name of the left drive motor in the robot configuration.
      */
     private static final String LEFT_DRIVE_MOTOR_NAME = "left_front_drive";
+
     /**
      * Name of the right drive motor in the robot configuration.
      */
     private static final String RIGHT_DRIVE_MOTOR_NAME = "right_front_drive";
+
     /**
      * The radius of the drive wheels in meters.
      */
     private static final double WHEEL_RADIUS = 0.42;
+
     /**
      * The effective gear ratio of the wheels to the motor drive shafts.
      * Expressed as wheelTeeth / hubGearTeeth, ignoring all intermediate meshing gears as they
@@ -37,10 +40,12 @@ public class TwoWheelDrive implements Layer {
      * consideration.
      */
     private static final double GEAR_RATIO = 1; // ticks per rot = 28, should get from config
+
     /**
      * Half the distance between the driving wheels in meters.
      */
     private static final double WHEEL_SPAN_RADIUS = Units.convert(15.0 / 2, Units.Distance.IN, Units.Distance.M);
+
     /**
      * Unitless, experimentally determined constant (ew) measuring lack of friction.
      * Measures lack of friction between wheels and floor material. Goal delta distances are directly
@@ -52,32 +57,40 @@ public class TwoWheelDrive implements Layer {
      * The robot's left wheel.
      */
     private Wheel leftWheel;
+
     /**
      * The robot's right wheel.
      */
     private Wheel rightWheel;
+
     /**
      * The position of the left wheel at the start of the currently executing task, in meters.
      */
     private double leftStartPos;
+
     /**
      * The position of the right wheel at the start of the currently executing task, in meters.
      */
     private double rightStartPos;
+
     /**
      * The required delta position of the left wheel to complete the currently executing task, in
      * meters.
      */
     private double leftGoalDelta;
+
     /**
      * The required delta position of the right wheel to complete the currently executing task, in
      * meters.
      */
     private double rightGoalDelta;
+
     /**
      * Whether the currently executing task has completed.
      */
     private boolean currentTaskDone;
+
+    public TwoWheelDrive() { }
 
     @Override
     public void setup(LayerSetupInfo initInfo) {

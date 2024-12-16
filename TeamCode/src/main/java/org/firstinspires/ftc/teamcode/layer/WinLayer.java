@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.task.WinTask;
  * Though seemingly frivolous, required as the top layer on autonomous layer
  * stacks to tell the strategy layers to emit something.
  */
-public class WinLayer implements Layer {
+public final class WinLayer implements Layer {
     /**
      * Whether the single WinTask has been emitted yet.
      */

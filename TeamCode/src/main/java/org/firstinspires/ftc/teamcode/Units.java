@@ -1,19 +1,39 @@
 package org.firstinspires.ftc.teamcode;
 
-import java.util.List;
-import java.util.HashSet;
-import java.util.HashMap;
-import java.util.Set;
-import java.util.Map;
-
 /**
  * Utility class for performing unit conversions.
  */
-public class Units {
+public final class Units {
+    private Units() { }
+
+    /**
+     * Converts between distance units.
+     *
+     * @param value - the value in fromUnit units to convert.
+     * @param fromUnit - the unit to convert from.
+     * @param toUnit - the unit to convert to.
+     * @return the given value, converted from fromUnits to toUnits.
+     */
+    public static double convert(double value, Distance fromUnit, Distance toUnit) {
+        return value * toUnit.unitsPerMeter / fromUnit.unitsPerMeter;
+    }
+
+    /**
+     * Converts between angle units.
+     *
+     * @param value - the value in fromUnit units to convert.
+     * @param fromUnit - the unit to convert from.
+     * @param toUnit - the unit to convert to.
+     * @return the given value, converted from fromUnits to toUnits.
+     */
+    public static double convert(double value, Angle fromUnit, Angle toUnit) {
+        return value * toUnit.unitsPerRadian / fromUnit.unitsPerRadian;
+    }
+
     /**
      * Represents a unit of distance measurement.
      */
-    public static enum Distance {
+    public enum Distance {
         /**
          * Millimeters.
          */
@@ -47,16 +67,18 @@ public class Units {
 
         /**
          * Constructs a Distance enum member.
+         *
          * @param unitsPerMeter - the number of this unit that is equivalent to one meter.
          */
         Distance(double unitsPerMeter) {
             this.unitsPerMeter = unitsPerMeter;
         }
     }
+
     /**
      * Represents a unit of angle measurement.
      */
-    public static enum Angle {
+    public enum Angle {
         /**
          * Degrees.
          */
@@ -78,31 +100,11 @@ public class Units {
 
         /**
          * Constructs an Angle enum member.
+         *
          * @param unitsPerRadian - the number of this unit that is equivalent to one radian.
          */
         Angle(double unitsPerRadian) {
             this.unitsPerRadian = unitsPerRadian;
         }
-    }
-
-    /**
-     * Converts between distance units.
-     * @param value - the value in fromUnit units to convert.
-     * @param fromUnit - the unit to convert from.
-     * @param toUnit - the unit to convert to.
-     * @return the given value, converted from fromUnits to toUnits.
-     */
-    public static double convert(double value, Distance fromUnit, Distance toUnit) {
-        return value * toUnit.unitsPerMeter / fromUnit.unitsPerMeter;
-    }
-    /**
-     * Converts between angle units.
-     * @param value - the value in fromUnit units to convert.
-     * @param fromUnit - the unit to convert from.
-     * @param toUnit - the unit to convert to.
-     * @return the given value, converted from fromUnits to toUnits.
-     */
-    public static double convert(double value, Angle fromUnit, Angle toUnit) {
-        return value * toUnit.unitsPerRadian / fromUnit.unitsPerRadian;
     }
 }

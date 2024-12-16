@@ -11,6 +11,7 @@ public class Wheel {
      * The motor driving the wheel.
      */
     private final DcMotor motor;
+
     /**
      * The radius of the wheel in a unit chosen by the owner.
      */
@@ -18,6 +19,7 @@ public class Wheel {
 
     /**
      * Constructs a Wheel.
+     *
      * @param motor The motor driving the wheel.
      * @param radius The radius of the wheel. No assumptions are made about the unit.
      */
@@ -38,6 +40,7 @@ public class Wheel {
      * </code></pre>
      * The unit of the return value is in the same unit as the wheel radius passed to the
      * constructor.
+     *
      * @return the distance traveled by the edge of the wheel.
      */
     public double getDistance() {
@@ -54,6 +57,7 @@ public class Wheel {
      * makes a distinction between the two (see
      * {@link com.qualcomm.robotcore.hardware.DcMotorEx#setVelocity} vs
      * {@link com.qualcomm.robotcore.hardware.DcMotor#setPower}).
+     *
      * @param velocity - the power to run the underlying motor at. Must be in the range [-1.0, 1.0],
      * where positive values indicate forward movement.
      */

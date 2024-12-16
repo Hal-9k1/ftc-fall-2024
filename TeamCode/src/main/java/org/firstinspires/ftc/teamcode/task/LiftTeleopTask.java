@@ -1,23 +1,24 @@
 package org.firstinspires.ftc.teamcode.task;
 
 /**
- * extends or retracts the lift but in teleop.
+ * Extends/retracts or swings a lift using absolute powers.
  */
 public class LiftTeleopTask implements Task {
     /**
-     * rotation of the arm/lift in radians.
-     * holds value inbetween interval [-1, 1] once normalized.
+     * The direction and speed the lift should swing with.
+     * Must be in the range [-1, 1].
      */
     public final double swing;
+
     /**
-     * some proportional value related to motor powers. (need better explanation later.)
-     * holds value inbetween interval [-1, 1] once normalized.
-     * This is used for both extend and retract. Negative value is retract, positive is extend.
+     * The direction andspeed the lift should extend with.
+     * Must be in the range [-1, 1]. Negative values indicate retraction.
      */
     public final double extension;
 
     /**
      * LiftTeleopTask constructor.
+     *
      * @param swing - the rotation of the arm/lift in radians.
      * @param extension - some proportional value related to motor powers. (need better explanation later.)
      */

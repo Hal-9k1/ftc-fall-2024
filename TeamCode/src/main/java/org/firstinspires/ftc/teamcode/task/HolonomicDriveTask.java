@@ -10,19 +10,23 @@ public class HolonomicDriveTask implements Task {
      * Positive values indicate forward movement and negative values indicate backward.
      */
     public double axial;
+
     /**
      * The relative acceleration to apply in the perpendicular direction to the one the robot is
      * facing.
      * Positive values indicate rightward movement and negative values indicate leftward.
      */
     public double lateral;
+
     /**
      * The relative acceleration to use to turn the robot.
      * Positive values indicate counterclockwise turning and negative values indicate clockwise.
      */
     public double yaw;
+
     /**
      * Constructs a HolonomicDriveTask.
+     *
      * @param axial - the relative acceleration to apply in the direction the robot is facing.
      * @param lateral - the relative acceleration to apply in the direction perpendicular to the one
      * the robot is facing.

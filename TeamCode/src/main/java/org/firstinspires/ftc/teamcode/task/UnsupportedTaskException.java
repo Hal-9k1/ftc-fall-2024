@@ -9,6 +9,7 @@ public class UnsupportedTaskException extends IllegalArgumentException {
     /**
      * Constructs an UnsupportedTaskException for a layer that does not support a task with a
      * standard error message.
+     *
      * @param layer - the Layer throwing the exception.
      * @param task - the Task that the layer rejected.
      */
@@ -16,8 +17,10 @@ public class UnsupportedTaskException extends IllegalArgumentException {
         super("Layer '" + layer.getClass().getName() + "' does not support task of type '"
             + task.getClass().getName() + "'.");
     }
+
     /**
      * Constructs an UnsupportedTaskException with a custom error message.
+     *
      * @param msg - the exception message.
      */
     public UnsupportedTaskException(String msg) {

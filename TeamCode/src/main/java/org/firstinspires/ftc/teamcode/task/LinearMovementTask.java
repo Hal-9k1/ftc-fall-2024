@@ -9,6 +9,7 @@ public class LinearMovementTask implements Task {
      * Negative values indicate backward movement.
      */
     public double axial;
+
     /**
      * The distance in meters to move to the robot's rightward direction.
      * Negative values indicate leftward movement.
@@ -17,6 +18,7 @@ public class LinearMovementTask implements Task {
 
     /**
      * Constructs a LinearMovementTask.
+     *
      * @param axial - the distance to move in the forward direction
      * @param lateral - the distance to move in the rightward direction
      */
