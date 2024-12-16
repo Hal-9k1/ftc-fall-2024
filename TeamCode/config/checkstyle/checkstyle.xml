@@ -117,9 +117,7 @@
     <!-- Miscellaneous -->
     <module name="ArrayTypeStyle" />
     <module name="CommentsIndentation" />
-    <module name="Indentation">
-      <property name="forceStrictCondition" value="true" />
-    </module>
+    <module name="Indentation" />
     <module name="NoCodeInFile" />
     <module name="OuterTypeFilename" />
     <module name="TodoComment">

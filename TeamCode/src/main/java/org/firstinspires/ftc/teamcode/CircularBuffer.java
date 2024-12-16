@@ -8,15 +8,17 @@ import java.util.Iterator;
  * A collection of fixed maximum size to which elements may always be added.
  * If the maximum size is reached, adding an element overwrites the oldest in the collection.
  */
-public class CircularBuffer<E> implements Collection<E> {
+public final class CircularBuffer<E> implements Collection<E> {
     /**
      * The maximum size the buffer will expand to before overwriting old elements.
      */
     private final int maxSize;
+
     /**
      * The buffer that stores elements.
      */
     private final ArrayList<E> buffer;
+
     /**
      * The next position to write to in the buffer.
      */
@@ -24,6 +26,7 @@ public class CircularBuffer<E> implements Collection<E> {
 
     /**
      * Constructs a CircularBuffer.
+     *
      * @param maxSize - the maximum size the buffer will expand to before overwriting old elements.
      */
     public CircularBuffer(int maxSize) {

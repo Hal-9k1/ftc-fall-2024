@@ -1,17 +1,21 @@
 package org.firstinspires.ftc.teamcode.layer.input.mapping;
 
-import org.firstinspires.ftc.teamcode.layer.FunctionLayer;
+import org.firstinspires.ftc.teamcode.layer.AbstractFunctionLayer;
 import org.firstinspires.ftc.teamcode.layer.LayerSetupInfo;
 import org.firstinspires.ftc.teamcode.task.GamepadInputTask;
-import org.firstinspires.ftc.teamcode.task.Task;
-import org.firstinspires.ftc.teamcode.task.LiftTask;
-import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
 import org.firstinspires.ftc.teamcode.task.LiftTeleopTask;
+import org.firstinspires.ftc.teamcode.task.Task;
+import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
 
 /**
  * Mapping for gamepad input that uses the right bumper and trigger to control a lift.
  */
-public class RightLiftMapping extends FunctionLayer {
+public final class RightLiftMapping extends AbstractFunctionLayer {
+    /**
+     * Constructs a RightLiftMapping.
+     */
+    public RightLiftMapping() { }
+
     @Override
     public void setup(LayerSetupInfo setupInfo) { }
 

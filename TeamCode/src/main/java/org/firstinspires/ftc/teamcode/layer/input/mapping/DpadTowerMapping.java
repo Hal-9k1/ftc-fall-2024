@@ -1,13 +1,22 @@
 package org.firstinspires.ftc.teamcode.layer.input.mapping;
 
-import org.firstinspires.ftc.teamcode.layer.FunctionLayer;
+import org.firstinspires.ftc.teamcode.layer.AbstractFunctionLayer;
 import org.firstinspires.ftc.teamcode.layer.LayerSetupInfo;
-import org.firstinspires.ftc.teamcode.task.Task;
 import org.firstinspires.ftc.teamcode.task.GamepadInputTask;
+import org.firstinspires.ftc.teamcode.task.Task;
 import org.firstinspires.ftc.teamcode.task.TowerTeleopTask;
 import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
 
-public class DpadTowerMapping extends FunctionLayer {
+/**
+ * Controls the tower swing using the up and down dpad buttons.
+ * Up swings the tower upwards (away from front of robot).
+ */
+public final class DpadTowerMapping extends AbstractFunctionLayer {
+    /**
+     * Constructs a DpadTowerMapping.
+     */
+    public DpadTowerMapping() { }
+
     @Override
     public void setup(LayerSetupInfo setupInfo) { }
 

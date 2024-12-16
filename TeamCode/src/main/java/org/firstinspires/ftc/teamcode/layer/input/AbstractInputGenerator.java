@@ -11,14 +11,14 @@ import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
  * would prevent the layer and everything below it from ever again being updated by the controller
  * in the likely case that the input generator is the top layer.
  */
-public abstract class InputGenerator implements Layer {
+public abstract class AbstractInputGenerator implements Layer {
     @Override
-    public boolean isTaskDone() {
+    public final boolean isTaskDone() {
         return false;
     }
 
     @Override
-    public void acceptTask(Task task) {
+    public final void acceptTask(Task task) {
         throw new UnsupportedTaskException(this, task);
     }
 }

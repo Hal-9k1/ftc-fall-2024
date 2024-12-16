@@ -1,14 +1,15 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.hardware.Gamepad;
-import com.qualcomm.robotcore.hardware.HardwareMap;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.ArrayList;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
+
+import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+
 import org.firstinspires.ftc.teamcode.layer.Layer;
 import org.firstinspires.ftc.teamcode.layer.LayerSetupInfo;
 import org.firstinspires.ftc.teamcode.task.Task;
@@ -37,83 +38,6 @@ import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
  */
 public class RobotController {
     /**
-     * Thinly wraps a Layer while storing its last accepted task.
-     */
-    private static class LayerInfo {
-        /**
-         * The contained Layer.
-         */
-        private Layer layer;
-        /**
-         * The last tasks the contained Layer accepted at once.
-         */
-        private ArrayList<Task> lastTasks;
-        /**
-         * Whether the previous accepted task satisfied the Layer's need for new tasks.
-         */
-        private boolean lastTaskSaturated;
-
-        /**
-         * Constructs a LayerInfo.
-         * @param layer - the Layer to contain.
-         */
-        public LayerInfo(Layer layer) {
-            this.layer = layer;
-            lastTasks = new ArrayList<>();
-            lastTaskSaturated = true;
-        }
-
-        /**
-         * Returns the implementing class name of the contained Layer.
-         * @return the contained Layer's concrete class name.
-         */
-        public String getName() {
-            return layer.getClass().getName();
-        }
-
-        /**
-         * Calls {@link Layer#isTaskDone} on the contained Layer.
-         * @return whether the contained Layer is finished processing its last accepted task.
-         */
-        public boolean isTaskDone() {
-            return layer.isTaskDone();
-        }
-
-        /**
-         * Calls {@link Layer#update} on the contained Layer.
-         * @param completed - an iterable of the tasks emitted by this Layer that have been
-         * completed since the last call to this method.
-         * @return an iterator of the tasks for the layer below to accept.
-         */
-        public Iterator<Task> update(Iterable<Task> completed) {
-            return layer.update(completed);
-        }
-
-        /**
-         * Calls {@link Layer#acceptTask} on the contained Layer.
-         * Must not be called if {@link #isTaskDone} returns false.
-         * @param task - the task the contained layer should be offered.
-         */
-        public void acceptTask(Task task) {
-            if (lastTaskSaturated) {
-                lastTasks.clear();
-            }
-            lastTasks.add(task);
-            layer.acceptTask(task);
-            lastTaskSaturated = !layer.isTaskDone();
-        }
-
-        /**
-         * Returns the layer's last accepted tasks.
-         * @return an iterable of the tasks last accepted by the layer.
-         * @see #acceptTask
-         */
-        public Iterable<Task> getLastTasks() {
-            return lastTasks;
-        }
-    }
-
-    /**
      * The number of unconsumed tasks by a layer to report in the exception message.
      * Prevents an infinite loop if a layer's update method returns an non-terminating iterator.
      */
@@ -123,10 +47,12 @@ public class RobotController {
      * Listeners to fire at the start of each {@link #update}.
      */
     private ArrayList<Runnable> updateListeners;
+
     /**
      * Listeners to fire during the first {@link #update} the layer stack finishes executing.
      */
     private ArrayList<Runnable> teardownListeners;
+
     /**
      * The current stack of layers and some metadata needed to execute them.
      */
@@ -142,15 +68,17 @@ public class RobotController {
 
     /**
      * Initializes the controller with the given layers.
-     * @param hardwareMap HardwareMap used to retrieve interfaces for robot hardware.
-     * @param layers the layer stack to use.
-     * @param gamepad0 the first connected Gamepad, or null if none is connected or available.
-     * @param gamepad1 the second connected Gamepad, or null if none is connected or available.
+     *
+     * @param hardwareMap - HardwareMap used to retrieve interfaces for robot hardware.
+     * @param layerStack - the layer stack to use.
+     * @param gamepad0 - the first connected Gamepad, or null if none is connected or available.
+     * @param gamepad1 - the second connected Gamepad, or null if none is connected or available.
      */
-    public void setup(HardwareMap hardwareMap, List<Layer> layers, Gamepad gamepad0,
-        Gamepad gamepad1) {
+    public void setup(HardwareMap hardwareMap, List<Layer> layerStack, Gamepad gamepad0,
+        Gamepad gamepad1
+    ) {
         LayerSetupInfo setupInfo = new LayerSetupInfo(hardwareMap, this, gamepad0, gamepad1);
-        this.layers = layers.stream().map(layer -> {
+        this.layers = layerStack.stream().map(layer -> {
             layer.setup(setupInfo);
             return new LayerInfo(layer);
         }).collect(Collectors.toList());
@@ -160,6 +88,7 @@ public class RobotController {
      * Performs incremental work and returns whether layers have completed all tasks.
      * Performs incremental work on the bottommost layer of the configured stack, invoking upper
      * layers as necessary when lower layers complete their current tasks.
+     *
      * @return whether the topmost layer (and by extension, the whole stack of layers) is exhausted
      * of tasks. When this happens, update listeners are notified and then unregistered.
      */
@@ -202,8 +131,12 @@ public class RobotController {
             layer = layerIter.previous();
             tasks = oldLayer.update(layer.getLastTasks());
             if (tasks == null) {
-                throw new NullPointerException("Layer '" + layer.getName()
-                    + "' returned null from update.");
+                throw new NullPointerException(
+                    String.format(
+                        "Layer '%s' returned null from update.",
+                        layer.getName()
+                    )
+                );
             }
             while (tasks.hasNext() && layer.isTaskDone()) {
                 layer.acceptTask(tasks.next());
@@ -228,18 +161,106 @@ public class RobotController {
      * Registers a function to be called on every update of the controller before layer work is
      * performed. Listeners are executed in registration order. After teardown,
      * listeners are unregistered.
-     * @param listener the function to be registered as an update listener
+     *
+     * @param listener - the function to be registered as an update listener.
      */
     public void addUpdateListener(Runnable listener) {
         updateListeners.add(listener);
     }
+
     /**
      * Registers a function to be called when the layer stack finishes executing.
      * On the first update after the topmost layer runs out of tasks, the
      * listeners are called in registration order, then unregistered.
-     * @param listener the function to be registered as an update listener
+     *
+     * @param listener - the function to be registered as an update listener.
      */
     public void addTeardownListener(Runnable listener) {
         teardownListeners.add(listener);
+    }
+
+    /**
+     * Thinly wraps a Layer while storing its last accepted task.
+     */
+    private static class LayerInfo {
+        /**
+         * The contained Layer.
+         */
+        private Layer layer;
+
+        /**
+         * The last tasks the contained Layer accepted at once.
+         */
+        private ArrayList<Task> lastTasks;
+
+        /**
+         * Whether the previous accepted task satisfied the Layer's need for new tasks.
+         */
+        private boolean lastTaskSaturated;
+
+        /**
+         * Constructs a LayerInfo.
+         *
+         * @param layer - the Layer to contain.
+         */
+        LayerInfo(Layer layer) {
+            this.layer = layer;
+            lastTasks = new ArrayList<>();
+            lastTaskSaturated = true;
+        }
+
+        /**
+         * Returns the implementing class name of the contained Layer.
+         *
+         * @return the contained Layer's concrete class name.
+         */
+        public String getName() {
+            return layer.getClass().getName();
+        }
+
+        /**
+         * Calls {@link Layer#isTaskDone} on the contained Layer.
+         *
+         * @return whether the contained Layer is finished processing its last accepted task.
+         */
+        public boolean isTaskDone() {
+            return layer.isTaskDone();
+        }
+
+        /**
+         * Calls {@link Layer#update} on the contained Layer.
+         *
+         * @param completed - an iterable of the tasks emitted by this Layer that have been
+         * completed since the last call to this method.
+         * @return an iterator of the tasks for the layer below to accept.
+         */
+        public Iterator<Task> update(Iterable<Task> completed) {
+            return layer.update(completed);
+        }
+
+        /**
+         * Calls {@link Layer#acceptTask} on the contained Layer.
+         * Must not be called if {@link #isTaskDone} returns false.
+         *
+         * @param task - the task the contained layer should be offered.
+         */
+        public void acceptTask(Task task) {
+            if (lastTaskSaturated) {
+                lastTasks.clear();
+            }
+            lastTasks.add(task);
+            layer.acceptTask(task);
+            lastTaskSaturated = !layer.isTaskDone();
+        }
+
+        /**
+         * Returns the layer's last accepted tasks.
+         *
+         * @return an iterable of the tasks last accepted by the layer.
+         * @see #acceptTask
+         */
+        public Iterable<Task> getLastTasks() {
+            return lastTasks;
+        }
     }
 }

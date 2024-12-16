@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
  * layers above.
  * Needed because the RobotController reads layers as a stack, not a tree.
  */
-public class MultiplexLayer implements Layer {
+public final class MultiplexLayer implements Layer {
     /**
      * The list of component layers.
      */
@@ -21,6 +21,7 @@ public class MultiplexLayer implements Layer {
 
     /**
      * Constructs a MultiplexLayer.
+     *
      * @param layers - the layers this MultiplexLayer will contain.
      */
     public MultiplexLayer(List<Layer> layers) {

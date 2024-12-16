@@ -9,13 +9,13 @@ public class TankDriveTask implements Task {
      * The relative acceleration to apply to the left side of the robot.
      * Positive values indicate forward movement and negative values indicate backward.
      */
-    public double left;
+    private double left;
 
     /**
      * The relative acceleration to apply to the right side of the robot.
      * Positive values indicate forward movement and negative values indicate backward.
      */
-    public double right;
+    private double right;
 
     /**
      * Constructs a TankDriveTask.
@@ -26,5 +26,25 @@ public class TankDriveTask implements Task {
     public TankDriveTask(double left, double right) {
         this.left = left;
         this.right = right;
+    }
+
+    /**
+     * Returns the relative acceleration to apply to the left side of the robot.
+     *
+     * @return the relative acceleration to apply to the left side of the robot. Positive values
+     * indicate forward movement and negative values indicate backward.
+     */
+    public double getLeft() {
+        return left;
+    }
+
+    /**
+     * Returns the relative acceleration to apply to the right side of the robot.
+     *
+     * @return the relative acceleration to apply to the right side of the robot. Positive values
+     * indicate forward movement and negative values indicate backward.
+     */
+    public double getRight() {
+        return right;
     }
 }

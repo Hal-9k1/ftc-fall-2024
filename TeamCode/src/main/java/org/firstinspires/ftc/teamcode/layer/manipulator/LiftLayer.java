@@ -1,95 +1,115 @@
 package org.firstinspires.ftc.teamcode.layer.manipulator;
 
+import java.util.Iterator;
+
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
-import java.util.Iterator;
-
 import org.firstinspires.ftc.teamcode.CircularBuffer;
+import org.firstinspires.ftc.teamcode.Units;
 import org.firstinspires.ftc.teamcode.layer.Layer;
 import org.firstinspires.ftc.teamcode.layer.LayerSetupInfo;
 import org.firstinspires.ftc.teamcode.mechanism.Wheel;
-import org.firstinspires.ftc.teamcode.task.Task;
 import org.firstinspires.ftc.teamcode.task.LiftTask;
 import org.firstinspires.ftc.teamcode.task.LiftTeleopTask;
+import org.firstinspires.ftc.teamcode.task.Task;
 import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
-import org.firstinspires.ftc.teamcode.Units;
 
 /**
  * Controls an extendable lift operated by a pulley.
  */
-public class LiftLayer implements Layer {
+public final class LiftLayer implements Layer {
     /**
      * Height above zeroDist in meters of the lift when fully extended.
      */
     private static final double RAISE_HEIGHT = Units.convert(46.375 - 16.875, Units.Distance.IN, Units.Distance.M);
+
     /**
      * Height just above zeroDist to meters of the lift to move to when lowering.
      * After lowering to this distance, the motor is disengaged and gravity lowers the lift the rest
      * of the way.
      */
     private static final double LOWER_HEIGHT = Units.convert(10, Units.Distance.CM, Units.Distance.M);
+
     /**
      * The factor by which the pulleys magnify the translation of the string by the motor.
      * In other words, if the motor displaces the string by x distance the lift will be displaced by
      * x * STRING_FAC.
      */
     private static final double STRING_FAC = 2;
+
     /**
      * Maximum number of pulley goal deltas to track for integral calculation.
      * Increasing this reduces the calculation's sensitivity to recent rapid changes in goal error.
      */
     private static final int DELTA_HISTORY_COUNT = 2000;
+
     /**
      * Weight of proportional component in pulley velocity calculation.
      */
     private static final double PULLEY_P_COEFF = 0.05;
+
     /**
      * Weight of integral component in pulley velocity calculation.
      */
     private static final double PULLEY_I_COEFF = 0.05;
+
     /**
      * Radius of the pulley in meters.
      */
     private static final double PULLEY_RADIUS = 0.42;
+
     /**
      * The motor used to swing the lift, zero power behavior is only brake.
      */
     private DcMotor swingMotor;
+
     /**
      * The motor used to power the lift, only retained to change zero power behavior.
      */
     private DcMotor pulleyMotor;
+
     /**
      * The pulley powering the lift.
      */
     private Wheel pulley;
+
     /**
      * The "distance" reported by the pulley when the lift is at its minimum height.
      */
     private double zeroDist;
+
     /**
      * The pulley distance measured at the beginning of the current task.
      */
     private double startDist;
+
     /**
      * Whether the lift was last set to extend.
      * This is used for fullExtend and fullRetract.
      */
     private boolean extensionLift;
+
     /**
      * Whether the lift was last set to raise.
      * This is used for raiseLift and lowerLift.
      */
     private boolean raisingLift;
+
     /**
      * Whether the goal set for the current task has been achieved.
      */
     private boolean goalAchieved;
+
     /**
      * The recent history of goal deltas.
      */
     private CircularBuffer<Double> deltaHistory;
+
+    /**
+     * Constructs a LiftLayer.
+     */
+    public LiftLayer() { }
 
     @Override
     public void setup(LayerSetupInfo setupInfo) {
@@ -169,8 +189,10 @@ public class LiftLayer implements Layer {
             throw new UnsupportedTaskException(this, task);
         }
     }
+
     /**
      * Calculates the current distance from the base to the tip of the lift.
+     *
      * @return the distance in meters from the base to the tip of the lift.
      */
     private double getPulleyDistance() {

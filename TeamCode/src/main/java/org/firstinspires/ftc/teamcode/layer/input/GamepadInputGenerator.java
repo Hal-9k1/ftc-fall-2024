@@ -1,9 +1,9 @@
 package org.firstinspires.ftc.teamcode.layer.input;
 
-import com.qualcomm.robotcore.hardware.Gamepad;
-
 import java.util.Collections;
 import java.util.Iterator;
+
+import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.layer.LayerSetupInfo;
 import org.firstinspires.ftc.teamcode.task.GamepadInputTask;
@@ -12,15 +12,21 @@ import org.firstinspires.ftc.teamcode.task.Task;
 /**
  * Generates {@link GamepadInputTask}s from snapshots of the gamepad inputs.
  */
-public class GamepadInputGenerator extends InputGenerator {
+public final class GamepadInputGenerator extends AbstractInputGenerator {
     /**
      * The gamepad connected to the first port, or null if none is connected there.
      */
     private Gamepad gamepad0;
+
     /**
      * The gamepad connected to the first port, or null if none is connected there.
      */
     private Gamepad gamepad1;
+
+    /**
+     * Constructs a GamepadInputGenerator.
+     */
+    public GamepadInputGenerator() { }
 
     @Override
     public void setup(LayerSetupInfo setupInfo) {

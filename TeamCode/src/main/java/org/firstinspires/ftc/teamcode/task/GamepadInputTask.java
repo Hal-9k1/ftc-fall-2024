@@ -5,14 +5,38 @@ package org.firstinspires.ftc.teamcode.task;
  */
 public class GamepadInputTask implements Task {
     /**
+     * Input captured from the gamepad connected to the first slot, or null if none is connected.
+     */
+    public final GamepadInput gamepad0;
+
+    /**
+     * Input captured from the gamepad connected to the second slot, or null if none is connected.
+     */
+    public final GamepadInput gamepad1;
+
+    /**
+     * Constructs a GamepadInputTask with given info about gamepad inputs.
+     *
+     * @param gamepad0 Input captured from the gamepad connected to the first slot, or null if none
+     * is connected.
+     * @param gamepad1 Input captured from the gamepad connected to the second slot, or null if none
+     * is connected.
+     */
+    public GamepadInputTask(GamepadInput gamepad0, GamepadInput gamepad1) {
+        this.gamepad0 = gamepad0;
+        this.gamepad1 = gamepad1;
+    }
+
+    /**
      * Carries information about the axes of a joystick on a gamepad.
      */
-    public static class Joystick {
+    public static final class Joystick {
         /**
          * The horizontal axis of the joystick.
          * Positive values correspond to the rightward direction.
          */
         public final float x;
+
         /**
          * The vertical axis of the joystick.
          * Positive values correspond to the upward direction.
@@ -21,6 +45,7 @@ public class GamepadInputTask implements Task {
 
         /**
          * Constructs a Joystick.
+         *
          * @param x - the joystick's horizontal axis input.
          * @param y - the joystick's vertical axis input.
          */
@@ -33,11 +58,12 @@ public class GamepadInputTask implements Task {
     /**
      * Carries information about the pair of joysticks on a gamepad.
      */
-    public static class Joysticks {
+    public static final class Joysticks {
         /**
          * The left joystick.
          */
         public final Joystick left;
+
         /**
          * The right joystick.
          */
@@ -45,6 +71,7 @@ public class GamepadInputTask implements Task {
 
         /**
          * Constructs a Joysticks.
+         *
          * @param left - the object representing the left joystick.
          * @param right - the object representing the right joystick.
          */
@@ -58,11 +85,12 @@ public class GamepadInputTask implements Task {
      * Carries information about a pair of symmetrical buttons on a gamepad, such as the triggers or
      * bumpers.
      */
-    public static class ButtonPair {
+    public static final class ButtonPair {
         /**
          * Whether the left button of the pair is pressed.
          */
         public final boolean left;
+
         /**
          * Whether the right button of the pair is pressed.
          */
@@ -70,6 +98,7 @@ public class GamepadInputTask implements Task {
 
         /**
          * Constructs a ButtonPair.
+         *
          * @param left - whether the left button of the pair is pressed.
          * @param right - whether the right button of the pair is pressed.
          */
@@ -83,19 +112,22 @@ public class GamepadInputTask implements Task {
      * Caries information about a gamepad's directional pad (four buttons arranged to indicate
      * movement along x and y axes).
      */
-    public static class DirectionalPad {
+    public static final class DirectionalPad {
         /**
          * Whether the up button of the dpad is pressed.
          */
         public final boolean up;
+
         /**
          * Whether the right button of the dpad is pressed.
          */
         public final boolean right;
+
         /**
          * Whether the down button of the dpad is pressed.
          */
         public final boolean down;
+
         /**
          * Whether the left button of the dpad is pressed.
          */
@@ -103,6 +135,7 @@ public class GamepadInputTask implements Task {
 
         /**
          * Constructs a DirectionalPad.
+         *
          * @param up - whether the up button of the dpad is pressed.
          * @param right - whether the right button of the dpad is pressed.
          * @param down - whether the down button of the dpad is pressed.
@@ -119,19 +152,22 @@ public class GamepadInputTask implements Task {
     /**
      * Carries information about miscellanous buttons on a gamepad.
      */
-    public static class Buttons {
+    public static final class Buttons {
         /**
          * Whether the A gamepad button is pressed.
          */
         public final boolean a;
+
         /**
          * Whether the B gamepad button is pressed.
          */
         public final boolean b;
+
         /**
          * Whether the X gamepad button is pressed.
          */
         public final boolean x;
+
         /**
          * Whether the Y gamepad button is pressed.
          */
@@ -139,6 +175,7 @@ public class GamepadInputTask implements Task {
 
         /**
          * Constructs a Buttons.
+         *
          * @param a - whether the A gamepad button is pressed.
          * @param b - whether the B gamepad button is pressed.
          * @param x - whether the X gamepad button is pressed.
@@ -157,27 +194,6 @@ public class GamepadInputTask implements Task {
      */
     public static class GamepadInput {
         /**
-         * The pair of joysticks on the gamepad.
-         */
-        public final Joysticks joysticks;
-        /**
-         * The pair of bumpers on the gamepad.
-         */
-        public final ButtonPair bumpers;
-        /**
-         * The pair of triggers on the gamepad.
-         */
-        public final ButtonPair triggers;
-        /**
-         * The directional pad on the gamepad.
-         */
-        public final DirectionalPad dpad;
-        /**
-         * The miscellanious buttons on the gamepad.
-         */
-        public final Buttons buttons;
-
-        /**
          * The minimum value reported by the trigger for it to be considered "pressed".
          * For the sake of symmetry with the PiE API, triggers are considered digital buttons
          * and not as real-valued inputs.
@@ -185,7 +201,33 @@ public class GamepadInputTask implements Task {
         private static final float TRIGGER_MIN = 0.3f;
 
         /**
+         * The pair of joysticks on the gamepad.
+         */
+        public final Joysticks joysticks;
+
+        /**
+         * The pair of bumpers on the gamepad.
+         */
+        public final ButtonPair bumpers;
+
+        /**
+         * The pair of triggers on the gamepad.
+         */
+        public final ButtonPair triggers;
+
+        /**
+         * The directional pad on the gamepad.
+         */
+        public final DirectionalPad dpad;
+
+        /**
+         * The miscellanious buttons on the gamepad.
+         */
+        public final Buttons buttons;
+
+        /**
          * Constructs a GamepadInput.
+         *
          * @param joystickLeftX - the horizontal axis of the left joystick.
          * @param joystickLeftY - the vertical axis of the left joystick.
          * @param bumperLeft - whether the left bumper is pressed.
@@ -230,27 +272,5 @@ public class GamepadInputTask implements Task {
             dpad = new DirectionalPad(dpadUp, dpadRight, dpadDown, dpadLeft);
             buttons = new Buttons(buttonA, buttonB, buttonX, buttonY);
         }
-    }
-
-
-    /**
-     * Input captured from the gamepad connected to the first slot, or null if none is connected.
-     */
-    public final GamepadInput gamepad0;
-    /**
-     * Input captured from the gamepad connected to the second slot, or null if none is connected.
-     */
-    public final GamepadInput gamepad1;
-
-    /**
-     * Constructs a GamepadInputTask with given info about gamepad inputs.
-     * @param gamepad0 Input captured from the gamepad connected to the first slot, or null if none
-     * is connected.
-     * @param gamepad1 Input captured from the gamepad connected to the second slot, or null if none
-     * is connected.
-     */
-    public GamepadInputTask(GamepadInput gamepad0, GamepadInput gamepad1) {
-        this.gamepad0 = gamepad0;
-        this.gamepad1 = gamepad1;
     }
 }

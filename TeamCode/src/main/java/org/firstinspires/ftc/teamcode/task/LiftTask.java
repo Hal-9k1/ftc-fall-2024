@@ -5,21 +5,25 @@ package org.firstinspires.ftc.teamcode.task;
  */
 public class LiftTask implements Task {
     /**
-     * The rotation of the arm in radians.
+     * The goal rotation of the arm in radians.
      */
     public final double swing;
+
     /**
      * Whether the lift should be fully extended.
      */
     public final boolean fullExtend;
+
     /**
      * Whether the lift should be fully retracted.
      */
     public final boolean fullRetract;
+
     /**
      * Whether the lift should be fully raised in an arc.
      */
     public final boolean raiseLift;
+
     /**
      * Whether the lift should be fully lowered in an arc.
      */
@@ -27,6 +31,7 @@ public class LiftTask implements Task {
 
     /**
      * Constructs a LiftTask.
+     *
      * @param swing - the rotation of the arm in radians.
      * @param fullExtend - Whether the lift should be fully extended.
      * @param fullRetract - Whether the lift should be fully retracted.

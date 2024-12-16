@@ -1,13 +1,14 @@
 package org.firstinspires.ftc.teamcode.opmode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-
 import java.util.Arrays;
 import java.util.List;
+
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+
 import org.firstinspires.ftc.teamcode.layer.Layer;
+import org.firstinspires.ftc.teamcode.layer.WinLayer;
 import org.firstinspires.ftc.teamcode.layer.drive.TwoWheelDrive;
 import org.firstinspires.ftc.teamcode.layer.strategy.PathlessStrategy;
-import org.firstinspires.ftc.teamcode.layer.WinLayer;
 
 /**
  * Autonomous that makes no use of anything but the drive system and scoots around like a roomba.
@@ -15,7 +16,12 @@ import org.firstinspires.ftc.teamcode.layer.WinLayer;
  * field.
  */
 @Autonomous(name="Roomba")
-public class RoombaAutonomous extends LayerOpMode {
+public final class RoombaAutonomous extends AbstractLayerOpMode {
+    /**
+     * Constructs a RoombaAutonomous.
+     */
+    public RoombaAutonomous() { }
+
     @Override
     protected List<Layer> getLayers() {
         return Arrays.asList(
