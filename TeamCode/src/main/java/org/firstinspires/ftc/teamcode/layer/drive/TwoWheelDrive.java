@@ -141,23 +141,23 @@ public final class TwoWheelDrive implements Layer {
     public void acceptTask(Task task) {
         if (task instanceof AxialMovementTask) {
             AxialMovementTask castedTask = (AxialMovementTask)task;
-            leftGoalDelta = castedTask.distance * GEAR_RATIO * SLIPPING_CONSTANT;
-            rightGoalDelta = castedTask.distance * GEAR_RATIO * SLIPPING_CONSTANT;
+            leftGoalDelta = castedTask.getDistance() * GEAR_RATIO * SLIPPING_CONSTANT;
+            rightGoalDelta = castedTask.getDistance() * GEAR_RATIO * SLIPPING_CONSTANT;
         } else if (task instanceof TurnTask) {
             TurnTask castedTask = (TurnTask)task;
-            leftGoalDelta = -castedTask.angle * WHEEL_SPAN_RADIUS * GEAR_RATIO * SLIPPING_CONSTANT;
-            rightGoalDelta = castedTask.angle * WHEEL_SPAN_RADIUS * GEAR_RATIO * SLIPPING_CONSTANT;
+            leftGoalDelta = -castedTask.getAngle() * WHEEL_SPAN_RADIUS * GEAR_RATIO * SLIPPING_CONSTANT;
+            rightGoalDelta = castedTask.getAngle() * WHEEL_SPAN_RADIUS * GEAR_RATIO * SLIPPING_CONSTANT;
         } else if (task instanceof TankDriveTask) {
             // Teleop, set deltas to 0 to pretend we're done
             leftGoalDelta = 0;
             rightGoalDelta = 0;
             TankDriveTask castedTask = (TankDriveTask)task;
             double maxAbsPower = Math.max(
-                Math.max(Math.abs(castedTask.left), Math.abs(castedTask.right)),
+                Math.max(Math.abs(castedTask.getLeft()), Math.abs(castedTask.getRight())),
                 1 // Clamp to 1 to prevent upscaling
             );
-            leftWheel.setVelocity(castedTask.left / maxAbsPower);
-            rightWheel.setVelocity(castedTask.right / maxAbsPower);
+            leftWheel.setVelocity(castedTask.getLeft() / maxAbsPower);
+            rightWheel.setVelocity(castedTask.getRight() / maxAbsPower);
             return;
         } else {
             throw new UnsupportedTaskException(this, task);

@@ -144,28 +144,28 @@ public final class MecanumDrive implements Layer {
             isAuto = true;
             AxialMovementTask castedTask = (AxialMovementTask)task;
             wheelGoalDeltas = GEAR_RATIO.map((key, gearRatio) ->
-                castedTask.distance * gearRatio * SLIPPING_CONSTANT.get(key)
+                castedTask.getDistance() * gearRatio * SLIPPING_CONSTANT.get(key)
             );
         } else if (task instanceof TurnTask) {
             isAuto = true;
             TurnTask castedTask = (TurnTask)task;
             wheelGoalDeltas = GEAR_RATIO.map((key, gearRatio) ->
-                (key.isLeft ? -1 : 1) * castedTask.angle * WHEEL_SPAN_RADIUS * gearRatio
+                (key.isLeft ? -1 : 1) * castedTask.getAngle() * WHEEL_SPAN_RADIUS * gearRatio
                     * SLIPPING_CONSTANT.get(key)
             );
         } else if (task instanceof LinearMovementTask) {
             isAuto = true;
             LinearMovementTask castedTask = (LinearMovementTask)task;
-            wheelGoalDeltas = calculateAlyDeltas(castedTask.axial, castedTask.lateral, 0);
+            wheelGoalDeltas = calculateAlyDeltas(castedTask.getAxial(), castedTask.getLateral(), 0);
         } else if (task instanceof TankDriveTask) {
             isAuto = false;
             TankDriveTask castedTask = (TankDriveTask)task;
             normalizeVelocities(
                 new WheelProperty<>(
-                    castedTask.left,
-                    castedTask.right,
-                    castedTask.left,
-                    castedTask.right
+                    castedTask.getLeft(),
+                    castedTask.getRight(),
+                    castedTask.getLeft(),
+                    castedTask.getRight()
                 ).map((key, velocity) -> velocity * SLIPPING_CONSTANT.get(key)),
                 false
             ).forEach((key, velocity) -> wheels.get(key).setVelocity(velocity));
@@ -174,9 +174,9 @@ public final class MecanumDrive implements Layer {
             HolonomicDriveTask castedTask = (HolonomicDriveTask)task;
             normalizeVelocities(
                 calculateAlyDeltas(
-                    castedTask.axial,
-                    castedTask.lateral,
-                    castedTask.yaw
+                    castedTask.getAxial(),
+                    castedTask.getLateral(),
+                    castedTask.getYaw()
                 ).map((key, velocity) -> velocity * SLIPPING_CONSTANT.get(key)),
                 false
             ).forEach((key, velocity) -> wheels.get(key).setVelocity(velocity));

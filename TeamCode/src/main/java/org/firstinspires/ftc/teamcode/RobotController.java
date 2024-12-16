@@ -75,7 +75,7 @@ public class RobotController {
         Gamepad gamepad1
     ) {
         LayerSetupInfo setupInfo = new LayerSetupInfo(hardwareMap, this, gamepad0, gamepad1);
-        this.layers = layers.stream().map(layer -> {
+        this.layers = layerStack.stream().map(layer -> {
             layer.setup(setupInfo);
             return new LayerInfo(layer);
         }).collect(Collectors.toList());
