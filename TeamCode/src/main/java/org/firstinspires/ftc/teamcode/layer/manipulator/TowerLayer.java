@@ -17,6 +17,10 @@ import org.firstinspires.ftc.teamcode.task.TowerTask;
 import org.firstinspires.ftc.teamcode.task.TowerTeleopTask;
 import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
 
+/**
+ * Controls a tower: a multi-jointed arm with a folding forearm and a claw that can hold specimens
+ * if aligned by a human player.
+ */
 public class TowerLayer implements Layer {
     /**
      * Maximum number of pulley goal deltas to track for integral calculation.
@@ -25,22 +29,42 @@ public class TowerLayer implements Layer {
     private static final int DELTA_HISTORY_COUNT = 2000;
 
     /**
-     * Weight of proportional component in pulley velocity calculation.
+     * Weight of proportional component in tower swing velocity calculation.
      */
     private static final double TOWER_P_COEFF = 0.05;
 
     /**
-     * Weight of integral component in pulley velocity calculation.
+     * Weight of integral component in tower swing velocity calculation.
      */
     private static final double TOWER_I_COEFF = 0.05;
 
-    private final double FOREARM_INIT_ANGLE = Units.convert(
+    /**
+     * The angle between the forearm's initial position and the position it should take after
+     * initialization.
+     * The forearm will hold this angle throughout the match, never retracting to its initial
+     * position.
+     */
+    private static final double FOREARM_INIT_ANGLE = Units.convert(
         0.25,
         Units.Angle.REV,
         Units.Angle.RAD
     );
 
-    private final double CLAW_TOGGLE_DURATION = Units.convert(
+    /**
+     * The maximum safe angle for the forearm from its resting position.
+     */
+    private static final double FOREARM_MAX_SAFE_ANGLE = Units.convert(
+        0.5,
+        Units.Angle.REV,
+        Units.Angle.RAD
+    );
+
+    /**
+     * An estimate of how long the claw servo takes to finish toggling between states.
+     * Servos don't report on progress towards goals, so we use this to judge whether we should
+     * report a claw manipulation task as being done.
+     */
+    private static final double CLAW_TOGGLE_DURATION = Units.convert(
         0.5,
         Units.Time.SEC,
         Units.Time.NANO
@@ -58,12 +82,15 @@ public class TowerLayer implements Layer {
     );
 
     /**
-     * Motor used to swing the tower, zero power behavior is only brake.
+     * Motor used to swing the tower.
+     * The zero power behavior is set to brake.
      */
     private DcMotor tower;
 
     /**
-     * Motor used to swing the forearm, zero power behavior is only brake.
+     * Motor used to swing the forearm.
+     * The zero power behavior is set to brake. The forearm should be "initialized" with a
+     * TowerForearmTask before the first . This unfolds it 
      */
     private DcMotor forearm;
 
@@ -78,24 +105,24 @@ public class TowerLayer implements Layer {
     private boolean isInit;
 
     /**
-     * Check if tower is currently swinging.
+     * Whether the tower is currently autonomously swinging to a goal.
      */
     private boolean isSwinging;
 
     /**
-     * The distance reported by the forearm at minimum height.
+     * The angle reported by the forearm at its starting position, fully folded.
      */
     private double forearmZero;
 
     /**
-     * The "distance" reported by the tower when it is at minimum height.
+     * The angle reported by the tower at its starting position, fully lowered.
      */
     private double towerZero;
 
     /**
-     * Tower distance measured at the beginning of the current task.
+     * Tower angle measured at the beginning of the current task.
      */
-    private double towerStartPos;
+    private double towerStartAngle;
 
     /**
      * The angle the tower needs to reach, using towerZero as reference.
@@ -108,7 +135,7 @@ public class TowerLayer implements Layer {
     private long clawStartTime;
 
     /**
-     * The recent history of goal deltas.
+     * The recent history of tower goal deltas, used to control PID.
      */
     private CircularBuffer<Double> deltaHistory;
 
@@ -162,32 +189,51 @@ public class TowerLayer implements Layer {
             } else if (castedTowerTask.fullLower) {
                 towerGoalAngle = 0;
             }
-            towerStartPos = tower.getCurrentPosition();
+            towerStartAngle = tower.getCurrentPosition();
         } else if (task instanceof TowerTeleopTask) {
             TowerTeleopTask castedTask = (TowerTeleopTask)task;
-            tower.setPower(castedTask.towerSwingPower);
+            boolean isUnsafe = getForearmAngle() > MAX_FOREARM_SAFE_ANGLE
+                && castedTask.towerSwingPower > 1;
+            tower.setPower(isUnsafe ? 0 : castedTask.towerSwingPower);
         } else {
             throw new UnsupportedTaskException(this, task);
         }
     }
 
+    /**
+     * Checks whether a change in some measured parameter has exceeded a desired change.
+     *
+     * @param delta - the measured change in the tested parameter.
+     * @param goalDelta - the desired change in the parameter.
+     * @return Whether delta exceeds goalDelta in magnitude and matches it in direction.
+     */
     private boolean checkDelta(double delta, double goalDelta) {
         boolean magExceeded = Math.abs(delta) > Math.abs(goalDelta);
         boolean signMatches = (delta > 0) == (goalDelta > 0);
         return magExceeded && signMatches;
     }
 
+    /**
+     * Calculates the angle of the forearm away from its starting position.
+     *
+     * @return The angle of the forearm relative to {@link #forearmZero}.
+     */
     private double getForearmAngle() {
         double revs = (forearm.getCurrentPosition() - forearmZero)
             / forearm.getMotorType().getTicksPerRev();
         return Units.convert(revs, Units.Angle.REV, Units.Angle.RAD);
     }
 
+    /**
+     * Calculates whether the tower has finished swinging to {@link towerGoalAngle}.
+     *
+     * @return Whether the tower has finished its most recent autonomous swing action.
+     */
     private boolean checkTowerDone() {
-        double revs = (tower.getCurrentPosition() - towerStartPos)
+        double revs = (tower.getCurrentPosition() - towerStartAngle)
             / tower.getMotorType().getTicksPerRev();
         double deltaAngle = Units.convert(revs, Units.Angle.REV, Units.Angle.RAD);
-        double startAngle = towerStartPos / tower.getMotorType().getTicksPerRev();
+        double startAngle = towerStartAngle / tower.getMotorType().getTicksPerRev();
         double goalDeltaAngle = towerGoalAngle - startAngle;
         return checkDelta(deltaAngle, goalDeltaAngle);
     }
