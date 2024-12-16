@@ -26,7 +26,7 @@ import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
  */
 public class TowerLayer implements Layer {
     /**
-     * Maximum number of pulley goal deltas to track for integral calculation.
+     * Maximum number of tower goal deltas to track for integral calculation.
      * Increasing this reduces the calculation's sensitivity to recent rapid changes in goal error.
      */
     private static final int DELTA_HISTORY_COUNT = 2000;
@@ -122,9 +122,9 @@ public class TowerLayer implements Layer {
     private double towerZero;
 
     /**
-     * Tower angle measured at the beginning of the current task.
+     * Tower encoder position measured at the beginning of the current task.
      */
-    private double towerStartAngle;
+    private double towerStartPos;
 
     /**
      * The angle the tower needs to reach, using towerZero as reference.
@@ -191,7 +191,7 @@ public class TowerLayer implements Layer {
             } else if (castedTowerTask.fullLower) {
                 towerGoalAngle = 0;
             }
-            towerStartAngle = tower.getCurrentPosition();
+            towerStartPos = tower.getCurrentPosition();
         } else if (task instanceof TowerTeleopTask) {
             TowerTeleopTask castedTask = (TowerTeleopTask)task;
             boolean isUnsafe = getForearmAngle() > MAX_FOREARM_SAFE_ANGLE
@@ -232,10 +232,10 @@ public class TowerLayer implements Layer {
      * @return Whether the tower has finished its most recent autonomous swing action.
      */
     private boolean checkTowerDone() {
-        double revs = (tower.getCurrentPosition() - towerStartAngle)
+        double revs = (tower.getCurrentPosition() - towerStartPos)
             / tower.getMotorType().getTicksPerRev();
         double deltaAngle = Units.convert(revs, Units.Angle.REV, Units.Angle.RAD);
-        double startAngle = towerStartAngle / tower.getMotorType().getTicksPerRev();
+        double startAngle = towerStartPos / tower.getMotorType().getTicksPerRev();
         double goalDeltaAngle = towerGoalAngle - startAngle;
         return checkDelta(deltaAngle, goalDeltaAngle);
     }
