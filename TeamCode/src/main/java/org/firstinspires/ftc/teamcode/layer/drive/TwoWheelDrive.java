@@ -102,7 +102,7 @@ public final class TwoWheelDrive implements Layer {
             initInfo.getHardwareMap().get(DcMotor.class, RIGHT_DRIVE_MOTOR_NAME),
             WHEEL_RADIUS
         );
-        
+
         leftStartPos = 0;
         rightStartPos = 0;
         leftGoalDelta = 0;
