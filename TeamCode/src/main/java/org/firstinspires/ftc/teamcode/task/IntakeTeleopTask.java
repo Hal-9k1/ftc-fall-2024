@@ -9,19 +9,22 @@ public class IntakeTeleopTask implements Task {
      * Depending on the intake implementation, this may be a simple delay or rely on a sensor to
      * detect a sample.
      */
-    public final boolean acquire;
+    private final boolean acquire;
+
     /**
      * Whether the intake should run until a sample has been predicted to be ejected.
      * This runs on a simple delay.
      */
-    public final boolean timedEject;
+    private final boolean timedEject;
+
     /**
      * A power to directly give to the intake actuator.
      */
-    public final double intakePower;
+    private final double intakePower;
 
     /**
      * Constructs an IntakeTeleopTask.
+     *
      * @param acquire - whether the intake should run until a sample has been predicted to be
      * acquired. Incompatible with timedEject.
      * @param timedEject - whether the intake should run until a sample has been predicted to be
@@ -38,5 +41,35 @@ public class IntakeTeleopTask implements Task {
                 "Cannot direct the intake to simultaneously acquire a sample and eject one."
             );
         }
+    }
+
+    /**
+     * Returns whether the intake should run until a sample has been predicted to be acquired.
+     * Depending on the intake implementation, this may be a simple delay or rely on a sensor to
+     * detect a sample.
+     *
+     * @return whether the intake should run until a sample has been predicted to be acquired.
+     */
+    public final boolean getAcquire() {
+        return acquire;
+    }
+
+    /**
+     * Returns whether the intake should run until a sample has been predicted to be ejected.
+     * This runs on a simple delay.
+     *
+     * @return whether the intake should run until a sample has been predicted to be ejected.
+     */
+    public final boolean getTimedEject() {
+        return timedEject;
+    }
+
+    /**
+     * Returns a power to directly give to the intake actuator.
+     *
+     * @return a power to directly give to the intake actuator, which will be in the range [-1, 1].
+     */
+    public final double getIntakePower() {
+        return intakePower;
     }
 }

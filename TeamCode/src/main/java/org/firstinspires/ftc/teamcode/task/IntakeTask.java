@@ -9,11 +9,12 @@ public class IntakeTask {
      * Depending on the intake implementation, this may be a simple delay or rely on a sensor to
      * detect a sample.
      */
-    public final boolean acquire;
+    private final boolean acquire;
+
     /**
      * Whether the intake should run until a sample has been predicted to be ejected.
      */
-    public final boolean eject;
+    private final boolean eject;
 
     /**
      * Constructs an IntakeTask.
@@ -30,5 +31,25 @@ public class IntakeTask {
                 "Cannot direct the intake to simultaneously acquire a sample and eject one."
             );
         }
+    }
+
+    /**
+     * Returns whether the intake should run until a sample has been predicted to be acquired.
+     * Depending on the intake implementation, this may be a simple delay or rely on a sensor to
+     * detect a sample.
+     *
+     * @return whether the intake should run until a sample has been predicted to be acquired.
+     */
+    public final boolean getAcquire() {
+        return acquire;
+    }
+
+    /**
+     * Returns whether the intake should run until a sample has been predicted to be ejected.
+     *
+     * @return whether the intake should run until a sample has been predicted to be ejected.
+     */
+    public final boolean getEject() {
+        return eject;
     }
 }
