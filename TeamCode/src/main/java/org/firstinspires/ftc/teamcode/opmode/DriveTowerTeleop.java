@@ -9,12 +9,14 @@ import org.firstinspires.ftc.teamcode.layer.Layer;
 import org.firstinspires.ftc.teamcode.layer.MultiplexLayer;
 import org.firstinspires.ftc.teamcode.layer.drive.MecanumDrive;
 import org.firstinspires.ftc.teamcode.layer.input.GamepadInputGenerator;
-import org.firstinspires.ftc.teamcode.layer.input.mapping.JoystickHoloDriveMapping;
 import org.firstinspires.ftc.teamcode.layer.input.mapping.DpadTowerMapping;
+import org.firstinspires.ftc.teamcode.layer.input.mapping.JoystickHoloDriveMapping;
 import org.firstinspires.ftc.teamcode.layer.manipulator.TowerLayer;
 
 @TeleOp(name="Drive Tower")
-public class DriveTowerTeleop extends AbstractLayerOpMode {
+public final class DriveTowerTeleop extends AbstractLayerOpMode {
+    public DriveTowerTeleop() { }
+
     @Override
     protected List<Layer> getLayers() {
         return Arrays.asList(

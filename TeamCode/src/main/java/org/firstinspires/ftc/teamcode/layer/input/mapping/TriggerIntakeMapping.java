@@ -2,8 +2,8 @@ package org.firstinspires.ftc.teamcode.layer.input.mapping;
 
 import org.firstinspires.ftc.teamcode.layer.AbstractFunctionLayer;
 import org.firstinspires.ftc.teamcode.layer.LayerSetupInfo;
-import org.firstinspires.ftc.teamcode.task.IntakeTeleopTask;
 import org.firstinspires.ftc.teamcode.task.GamepadInputTask;
+import org.firstinspires.ftc.teamcode.task.IntakeTeleopTask;
 import org.firstinspires.ftc.teamcode.task.Task;
 import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
 
@@ -11,7 +11,9 @@ import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
  * Mapping for gamepad input that uses the left and right triggers to acquire and eject samples from
  * the intake.
  */
-public class TriggerIntakeMapping extends AbstractFunctionLayer {
+public final class TriggerIntakeMapping extends AbstractFunctionLayer {
+    public TriggerIntakeMapping() { }
+
     @Override
     public void setup(LayerSetupInfo setupInfo) { }
 

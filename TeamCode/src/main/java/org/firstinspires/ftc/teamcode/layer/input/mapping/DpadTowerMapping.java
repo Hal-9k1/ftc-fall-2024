@@ -7,7 +7,9 @@ import org.firstinspires.ftc.teamcode.task.Task;
 import org.firstinspires.ftc.teamcode.task.TowerTeleopTask;
 import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
 
-public class DpadTowerMapping extends AbstractFunctionLayer {
+public final class DpadTowerMapping extends AbstractFunctionLayer {
+    public DpadTowerMapping() { }
+
     @Override
     public void setup(LayerSetupInfo setupInfo) { }
 

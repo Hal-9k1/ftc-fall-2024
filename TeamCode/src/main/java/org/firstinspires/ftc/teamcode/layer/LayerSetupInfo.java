@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.layer;
 
-import java.util.function.Consumer;
-
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -91,8 +89,10 @@ public class LayerSetupInfo {
     public void addUpdateListener(Runnable listener) {
         robotController.addUpdateListener(listener);
     }
+
     /**
      * Registers a callback to be called after the layer stack finishes executing.
+     *
      * @param listener - the callback to be called.
      */
     public void addTeardownListener(Runnable listener) {

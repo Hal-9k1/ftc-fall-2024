@@ -18,6 +18,7 @@ public class IntakeTask {
 
     /**
      * Constructs an IntakeTask.
+     *
      * @param acquire - whether the intake should run until a sample has been predicted to be
      * acquired. Incompatible with eject.
      * @param eject - whether the intake should run until a sample has been predicted to be

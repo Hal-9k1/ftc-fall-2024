@@ -123,7 +123,7 @@ public final class Units {
     /**
      * Represents a unit of time.
      */
-    public static enum Time {
+    public enum Time {
         /**
          * Seconds.
          */
@@ -144,6 +144,7 @@ public final class Units {
 
         /**
          * Constructs a Time enum member.
+         *
          * @param unitsPerSecond - the number of this unit that is equivalent to one second.
          */
         Time(double unitsPerSecond) {

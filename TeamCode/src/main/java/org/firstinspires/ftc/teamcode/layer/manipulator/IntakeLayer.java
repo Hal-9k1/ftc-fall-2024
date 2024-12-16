@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.layer.manipulator;
 import java.util.Iterator;
 
 import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.TouchSensor;
+//import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.teamcode.Units;
 import org.firstinspires.ftc.teamcode.layer.Layer;
@@ -38,18 +38,18 @@ public final class IntakeLayer implements Layer {
     /**
      * Duration in nanoseconds of intake.
      */
-    private final double INTAKE_DURATION = Units.convert(1.5, Units.Time.SEC, Units.Time.NANO);
+    private static final double INTAKE_DURATION = Units.convert(1.5, Units.Time.SEC, Units.Time.NANO);
 
     /**
      * Duration in nanoseconds of ejection.
      */
-    private final double EJECT_DURATION = Units.convert(1.5, Units.Time.SEC, Units.Time.NANO);
+    private static final double EJECT_DURATION = Units.convert(1.5, Units.Time.SEC, Units.Time.NANO);
 
     /**
      * Multiplier for intake actuator power.
      * Should be in the range [-1.0, 1.0].
      */
-    private final double INTAKE_SPEED = 1.0;
+    private static final double INTAKE_SPEED = 1.0;
 
     /**
      * Servo spinning the intake mechanism.
@@ -70,6 +70,8 @@ public final class IntakeLayer implements Layer {
      * The nanosecond timestamp of the start of the last eject action.
      */
     private long ejectStart;
+
+    public IntakeLayer() { }
 
     @Override
     public void setup(LayerSetupInfo setupInfo) {

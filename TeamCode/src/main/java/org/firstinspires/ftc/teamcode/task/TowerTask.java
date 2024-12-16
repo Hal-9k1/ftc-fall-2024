@@ -7,14 +7,16 @@ public class TowerTask implements Task {
     /**
      * Whether the tower should be fully raised in an arc.
      */
-    public boolean fullRaise;
+    private final boolean fullRaise;
+
     /**
      * Whether the tower should be fully lowered in an arc.
      */
-    public boolean fullLower;
+    private final boolean fullLower;
 
     /**
-     * Constructor for TowerTask
+     * Constructs a TowerTask.
+     *
      * @param fullRaise - Whether the tower should be fully raised in an arc.
      * @param fullLower - Whether the tower should be fully lowered in an arc.
      */
@@ -24,5 +26,23 @@ public class TowerTask implements Task {
         if (fullRaise && fullLower) {
             throw new IllegalArgumentException("The arm can't be both fully raised and fully lowered");
         }
+    }
+
+    /**
+     * Returns whether the tower should be fully raised in an arc.
+     *
+     * @return whether the tower should be fully raised in an arc.
+     */
+    public boolean getFullRaise() {
+        return fullRaise;
+    }
+
+    /**
+     * Returns whether the tower should be fully lowered in an arc.
+     *
+     * @return whether the tower should be fully lowered in an arc.
+     */
+    public boolean getFullLower() {
+        return fullLower;
     }
 }

@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.layer.manipulator;
 import java.util.Iterator;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.CircularBuffer;
@@ -12,7 +11,6 @@ import org.firstinspires.ftc.teamcode.layer.Layer;
 import org.firstinspires.ftc.teamcode.layer.LayerSetupInfo;
 import org.firstinspires.ftc.teamcode.task.Task;
 import org.firstinspires.ftc.teamcode.task.TowerForearmTask;
-import org.firstinspires.ftc.teamcode.task.TowerInitTask;
 import org.firstinspires.ftc.teamcode.task.TowerTask;
 import org.firstinspires.ftc.teamcode.task.TowerTeleopTask;
 import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
@@ -24,7 +22,7 @@ import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
  * it from the position it starts in to fit in the sizing cube. The forearm remains in its unfolded
  * position throughout the lifetime of the program.
  */
-public class TowerLayer implements Layer {
+public final class TowerLayer implements Layer {
     /**
      * Maximum number of tower goal deltas to track for integral calculation.
      * Increasing this reduces the calculation's sensitivity to recent rapid changes in goal error.
@@ -186,17 +184,17 @@ public class TowerLayer implements Layer {
         } else if (task instanceof TowerTask) {
             TowerTask castedTowerTask = (TowerTask)task;
             isSwinging = true;
-            if (castedTowerTask.fullRaise) {
+            if (castedTowerTask.getFullRaise()) {
                 towerGoalAngle = FULL_RAISE_ANGLE;
-            } else if (castedTowerTask.fullLower) {
+            } else if (castedTowerTask.getFullLower()) {
                 towerGoalAngle = 0;
             }
             towerStartPos = tower.getCurrentPosition();
         } else if (task instanceof TowerTeleopTask) {
             TowerTeleopTask castedTask = (TowerTeleopTask)task;
             boolean isUnsafe = getForearmAngle() > FOREARM_MAX_SAFE_ANGLE
-                && castedTask.towerSwingPower > 1;
-            tower.setPower(isUnsafe ? 0 : castedTask.towerSwingPower);
+                && castedTask.getTowerSwingPower() > 1;
+            tower.setPower(isUnsafe ? 0 : castedTask.getTowerSwingPower());
         } else {
             throw new UnsupportedTaskException(this, task);
         }
