@@ -20,6 +20,9 @@ import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
 /**
  * Controls a tower: a multi-jointed arm with a folding forearm and a claw that can hold specimens
  * if aligned by a human player.
+ * The forearm should be "initialized" with a TowerForearmTask before it is first used. This unfolds
+ * it from the position it starts in to fit in the sizing cube. The forearm remains in its unfolded
+ * position throughout the lifetime of the program.
  */
 public class TowerLayer implements Layer {
     /**
@@ -89,8 +92,7 @@ public class TowerLayer implements Layer {
 
     /**
      * Motor used to swing the forearm.
-     * The zero power behavior is set to brake. The forearm should be "initialized" with a
-     * TowerForearmTask before the first . This unfolds it 
+     * The zero power behavior is set to brake.
      */
     private DcMotor forearm;
 
