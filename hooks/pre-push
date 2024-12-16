@@ -14,10 +14,12 @@ do
   fi
   git diff-index --check --cached $robj -- || {
     echo Branch $lref failed diff-index --check. >&2
+    git checkout --quiet $head --
     exit 1
   }
   ./gradlew build || {
     echo Branch $lref failed to build. >&2
+    git checkout --quiet $head --
     exit 1
   }
 done
