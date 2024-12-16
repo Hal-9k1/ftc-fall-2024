@@ -59,7 +59,7 @@ public class TowerLayer implements Layer {
      * Assumed to be the same as goalAchieved but for TowerTask
      * TODO: need confirmation on if this is right.
      */
-    private boolean towerWorking;
+    private boolean isSwinging;
     /**
      * The distance reported by the forearm at minimum height.
      */
@@ -108,7 +108,7 @@ public class TowerLayer implements Layer {
     public boolean isTaskDone() {
         if (isInit) {
             return checkDelta(getForearmAngle(), FOREARM_INIT_ANGLE);
-        } else if (towerWorking) {
+        } else if (isSwinging) {
             return checkTowerDone();
         } else {
             return System.nanoTime() - clawStartTime >= CLAW_TOGGLE_DURATION;
@@ -116,6 +116,12 @@ public class TowerLayer implements Layer {
     }
     @Override
     public Iterator<Task> update(Iterable<Task> completed) {
+        setupInfo.addUpdateListener(() -> {
+            if (isSwinging && checkTowerDone()) {
+                isSwinging = false;
+                tower.setPower(0.0);
+            }
+        });
         return null;
     }
     @Override
@@ -125,10 +131,10 @@ public class TowerLayer implements Layer {
             isInit = true;
         } else if (task instanceof TowerTask) {
             TowerTask castedTowerTask = (TowerTask)task;
-            towerWorking = false;
+            isSwinging = true;
             if (castedTowerTask.fullRaise) {
                 raisingTower = true;
-            } else if (castedTowerTask.fullLower){
+            } else if (castedTowerTask.fullLower) {
                 raisingTower = false;
             }
 
