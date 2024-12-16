@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.layer.input.mapping.JoystickHoloDriveMappi
  * No manipulators or anything else at all are initialized.
  */
 @TeleOp(name="Drive")
-public final class DriveTeleop extends LayerOpMode {
+public final class DriveTeleop extends AbstractLayerOpMode {
     public DriveTeleop() { }
 
     @Override

@@ -7,9 +7,9 @@ import org.firstinspires.ftc.teamcode.task.Task;
 
 /**
  * Convenience base class for all layers that map each accepted task to only one subtask.
- * Similar to {@link QueuedLayer}, but only generates one task instead of a queue.
+ * Similar to {@link AbstractQueuedLayer}, but only generates one task instead of a queue.
  */
-public abstract class FunctionLayer implements Layer {
+public abstract class AbstractFunctionLayer implements Layer {
     /**
      * Whether {@link #subtask} has been emitted yet.
      */
@@ -21,9 +21,9 @@ public abstract class FunctionLayer implements Layer {
     private Task subtask;
 
     /**
-     * Constructs a FunctionLayer.
+     * Constructs a AbstractFunctionLayer.
      */
-    protected FunctionLayer() {
+    protected AbstractFunctionLayer() {
         emittedSubtask = true;
         subtask = null;
     }

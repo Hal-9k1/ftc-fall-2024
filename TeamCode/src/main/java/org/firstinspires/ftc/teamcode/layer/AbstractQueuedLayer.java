@@ -10,16 +10,16 @@ import org.firstinspires.ftc.teamcode.task.Task;
  * A convenience base class for layers that can compute queues of subtasks ahead of time and require
  * no additional processing in their update method.
  */
-public abstract class QueuedLayer implements Layer {
+public abstract class AbstractQueuedLayer implements Layer {
     /**
      * An iterator over the subtasks for the current accepted task.
      */
     private Iterator<Task> subtaskIter;
 
     /**
-     * Constructs a QueuedLayer.
+     * Constructs a AbstractQueuedLayer.
      */
-    protected QueuedLayer() {
+    protected AbstractQueuedLayer() {
         subtaskIter = null;
     }
 

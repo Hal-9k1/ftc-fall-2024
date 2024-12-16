@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.layer.input.mapping;
 
-import org.firstinspires.ftc.teamcode.layer.FunctionLayer;
+import org.firstinspires.ftc.teamcode.layer.AbstractFunctionLayer;
 import org.firstinspires.ftc.teamcode.layer.LayerSetupInfo;
 import org.firstinspires.ftc.teamcode.task.GamepadInputTask;
 import org.firstinspires.ftc.teamcode.task.TankDriveTask;
@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
  * Mapping for gamepad input that uses the y components of each joystick to
  * control power to the corresponding side of the robot.
  */
-public final class TankDriveMapping extends FunctionLayer {
+public final class TankDriveMapping extends AbstractFunctionLayer {
     public TankDriveMapping() { }
 
     @Override

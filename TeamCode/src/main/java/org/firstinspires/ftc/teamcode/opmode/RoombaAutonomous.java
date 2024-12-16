@@ -16,7 +16,7 @@ import org.firstinspires.ftc.teamcode.layer.strategy.PathlessStrategy;
  * field.
  */
 @Autonomous(name="Roomba")
-public final class RoombaAutonomous extends LayerOpMode {
+public final class RoombaAutonomous extends AbstractLayerOpMode {
     public RoombaAutonomous() { }
 
     @Override

@@ -3,8 +3,8 @@ package org.firstinspires.ftc.teamcode.layer.strategy;
 import java.util.Arrays;
 
 import org.firstinspires.ftc.teamcode.Units;
+import org.firstinspires.ftc.teamcode.layer.AbstractQueuedLayer;
 import org.firstinspires.ftc.teamcode.layer.LayerSetupInfo;
-import org.firstinspires.ftc.teamcode.layer.QueuedLayer;
 import org.firstinspires.ftc.teamcode.task.LinearMovementTask;
 import org.firstinspires.ftc.teamcode.task.Task;
 import org.firstinspires.ftc.teamcode.task.TurnTask;
@@ -17,7 +17,7 @@ import org.firstinspires.ftc.teamcode.task.WinTask;
  * is only compatible with holonomic drive systems, subject to encoder drift, and cannot respond to
  * obstacles.
  */
-public final class PathlessStrategy extends QueuedLayer {
+public final class PathlessStrategy extends AbstractQueuedLayer {
     private static final double FIRST_RUSH_DIST = 2.1;
 
     private static final double RUSH_DIST = 2.0;

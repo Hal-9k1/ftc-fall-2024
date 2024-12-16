@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.task.Task;
 /**
  * Generates {@link GamepadInputTask}s from snapshots of the gamepad inputs.
  */
-public final class GamepadInputGenerator extends InputGenerator {
+public final class GamepadInputGenerator extends AbstractInputGenerator {
     /**
      * The gamepad connected to the first port, or null if none is connected there.
      */

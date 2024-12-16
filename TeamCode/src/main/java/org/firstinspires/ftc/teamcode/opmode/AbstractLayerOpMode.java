@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.layer.Layer;
 /**
  * Base class for opmodes that use a RobotController to execute Layers.
  */
-public abstract class LayerOpMode extends OpMode {
+public abstract class AbstractLayerOpMode extends OpMode {
     /**
      * The RobotController used to execute the layer stack.
      */
