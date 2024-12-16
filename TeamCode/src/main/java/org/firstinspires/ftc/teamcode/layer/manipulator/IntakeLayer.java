@@ -101,22 +101,22 @@ public final class IntakeLayer implements Layer {
     public void acceptTask(Task task) {
         if (task instanceof IntakeTask) {
             IntakeTask castedTask = (IntakeTask)task;
-            if (castedTask.acquire) {
+            if (castedTask.getAcquire()) {
                 state = State.INTAKING;
                 intake.setPower(-INTAKE_SPEED);
                 intakeStart = System.nanoTime();
-            } else if (castedTask.eject) {
+            } else if (castedTask.getEject()) {
                 state = State.EJECTING;
                 intake.setPower(INTAKE_SPEED);
                 ejectStart = System.nanoTime();
             }
         } else if (task instanceof IntakeTeleopTask) {
             IntakeTeleopTask castedTask = (IntakeTeleopTask)task;
-            if (castedTask.acquire) {
+            if (castedTask.getAcquire()) {
                 state = State.INTAKING;
                 intake.setPower(-INTAKE_SPEED);
                 intakeStart = System.nanoTime();
-            } else if (castedTask.timedEject) {
+            } else if (castedTask.getTimedEject()) {
                 state = State.EJECTING;
                 intake.setPower(INTAKE_SPEED);
                 ejectStart = System.nanoTime();
@@ -124,7 +124,7 @@ public final class IntakeLayer implements Layer {
                 state = State.IDLE;
                 intakeStart = 0;
                 ejectStart = 0;
-                intake.setPower(castedTask.intakePower);
+                intake.setPower(castedTask.getIntakePower());
             }
         } else {
             throw new UnsupportedTaskException(this, task);
