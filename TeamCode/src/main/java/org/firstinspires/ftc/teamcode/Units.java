@@ -31,6 +31,18 @@ public final class Units {
     }
 
     /**
+     * Converts between time units.
+     *
+     * @param value - the value in fromUnit units to convert.
+     * @param fromUnit - the unit to convert from.
+     * @param toUnit - the unit to convert to.
+     * @return the given value, converted from fromUnits to toUnits.
+     */
+    public static double convert(double value, Time fromUnit, Time toUnit) {
+        return value * toUnit.unitsPerSecond / fromUnit.unitsPerSecond;
+    }
+
+    /**
      * Represents a unit of distance measurement.
      */
     public enum Distance {
@@ -105,6 +117,37 @@ public final class Units {
          */
         Angle(double unitsPerRadian) {
             this.unitsPerRadian = unitsPerRadian;
+        }
+    }
+
+    /**
+     * Represents a unit of time.
+     */
+    public static enum Time {
+        /**
+         * Seconds.
+         */
+        SEC(1),
+        /**
+         * Nanoseconds.
+         */
+        NANO(Math.pow(10, 9)),
+        /**
+         * Milliseconds.
+         */
+        MSEC(1000);
+
+        /**
+         * The number of this unit that is equivalent to one second.
+         */
+        private final double unitsPerSecond;
+
+        /**
+         * Constructs a Time enum member.
+         * @param unitsPerSecond - the number of this unit that is equivalent to one second.
+         */
+        Time(double unitsPerSecond) {
+            this.unitsPerSecond = unitsPerSecond;
         }
     }
 }

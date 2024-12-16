@@ -120,8 +120,8 @@ public final class LiftLayer implements Layer {
         extensionLift = false;
         goalAchieved = true;
         deltaHistory = new CircularBuffer<>(DELTA_HISTORY_COUNT);
-        setupInfo.addUpdateListener((isTeardown) -> {
-            if (zeroSwitch.isPressed() && !isTeardown) {
+        setupInfo.addUpdateListener(() -> {
+            if (zeroSwitch.isPressed()) {
                 zeroDist = pulley.getDistance();
             }
         });

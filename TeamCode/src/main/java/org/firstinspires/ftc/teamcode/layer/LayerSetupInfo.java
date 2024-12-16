@@ -86,10 +86,16 @@ public class LayerSetupInfo {
     /**
      * Registers a callback to be called on every update of the owning RobotController.
      *
-     * @param listener - the callback to be called. Passed with a value of true during teardown, and
-     * false otherwise.
+     * @param listener - the callback to be called.
      */
-    public void addUpdateListener(Consumer<Boolean> listener) {
+    public void addUpdateListener(Runnable listener) {
         robotController.addUpdateListener(listener);
+    }
+    /**
+     * Registers a callback to be called after the layer stack finishes executing.
+     * @param listener - the callback to be called.
+     */
+    public void addTeardownListener(Runnable listener) {
+        robotController.addTeardownListener(listener);
     }
 }
