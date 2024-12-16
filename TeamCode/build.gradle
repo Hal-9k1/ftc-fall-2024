@@ -198,7 +198,18 @@ def registerCheckstyle(String name) {
     include '**/*.java'
     classpath = files()
     configFile = new File('config/checkstyle/checkstyle.xml')
-    getConfigProperties()['basedir'] = new File(projectDir, "src/${name}/java").getPath()
+    getConfigProperties()['basedir'] = projectDir
+    getConfigProperties()['cachefile'] = (layout.buildDirectory
+      .dir("intermediates/checkstyle/cache/${name}")
+      .get()
+      .getAsFile()
+      .getPath())
+    reports {
+      html {
+        outputLocation = (layout.buildDirectory.dir("reports/checkstyle/${name}.html")
+          .get().getAsFile())
+      }
+    }
   }
 }
 registerCheckstyle('main')

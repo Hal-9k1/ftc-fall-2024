@@ -4,5 +4,245 @@
   "https://checkstyle.org/dtds/configuration_1_3.dtd">
 <module name="Checker">
   <property name="basedir" value="${basedir}" />
+  <property name="cacheFile" value="${cachefile}" />
+  <property name="tabWidth" value="4" />
   <module name="JavadocPackage" />
+  <module name="NewlineAtEndOfFile" />
+  <module name="FileTabCharacter" />
+  <module name="TreeWalker">
+    <!-- Annotations -->
+    <module name="AnnotationLocation" />
+    <module name="AnnotationUseStyle" />
+    <module name="MissingDeprecated" />
+    <module name="MissingOverride" />
+    <!-- Blocks -->
+    <module name="EmptyBlock">
+      <property name="id" value="blocksContainCommentOrStatement" />
+      <property name="option" value="text" />
+      <property name="tokens" value="LITERAL_WHILE" />
+      <property name="tokens" value="LITERAL_TRY" />
+      <property name="tokens" value="LITERAL_CATCH" />
+      <property name="tokens" value="LITERAL_FINALLY" />
+      <property name="tokens" value="LITERAL_FOR" />
+      <property name="tokens" value="INSTANCE_INIT" />
+      <property name="tokens" value="STATIC_INIT" />
+      <property name="tokens" value="LITERAL_SWITCH" />
+      <property name="tokens" value="LITERAL_SYNCHRONIZED" />
+      <property name="tokens" value="LITERAL_CASE" />
+      <property name="tokens" value="LITERAL_DEFAULT" />
+      <property name="tokens" value="ARRAY_INIT" />
+    </module>
+    <module name="EmptyBlock">
+      <property name="id" value="blocksContainStatement" />
+      <property name="option" value="statement" />
+      <property name="tokens" value="LITERAL_DO" />
+      <property name="tokens" value="LITERAL_IF" />
+      <property name="tokens" value="LITERAL_ELSE" />
+    </module>
+    <module name="LeftCurly">
+      <property name="ignoreEnums" value="false" />
+    </module>
+    <module name="NeedBraces" />
+    <module name="RightCurly" />
+    <!-- Class design -->
+    <module name="DesignForExtension" />
+    <module name="FinalClass" />
+    <module name="HideUtilityClassConstructor" />
+    <module name="InnerTypeLast" />
+    <module name="InterfaceIsType" />
+    <module name="MutableException" />
+    <module name="OneTopLevelClass" />
+    <module name="VisibilityModifier">
+      <property name="allowPublicFinalFields" value="true" />
+    </module>
+    <!-- Coding -->
+    <module name="AvoidDoubleBraceInitialization" />
+    <module name="AvoidNoArgumentSuperConstructorCall" />
+    <module name="CovariantEquals" />
+    <module name="DeclarationOrder" />
+    <module name="DefaultComesLast" />
+    <module name="EmptyStatement" />
+    <module name="EqualsAvoidNull" />
+    <module name="EqualsHashCode" />
+    <module name="FallThrough" />
+    <module name="HiddenField">
+      <property name="ignoreConstructorParameter" value="true" />
+      <property name="ignoreSetter" value="true" />
+    </module>
+    <module name="IllegalToken" />
+    <module name="InnerAssignment" />
+    <module name="MagicNumber" />
+    <module name="MissingCtor" />
+    <module name="MissingSwitchDefault" />
+    <module name="ModifiedControlVariable" />
+    <module name="MultipleStringLiterals" />
+    <module name="MultipleVariableDeclarations" />
+    <module name="NoArrayTrailingComma" />
+    <module name="NoClone" />
+    <module name="NoEnumTrailingComma" />
+    <module name="NoFinalizer" />
+    <module name="OneStatementPerLine" />
+    <module name="OverloadMethodsDeclarationOrder" />
+    <module name="PackageDeclaration" />
+    <module name="ParameterAssignment" />
+    <module name="SimplifyBooleanExpression" />
+    <module name="SimplifyBooleanReturn" />
+    <module name="StringLiteralEquality" />
+    <module name="UnnecessarySemicolonAfterOuterTypeDeclaration" />
+    <module name="UnnecessarySemicolonAfterTypeMemberDeclaration" />
+    <module name="UnnecessarySemicolonInEnumeration" />
+    <module name="UnnecessarySemicolonInTryWithResources" />
+    <!-- Imports -->
+    <module name="AvoidStarImport" />
+    <module name="AvoidStaticImport" />
+    <module name="ImportOrder">
+      <property name="separated" value="true" />
+      <property name="groups" value="java" />
+      <property name="groups" value="/robotcore/" />
+      <property name="groups" value="org.firstinspires.ftc.teamcode" />
+    </module>
+    <module name="RedundantImport" />
+    <module name="UnusedImports" />
+    <!-- Javadocs (tag presence is checked by javadocWerror, not checkstyle) -->
+    <module name="AtclauseOrder" />
+    <module name="InvalidJavadocPosition" />
+    <module name="JavadocBlockTagLocation" />
+    <module name="JavadocContentLocation" />
+    <module name="JavadocMissingWhitespaceAfterAsterisk" />
+    <module name="JavadocParagraph" />
+    <module name="JavadocStyle" />
+    <module name="NonEmptyAtclauseDescription" />
+    <module name="RequireEmptyLineBeforeBlockTagGroup" />
+    <module name="SummaryJavadoc" />
+    <!-- Miscellaneous -->
+    <module name="ArrayTypeStyle" />
+    <module name="CommentsIndentation" />
+    <module name="Indentation">
+      <property name="forceStrictCondition" value="true" />
+    </module>
+    <module name="NoCodeInFile" />
+    <module name="OuterTypeFilename" />
+    <module name="TodoComment">
+      <property name="severity" value="info" />
+    </module>
+    <module name="UpperEll" />
+    <!-- Modifiers -->
+    <module name="ModifierOrder" />
+    <module name="RedundantModifier" />
+    <!-- Naming conventions -->
+    <module name="AbbreviationAsWordInName" />
+    <module name="AbstractClassName" />
+    <module name="CatchParameterName" />
+    <module name="ClassTypeParameterName" />
+    <module name="ConstantName" />
+    <module name="IllegalIdentifierName" />
+    <module name="InterfaceTypeParameterName" />
+    <module name="LambdaParameterName">
+        <property name="format" value="^[a-z_][a-zA-Z0-9]*$" />
+    </module>
+    <module name="LocalFinalVariableName" />
+    <module name="LocalVariableName" />
+    <module name="MemberName" />
+    <module name="MethodName" />
+    <module name="MethodTypeParameterName" />
+    <module name="PackageName" />
+    <module name="ParameterName" />
+    <module name="PatternVariableName" />
+    <module name="StaticVariableName" />
+    <module name="TypeName" />
+    <!-- Whitespace -->
+    <module name="EmptyForInitializerPad" />
+    <module name="EmptyForIteratorPad" />
+    <module name="EmptyLineSeparator">
+      <property name="allowMultipleEmptyLines" value="false" />
+      <property name="allowMultipleEmptyLinesInsideClassMembers" value="false" />
+    </module>
+    <module name="GenericWhitespace" />
+    <module name="MethodParamPad" />
+    <module name="NoLineWrap">
+      <property name="tokens" value="IMPORT" />
+    </module>
+    <module name="NoWhitespaceAfter" />
+    <module name="NoWhitespaceBefore" />
+    <!--<module name="NoWhitespaceBeforeCaseDefaultColon" />-->
+    <module name="OperatorWrap" />
+    <module name="ParenPad" />
+    <module name="SeparatorWrap">
+      <property name="id" value="wrapEndOfLineSeparators" />
+      <property name="tokens" value="COMMA" />
+      <property name="tokens" value="ELLIPSIS" />
+    </module>
+    <module name="SeparatorWrap">
+      <property name="id" value="wrapNewLineSeparators" />
+      <property name="option" value="nl" />
+      <property name="tokens" value="DOT" />
+      <property name="tokens" value="METHOD_REF" />
+    </module>
+    <module name="SingleSpaceSeparator" />
+    <module name="TypecastParenPad" />
+    <module name="WhitespaceAfter">
+      <property name="tokens" value="COMMA" />
+      <property name="tokens" value="SEMI" />
+      <property name="tokens" value="LITERAL_IF" />
+      <property name="tokens" value="LITERAL_ELSE" />
+      <property name="tokens" value="LITERAL_WHILE" />
+      <property name="tokens" value="LITERAL_DO" />
+      <property name="tokens" value="LITERAL_FOR" />
+      <property name="tokens" value="DO_WHILE" />
+    </module>
+    <module name="WhitespaceAround">
+      <!-- Omit ASSIGN because it flags on annotation parameters -->
+      <property name="tokens" value="BAND" />
+      <property name="tokens" value="BAND_ASSIGN" />
+      <property name="tokens" value="BOR" />
+      <property name="tokens" value="BOR_ASSIGN" />
+      <property name="tokens" value="BSR" />
+      <property name="tokens" value="BSR_ASSIGN" />
+      <property name="tokens" value="BXOR" />
+      <property name="tokens" value="BXOR_ASSIGN" />
+      <property name="tokens" value="COLON" />
+      <property name="tokens" value="DIV" />
+      <property name="tokens" value="DIV_ASSIGN" />
+      <property name="tokens" value="DO_WHILE" />
+      <property name="tokens" value="EQUAL" />
+      <property name="tokens" value="GE" />
+      <property name="tokens" value="GT" />
+      <property name="tokens" value="LAMBDA" />
+      <property name="tokens" value="LAND" />
+      <property name="tokens" value="LCURLY" />
+      <property name="tokens" value="LE" />
+      <property name="tokens" value="LITERAL_CATCH" />
+      <property name="tokens" value="LITERAL_DO" />
+      <property name="tokens" value="LITERAL_ELSE" />
+      <property name="tokens" value="LITERAL_FINALLY" />
+      <property name="tokens" value="LITERAL_FOR" />
+      <property name="tokens" value="LITERAL_IF" />
+      <property name="tokens" value="LITERAL_RETURN" />
+      <property name="tokens" value="LITERAL_SWITCH" />
+      <property name="tokens" value="LITERAL_SYNCHRONIZED" />
+      <property name="tokens" value="LITERAL_TRY" />
+      <property name="tokens" value="LITERAL_WHILE" />
+      <property name="tokens" value="LOR" />
+      <property name="tokens" value="LT" />
+      <property name="tokens" value="MINUS" />
+      <property name="tokens" value="MINUS_ASSIGN" />
+      <property name="tokens" value="MOD" />
+      <property name="tokens" value="MOD_ASSIGN" />
+      <property name="tokens" value="NOT_EQUAL" />
+      <property name="tokens" value="PLUS" />
+      <property name="tokens" value="PLUS_ASSIGN" />
+      <property name="tokens" value="QUESTION" />
+      <property name="tokens" value="RCURLY" />
+      <property name="tokens" value="SL" />
+      <property name="tokens" value="SLIST" />
+      <property name="tokens" value="SL_ASSIGN" />
+      <property name="tokens" value="SR" />
+      <property name="tokens" value="SR_ASSIGN" />
+      <property name="tokens" value="STAR" />
+      <property name="tokens" value="STAR_ASSIGN" />
+      <property name="tokens" value="LITERAL_ASSERT" />
+      <property name="tokens" value="TYPE_EXTENSION_AND" />
+    </module>
+  </module>
 </module>
+
