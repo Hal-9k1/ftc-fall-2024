@@ -108,6 +108,9 @@ public final class TestMotorOpMode extends LinearOpMode {
      */
     private boolean didResetEncReads = false;
 
+    /**
+     * Constructs a TestMotorOpMode.
+     */
     public TestMotorOpMode() { }
 
     @Override

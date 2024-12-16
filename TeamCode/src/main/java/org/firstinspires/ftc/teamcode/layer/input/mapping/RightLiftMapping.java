@@ -11,6 +11,9 @@ import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
  * Mapping for gamepad input that uses the right bumper and trigger to control a lift.
  */
 public final class RightLiftMapping extends AbstractFunctionLayer {
+    /**
+     * Constructs a RightLiftMapping.
+     */
     public RightLiftMapping() { }
 
     @Override

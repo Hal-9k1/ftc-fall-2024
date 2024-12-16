@@ -16,6 +16,9 @@ import org.firstinspires.ftc.teamcode.layer.input.mapping.JoystickHoloDriveMappi
  */
 @TeleOp(name="Drive")
 public final class DriveTeleop extends AbstractLayerOpMode {
+    /**
+     * Constructs a DriveTeleop opmode.
+     */
     public DriveTeleop() { }
 
     @Override

@@ -12,6 +12,9 @@ import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
  * joystick for movement and turning, leaving the other joystick free.
  */
 public final class ZeldaDriveMapping extends AbstractFunctionLayer {
+    /**
+     * Constructs a ZeldaDriveMapipng.
+     */
     public ZeldaDriveMapping() { }
 
     @Override

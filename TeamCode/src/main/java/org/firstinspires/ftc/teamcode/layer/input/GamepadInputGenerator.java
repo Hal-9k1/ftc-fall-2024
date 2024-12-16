@@ -23,6 +23,9 @@ public final class GamepadInputGenerator extends AbstractInputGenerator {
      */
     private Gamepad gamepad1;
 
+    /**
+     * Constructs a GamepadInputGenerator.
+     */
     public GamepadInputGenerator() { }
 
     @Override

@@ -90,6 +90,9 @@ public final class TwoWheelDrive implements Layer {
      */
     private boolean currentTaskDone;
 
+    /**
+     * Constructs a TwoWheelDrive layer.
+     */
     public TwoWheelDrive() { }
 
     @Override

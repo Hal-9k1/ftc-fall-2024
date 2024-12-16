@@ -106,6 +106,9 @@ public final class LiftLayer implements Layer {
      */
     private CircularBuffer<Double> deltaHistory;
 
+    /**
+     * Constructs a LiftLayer.
+     */
     public LiftLayer() { }
 
     @Override

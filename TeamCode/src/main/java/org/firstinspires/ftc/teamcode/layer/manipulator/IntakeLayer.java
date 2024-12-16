@@ -71,6 +71,9 @@ public final class IntakeLayer implements Layer {
      */
     private long ejectStart;
 
+    /**
+     * Constructs an IntakeLayer.
+     */
     public IntakeLayer() { }
 
     @Override

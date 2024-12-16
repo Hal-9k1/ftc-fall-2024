@@ -7,7 +7,14 @@ import org.firstinspires.ftc.teamcode.task.Task;
 import org.firstinspires.ftc.teamcode.task.TowerTeleopTask;
 import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
 
+/**
+ * Controls the tower swing using the up and down dpad buttons.
+ * Up swings the tower upwards (away from front of robot).
+ */
 public final class DpadTowerMapping extends AbstractFunctionLayer {
+    /**
+     * Constructs a DpadTowerMapping.
+     */
     public DpadTowerMapping() { }
 
     @Override

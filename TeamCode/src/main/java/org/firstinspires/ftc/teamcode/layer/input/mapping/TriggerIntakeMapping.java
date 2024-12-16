@@ -12,6 +12,9 @@ import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
  * the intake.
  */
 public final class TriggerIntakeMapping extends AbstractFunctionLayer {
+    /**
+     * Constructs a TriggerIntakeMapping.
+     */
     public TriggerIntakeMapping() { }
 
     @Override

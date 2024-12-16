@@ -12,6 +12,9 @@ import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
  * control power to the corresponding side of the robot.
  */
 public final class TankDriveMapping extends AbstractFunctionLayer {
+    /**
+     * Constructs a TankDriveMapping.
+     */
     public TankDriveMapping() { }
 
     @Override

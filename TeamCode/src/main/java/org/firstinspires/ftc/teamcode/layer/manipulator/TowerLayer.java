@@ -139,6 +139,9 @@ public final class TowerLayer implements Layer {
      */
     private CircularBuffer<Double> deltaHistory;
 
+    /**
+     * Constructs a TowerLayer.
+     */
     public TowerLayer() { }
 
     @Override

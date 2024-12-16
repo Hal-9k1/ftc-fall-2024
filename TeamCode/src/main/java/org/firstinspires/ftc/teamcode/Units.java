@@ -4,6 +4,9 @@ package org.firstinspires.ftc.teamcode;
  * Utility class for performing unit conversions.
  */
 public final class Units {
+    /**
+     * Units is a utility class with only static methods; it should not be instantinated.
+     */
     private Units() { }
 
     /**

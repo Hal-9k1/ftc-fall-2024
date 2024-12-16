@@ -13,8 +13,15 @@ import org.firstinspires.ftc.teamcode.layer.input.mapping.DpadTowerMapping;
 import org.firstinspires.ftc.teamcode.layer.input.mapping.JoystickHoloDriveMapping;
 import org.firstinspires.ftc.teamcode.layer.manipulator.TowerLayer;
 
+/**
+ * Teleop opmode that drives the robot and controls a tower.
+ * See {@link TowerLayer} for what a "tower" is.
+ */
 @TeleOp(name="Drive Tower")
 public final class DriveTowerTeleop extends AbstractLayerOpMode {
+    /**
+     * Constructs a DriveTowerTeleop opmode.
+     */
     public DriveTowerTeleop() { }
 
     @Override

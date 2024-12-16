@@ -89,6 +89,9 @@ public final class MecanumDrive implements Layer {
      */
     private boolean currentTaskDone;
 
+    /**
+     * Constructs a MecanumDrive layer.
+     */
     public MecanumDrive() { }
 
     @Override

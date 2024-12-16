@@ -12,6 +12,9 @@ import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
  * the robot) and the x axis of the right joystick to turn a robot using holonomic drive.
  */
 public final class JoystickHoloDriveMapping extends AbstractFunctionLayer {
+    /**
+     * Constructs a JoystickHoloDriveMapping.
+     */
     public JoystickHoloDriveMapping() { }
 
     @Override
