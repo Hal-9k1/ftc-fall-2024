@@ -7,7 +7,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.ArrayList;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.firstinspires.ftc.teamcode.layer.Layer;
@@ -121,10 +120,13 @@ public class RobotController {
     private static final int MAX_UNCONSUMED_REPORT_TASKS = 4;
 
     /**
-     * Listeners to fire at the start of each {@link #update} as well as after the stack has
-     * finished executing.
+     * Listeners to fire at the start of each {@link #update}.
      */
-    private ArrayList<Consumer<Boolean>> updateListeners;
+    private ArrayList<Runnable> updateListeners;
+    /**
+     * Listeners to fire during the first {@link #update} the layer stack finishes executing.
+     */
+    private ArrayList<Runnable> teardownListeners;
     /**
      * The current stack of layers and some metadata needed to execute them.
      */
@@ -163,8 +165,8 @@ public class RobotController {
      */
     public boolean update() {
         // Call all update listeners
-        for (Consumer<Boolean> listener : updateListeners) {
-            listener.accept(false);
+        for (Runnable listener : updateListeners) {
+            listener.run();
         }
 
         // Do work on layers
@@ -180,8 +182,8 @@ public class RobotController {
             }
             if (!layerIter.hasNext()) {
                 // No tasks left in any layer, inform all listeners of completion
-                for (Consumer<Boolean> listener : updateListeners) {
-                    listener.accept(true);
+                for (Runnable listener : teardownListeners) {
+                    listener.run();
                 }
                 updateListeners.clear();
                 layers = null;
@@ -224,12 +226,20 @@ public class RobotController {
     /**
      * Registers a function to be called on every update.
      * Registers a function to be called on every update of the controller before layer work is
-     * performed. Listeners are executed in registration order and called with a single positional
-     * argument of true. On the first update after the topmost layer runs out of tasks, the
-     * listeners are called again with an argument of false, then unregistered.
+     * performed. Listeners are executed in registration order. After teardown,
+     * listeners are unregistered.
      * @param listener the function to be registered as an update listener
      */
-    public void addUpdateListener(Consumer<Boolean> listener) {
+    public void addUpdateListener(Runnable listener) {
         updateListeners.add(listener);
+    }
+    /**
+     * Registers a function to be called when the layer stack finishes executing.
+     * On the first update after the topmost layer runs out of tasks, the
+     * listeners are called in registration order, then unregistered.
+     * @param listener the function to be registered as an update listener
+     */
+    public void addTeardownListener(Runnable listener) {
+        teardownListeners.add(listener);
     }
 }
