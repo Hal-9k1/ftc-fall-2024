@@ -1,0 +1,32 @@
+#!/bin/sh
+stash=`git stash create`
+head=`git name-rev --name-only HEAD`
+zero=`git hash-object --stdin </dev/null | tr '[0-9a-f]' '0'`
+git reset --hard --quiet
+
+while read lref _ _ robj
+do
+  git checkout --quiet $lref --
+  echo Testing $lref...
+  if test $robj = $zero
+  then
+    robj=`git hash-object -t tree /dev/null`
+  fi
+  git diff-index --check --cached $robj -- || {
+    echo Branch $lref failed diff-index --check. >&2
+    exit 1
+  }
+  ./gradlew build || {
+    echo Branch $lref failed to build. >&2
+    exit 1
+  }
+done
+
+git checkout --quiet $head --
+if test $stash
+then
+  git stash apply --index --quiet $stash
+fi
+echo Pre-push checks done.
+
+exit 0
