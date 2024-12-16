@@ -52,12 +52,15 @@ public class TowerLayer implements Layer {
      */
     private static final double TOWER_I_COEFF = 0.05;
     /**
-     * TODO: add description
+     * Fully raised angle for the tower, current placeholder rev is 0.25, need to test and change later.
+     */
+    private static final double FULL_RAISE_ANGLE = Units.convert(0.25, Units.Angle.REV, Units.Angle.RAD);
+    /**
+     * Check to see if tower and forearm has moved to the initialized location.
      */
     private boolean isInit;
     /**
-     * Assumed to be the same as goalAchieved but for TowerTask
-     * TODO: need confirmation on if this is right.
+     * Check if tower is currently swinging.
      */
     private boolean isSwinging;
     /**
@@ -73,19 +76,13 @@ public class TowerLayer implements Layer {
      */
     private double towerStartPos;
     /**
-     * TODO: add description
+     * The angle the tower needs to reach, using towerZero as reference.
      */
     private double towerGoalAngle;
     /**
-     * TODO: add description
+     * Timestamp for when the claw last began moving.
      */
     private long clawStartTime;
-    /**
-     * Whether the lift was last set to raise.
-     * This is used for raiseTower and lowerTower.
-     * True if fullRaise, false if fullLower.
-     */
-    private boolean raisingTower;
     /**
      * The recent history of goal deltas.
      */
@@ -133,9 +130,9 @@ public class TowerLayer implements Layer {
             TowerTask castedTowerTask = (TowerTask)task;
             isSwinging = true;
             if (castedTowerTask.fullRaise) {
-                raisingTower = true;
+                towerGoalAngle = FULL_RAISE_ANGLE;
             } else if (castedTowerTask.fullLower) {
-                raisingTower = false;
+                towerGoalAngle = towerZero;
             }
 
         } else if (task instanceof TowerTeleopTask) {
