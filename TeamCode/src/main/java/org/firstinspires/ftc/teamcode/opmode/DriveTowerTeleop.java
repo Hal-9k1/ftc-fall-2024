@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.layer.input.mapping.DpadTowerMapping;
 import org.firstinspires.ftc.teamcode.layer.manipulator.TowerLayer;
 
 @TeleOp(name="Drive Tower")
-public class DriveTowerTeleop extends LayerOpMode {
+public class DriveTowerTeleop extends AbstractLayerOpMode {
     @Override
     protected List<Layer> getLayers() {
         return Arrays.asList(
