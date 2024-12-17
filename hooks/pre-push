@@ -6,6 +6,10 @@ git reset --hard --quiet
 
 while read lref _ _ robj
 do
+  if test $lref = '(deleted)'
+  then
+    continue
+  fi
   git checkout --quiet $lref --
   echo Testing $lref...
   if test $robj = $zero
