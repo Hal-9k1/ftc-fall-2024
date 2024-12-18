@@ -57,14 +57,14 @@ public final class MultiplexLayer implements Layer {
 
     @Override
     public void acceptTask(Task task) {
-        boolean anyAccepted = layers.stream().anyMatch((layer) -> {
+        boolean anyAccepted = layers.stream().map((layer) -> {
             try {
                 layer.acceptTask(task);
             } catch (UnsupportedTaskException e) {
                 return false;
             }
             return true;
-        });
+        }).reduce(false, (a, b) -> a || b); // Prevent short circuiting
         if (!anyAccepted) {
             // Should list component layers, not say MultiplexLayer
             throw new UnsupportedTaskException(this, task);
