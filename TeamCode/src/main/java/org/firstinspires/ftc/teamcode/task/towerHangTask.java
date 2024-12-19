@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.task;
 /**
  * Hang and hold or release the tower forearm.
  */
-public class towerHangTask implements Task{
+public class TowerHangTask implements Task{
     /**
      * When true, hangs and holds the forearm.
      */
@@ -15,11 +15,11 @@ public class towerHangTask implements Task{
     private final boolean unhang;
 
     /**
-     * Constructs a towerHangTask.
+     * Constructs a TowerHangTask.
      * @param hang - Whether the forearm should be clamped and held still.
      * @param unhang - Whether the forearm should be released.
      */
-    public towerHangTask(boolean hang, boolean unhang) {
+    public TowerHangTask(boolean hang, boolean unhang) {
 
         this.hang = hang;
         this.unhang = unhang;
