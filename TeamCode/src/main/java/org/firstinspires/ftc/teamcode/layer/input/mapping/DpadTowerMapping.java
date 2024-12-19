@@ -4,6 +4,7 @@ import org.firstinspires.ftc.teamcode.layer.AbstractFunctionLayer;
 import org.firstinspires.ftc.teamcode.layer.LayerSetupInfo;
 import org.firstinspires.ftc.teamcode.task.GamepadInputTask;
 import org.firstinspires.ftc.teamcode.task.Task;
+import org.firstinspires.ftc.teamcode.task.TowerForearmTask;
 import org.firstinspires.ftc.teamcode.task.TowerTeleopTask;
 import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
 
@@ -26,6 +27,8 @@ public final class DpadTowerMapping extends AbstractFunctionLayer {
             GamepadInputTask castedTask = (GamepadInputTask)task;
             return new TowerTeleopTask((castedTask.gamepad0.dpad.up ? 1 : 0)
                 - (castedTask.gamepad0.dpad.down ? 1 : 0));
+        } else if (task instanceof TowerForearmTask) {
+            return task;
         } else {
             throw new UnsupportedTaskException(this, task);
         }

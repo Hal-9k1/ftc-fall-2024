@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.layer.Layer;
 import org.firstinspires.ftc.teamcode.layer.MultiplexLayer;
+import org.firstinspires.ftc.teamcode.layer.TopLayerSequence;
 import org.firstinspires.ftc.teamcode.layer.drive.MecanumDrive;
 import org.firstinspires.ftc.teamcode.layer.input.GamepadInputGenerator;
 import org.firstinspires.ftc.teamcode.layer.input.mapping.DpadTowerMapping;
@@ -39,7 +40,10 @@ public final class TowerIntakeTeleop extends AbstractLayerOpMode {
                 new DpadTowerMapping(),
                 new TriggerIntakeMapping()
             )),
-            new GamepadInputGenerator()
+            new TopLayerSequence(Arrays.asList(
+                new TowerLayer.InitLayer(),
+                new GamepadInputGenerator()
+            ))
         );
     }
 }

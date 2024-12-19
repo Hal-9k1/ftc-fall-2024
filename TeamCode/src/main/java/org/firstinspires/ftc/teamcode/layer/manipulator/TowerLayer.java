@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.layer.manipulator;
 
+import java.util.Collections;
 import java.util.Iterator;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -239,5 +240,27 @@ public final class TowerLayer implements Layer {
         double startAngle = towerStartPos / tower.getMotorType().getTicksPerRev();
         double goalDeltaAngle = towerGoalAngle - startAngle;
         return checkDelta(deltaAngle, goalDeltaAngle);
+    }
+
+    public final static class InitLayer implements Layer {
+        public InitLayer() { }
+
+        @Override
+        public void setup(LayerSetupInfo setupInfo) { }
+
+        @Override
+        public boolean isTaskDone() {
+            return false;
+        }
+
+        @Override
+        public Iterator<Task> update(Iterable<Task> completed) {
+            return Collections.singleton((Task)new TowerForearmTask()).iterator();
+        }
+
+        @Override
+        public void acceptTask(Task task) {
+            throw new UnsupportedTaskException(this, task);
+        }
     }
 }
