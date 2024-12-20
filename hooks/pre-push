@@ -14,7 +14,11 @@ do
   echo Testing $lref...
   if test $robj = $zero
   then
-    robj=`git hash-object -t tree /dev/null`
+    robj=`git ls-remote $1 HEAD | head -1 | cut -f1`
+    if test -z $robj
+    then
+      robj=`git hash-object -t tree /dev/null`
+    fi
   fi
   git diff-index --check --cached $robj -- || {
     echo Branch $lref failed diff-index --check. >&2
