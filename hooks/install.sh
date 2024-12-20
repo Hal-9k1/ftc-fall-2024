@@ -1,3 +1,4 @@
+#!/bin/sh
 if test -d hooks
 then
   cd hooks
