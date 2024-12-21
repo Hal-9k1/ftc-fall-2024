@@ -4,7 +4,7 @@ import org.firstinspires.ftc.teamcode.layer.AbstractFunctionLayer;
 import org.firstinspires.ftc.teamcode.layer.LayerSetupInfo;
 import org.firstinspires.ftc.teamcode.task.GamepadInputTask;
 import org.firstinspires.ftc.teamcode.task.Task;
-import org.firstinspires.ftc.teamcode.task.TowerHangTask;  // Either change this for TowerHangTeleopTask or change TowerHangTask to work with teleop.
+import org.firstinspires.ftc.teamcode.task.TowerHangTask;
 import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
 
 /**
@@ -23,10 +23,11 @@ public final class TowerHangMapping extends AbstractFunctionLayer {
     public Task map(Task task) {
         if (task instanceof GamepadInputTask) {
             GamepadInputTask castedTask = (GamepadInputTask) task;
+            // Not sure if this will be automatically set to false if another button is pressed. May need to check.
             boolean hang = castedTask.gamepad0.buttons.y;
             boolean unhang = castedTask.gamepad0.buttons.a;
-            // Below bit is wrong so it will throw an exception if compiled. Need to fix later.
-            return new TowerHangTask((hang ? 1 : 0) - (unhang ? 1 : 0));
+
+            return new TowerHangTask(hang, unhang);
         } else {
             throw new UnsupportedTaskException(this, task);
         }
