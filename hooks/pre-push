@@ -1,42 +1,79 @@
 #!/bin/sh
+set -x
+echo Starting pre-push checks...
+# Save index, working tree, and current branch (if we are on one) so we can check it out again
+# later. We have to use name-rev to get a ref name if possible because checkout will leave us
+# detached if we give a commit id, even if that id is pointed to by a ref.
 stash=`git stash create`
 head=`git name-rev --name-only HEAD`
-zero=`git hash-object --stdin </dev/null | tr '[0-9a-f]' '0'`
-git reset --hard --quiet
 
+on_exit ()
+{
+  # Checkout the branch or commit that was checked out before
+  git checkout --quiet $head --
+  # Restore the index and working tree from before
+  if test $stash
+  then
+    git stash apply --index --quiet $stash
+  fi
+}
+trap on_exit EXIT
+
+# Get the hash of a null tree
+null=`git hash-object -t tree /dev/null`
+# Get an appropriate length zero hash
+zero=`echo $null | tr '[0-9a-f]' '0'`
+# Reset index and working tree so checkout doesn't complain
+git reset --hard --quiet
+# Make sure our local repo is aware of all possible robjs in case we use them for diff-index. Has
+# the side effect of printing ls-remote, so to save a network call we also grab the remote HEAD from
+# here (used as a fallback robj)
+echo Fetching objects from \"$2\"...
+git fetch-pack --all --no-progress $2
+rhead=`git fetch-pack --all --no-progress $2 2>&1 | grep -m1 ' HEAD' | cut -f1 -d' '`
+echo null=$null
+echo rhead=$rhead
+
+# lref = local ref being pushed, lobj = object pointed to by lref
+# rref = remote ref being pushed to, robj = object pointed to by robj
 while read lref _ _ robj
 do
   if test $lref = '(deleted)'
   then
+    # Nothing to check for deleted refs
     continue
   fi
+  # Check out the local ref, making sure to treat it as a ref and not a file name
   git checkout --quiet $lref --
   echo Testing $lref...
+  # We want to use robj to run the diff-index check against, but if rref doesn't exist (like when
+  # pushing a new branch) then it'll be invalid
   if test $robj = $zero
   then
-    robj=`git ls-remote $1 HEAD | head -1 | cut -f1`
-    if test -z $robj
-    then
-      robj=`git hash-object -t tree /dev/null`
-    fi
+    # Try to check against the remote head, but if one isn't set just check against the null tree
+    # (so check all files with diff-index)
+    robj=${rhead:-$null}
   fi
+  echo Chose robj=$robj
+  echo null=$null
+  echo rhead=$rhead
+  # Check for whitespace errors and merge conflict markers
   git diff-index --check --cached $robj -- || {
     echo Branch $lref failed diff-index --check. >&2
     git checkout --quiet $head --
     exit 1
   }
+  echo Passed diff-index --check.
+  # Assemble and run all Gradle checks
   ./gradlew build || {
     echo Branch $lref failed to build. >&2
     git checkout --quiet $head --
     exit 1
   }
+  echo Successfully ran Gradle build.
 done
 
-git checkout --quiet $head --
-if test $stash
-then
-  git stash apply --index --quiet $stash
-fi
 echo Pre-push checks done.
 
+exit 1
 exit 0
