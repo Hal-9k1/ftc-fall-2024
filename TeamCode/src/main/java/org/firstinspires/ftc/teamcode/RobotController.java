@@ -140,7 +140,12 @@ public class RobotController {
                 );
             }
             while (tasks.hasNext() && layer.isTaskDone()) {
-                layer.acceptTask(tasks.next());
+                Task task = tasks.next();
+                if (task == null) {
+                    throw new NullPointerException("Layer '" + oldLayer.getName()
+                        + "' returned null as a subtask.");
+                }
+                layer.acceptTask(task);
             }
             if (tasks.hasNext()) {
                 String errMsg = "Layer '" + layer.getName() + "' did not consume all"

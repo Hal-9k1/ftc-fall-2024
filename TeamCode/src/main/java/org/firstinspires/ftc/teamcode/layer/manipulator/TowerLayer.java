@@ -5,6 +5,7 @@ import java.util.Iterator;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 import org.firstinspires.ftc.teamcode.CircularBuffer;
 import org.firstinspires.ftc.teamcode.Units;
@@ -134,6 +135,8 @@ public final class TowerLayer implements Layer {
      * Timestamp for when the claw last began moving.
      */
     private long clawStartTime;
+    private Telemetry telemetry;
+
 
     /**
      * The recent history of tower goal deltas, used to control PID.
@@ -147,6 +150,7 @@ public final class TowerLayer implements Layer {
 
     @Override
     public void setup(LayerSetupInfo setupInfo) {
+        telemetry = setupInfo.getTelemetry();
         isInit = false;
         tower = setupInfo.getHardwareMap().get(DcMotor.class, "tower_swing");
         tower.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -199,6 +203,7 @@ public final class TowerLayer implements Layer {
             boolean isUnsafe = getForearmAngle() > FOREARM_MAX_SAFE_ANGLE
                 && castedTask.getTowerSwingPower() > 1;
             tower.setPower(isUnsafe ? 0 : castedTask.getTowerSwingPower());
+            telemetry.addData("tower", castedTask.getTowerSwingPower());
         } else {
             throw new UnsupportedTaskException(this, task);
         }

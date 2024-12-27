@@ -71,6 +71,7 @@ public final class IntakeLayer implements Layer {
      * The nanosecond timestamp of the start of the last eject action.
      */
     private long ejectStart;
+    private Telemetry telemetry;
 
     /**
      * Telemetry.
@@ -87,6 +88,7 @@ public final class IntakeLayer implements Layer {
         intake = setupInfo.getHardwareMap().get(CRServo.class, "intake");
         state = State.IDLE;
         //TouchSensor loadSensor = setupInfo.getHardwareMap().get(TouchSensor.class, "intake_load_sensor");
+        telemetry = setupInfo.getTelemetry();
         setupInfo.addUpdateListener(() -> {
             //boolean intakeDone = state == State.INTAKING && loadSensor.isPressed();
             boolean intakeDone = state == State.INTAKING && (System.nanoTime() - intakeStart) > INTAKE_DURATION;

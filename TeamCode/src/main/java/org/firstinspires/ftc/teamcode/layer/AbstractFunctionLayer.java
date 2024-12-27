@@ -35,6 +35,10 @@ public abstract class AbstractFunctionLayer implements Layer {
 
     @Override
     public final Iterator<Task> update(Iterable<Task> completed) {
+        if (emittedSubtask) {
+            throw new IllegalStateException("FunctionLayer " + getClass().getName()
+                + " updated without new subtask.");
+        }
         emittedSubtask = true;
         return Collections.singleton(subtask).iterator();
     }
@@ -42,6 +46,10 @@ public abstract class AbstractFunctionLayer implements Layer {
     @Override
     public final void acceptTask(Task task) {
         subtask = map(task);
+        if (subtask == null) {
+            throw new NullPointerException("FunctionLayer " + getClass().getName()
+                + " returned null from mapping function.");
+        }
         emittedSubtask = false;
     }
 
