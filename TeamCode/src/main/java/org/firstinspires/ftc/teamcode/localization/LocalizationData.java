@@ -1,30 +1,13 @@
 package org.firstinspires.ftc.teamcode.localization;
 
-public final class LocalizationData {
-    private Mat3 transform;
-    private double accuracy;
-    private double positionPrecision;
-    private double rotationPrecision;
+public interface LocalizationData {
+    double getPositionProbability(Vec2 pos);
 
-    public LocalizationData(
-        Mat3 transform,
-        double accuracy,
-        double positionPrecision,
-        double rotationPrecision
-    ) {
-        this.transform = transform;
-        this.accuracy = accuracy;
-        this.positionPrecision = positionPrecision;
-        this.rotationPrecision = rotationPrecision;
-    }
+    Vec2 getPositionProbabilityGradient(Vec2 pos, List<Double> ignoreRoots);
 
-    public Mat3 getTransform() {
-        return transform;
-    }
+    double getRotationProbability(double rot);
 
-    public double getAccuracy() {
-        return accuracy;
-    }
+    double getRotationProbabilityDerivative(double rot, List<Double> ignoreRoots);
 
     public double getPositionPrecision() {
         return positionPrecision;
