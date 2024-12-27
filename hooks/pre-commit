@@ -1,0 +1,3 @@
+#!/bin/sh
+# Checks for whitespace "errors" (trailing line whitespace, usually) and merge conflict markers
+exec git diff-index --check --cached HEAD --
