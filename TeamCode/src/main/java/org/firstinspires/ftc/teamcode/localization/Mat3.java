@@ -5,13 +5,13 @@ public final class Mat3 {
 
     public Mat3(
         double m00, double m10, double m20,
-        double m01, double m11, double m12,
-        double m20, double m21, double m22
+        double m01, double m11, double m21,
+        double m02, double m12, double m22
     ) {
-        mat = new double[]{ m00, m10, m20, m01, m11, m12, m20, m21, m22 };
+        mat = new double[]{ m00, m10, m20, m01, m11, m21, m02, m12, m22 };
     }
 
-    public Mat3 mul(Mat2 other) {
+    public Mat3 mul(Mat3 other) {
         return new Mat3(
             row(0).dot(other.col(0)),
             row(0).dot(other.col(1)),
@@ -62,12 +62,12 @@ public final class Mat3 {
 
     public Vec3 col(int num) {
         checkDim(num, true);
-        return Vec3(mat[num], mat[num + 3], mat[num + 6]);
+        return new Vec3(mat[num], mat[num + 3], mat[num + 6]);
     }
 
     public Vec3 row(int num) {
         checkDim(num, false);
-        return Vec3(mat[num * 3], mat[num * 3 + 1], mat[num * 3 + 2]);
+        return new Vec3(mat[num * 3], mat[num * 3 + 1], mat[num * 3 + 2]);
     }
 
     public Mat3 transpose() {
@@ -107,9 +107,19 @@ public final class Mat3 {
         );
     }
 
+    public Vec2 getTranslation() {
+        return new Vec2(mat[2], mat[5]);
+    }
+
+    public double getRotation() {
+        // TODO: implement
+        return 0;
+    }
+
     private void checkDim(int num, boolean col) {
         if (num < 0 || num > 2) {
-            throw new IllegalArgumentException("Bad " + col ? "column" : "row" + " number " + num);
+            throw new IllegalArgumentException("Bad " + (col ? "column" : "row") + " number "
+                + num);
         }
     }
 }

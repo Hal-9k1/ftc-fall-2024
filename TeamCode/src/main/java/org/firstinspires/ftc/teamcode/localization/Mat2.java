@@ -51,9 +51,9 @@ public final class Mat2 {
     }
 
     public Vec2 col(int num) {
-        if (col == 0) {
+        if (num == 0) {
             return new Vec2(mat[0], mat[2]);
-        } else if (col == 1) {
+        } else if (num == 1) {
             return new Vec2(mat[1], mat[3]);
         } else {
             throw new IllegalArgumentException("Bad column number " + num);
@@ -61,9 +61,9 @@ public final class Mat2 {
     }
 
     public Vec2 row(int num) {
-        if (row == 0) {
+        if (num == 0) {
             return new Vec2(mat[0], mat[1]);
-        } else if (row == 1) {
+        } else if (num == 1) {
             return new Vec2(mat[2], mat[3]);
         } else {
             throw new IllegalArgumentException("Bad row number " + num);

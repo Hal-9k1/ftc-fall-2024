@@ -1,19 +1,25 @@
 package org.firstinspires.ftc.teamcode.localization;
 
+import java.util.List;
+
 public interface LocalizationData {
     double getPositionProbability(Vec2 pos);
 
-    Vec2 getPositionProbabilityGradient(Vec2 pos, List<Double> ignoreRoots);
+    double getPositionProbabilityDx(Vec2 pos, List<Vec2> ignoreRoots);
+
+    double getPositionProbabilityDy(Vec2 pos, List<Vec2> ignoreRoots);
+
+    Vec2 getPositionProbabilityDxGradient(Vec2 pos, List<Vec2> ignoreRoots);
+
+    Vec2 getPositionProbabilityDyGradient(Vec2 pos, List<Vec2> ignoreRoots);
 
     double getRotationProbability(double rot);
 
-    double getRotationProbabilityDerivative(double rot, List<Double> ignoreRoots);
+    double getRotationProbabilityDx(double rot, List<Double> ignoreRoots);
 
-    public double getPositionPrecision() {
-        return positionPrecision;
-    }
+    double getRotationProbabilityDx2(double rot, List<Double> ignoreRoots);
 
-    public double getRotationPrecision() {
-        return rotationPrecision;
-    }
+    public double getPositionPrecision();
+
+    public double getRotationPrecision();
 }
