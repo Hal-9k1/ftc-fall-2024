@@ -1,14 +1,15 @@
 package org.firstinspires.ftc.teamcode.layer;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Spliterators;
 import java.util.stream.StreamSupport;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
 import org.firstinspires.ftc.teamcode.task.Task;
 import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 /**
  * Acts on behalf on multiple component layers to handle multiple unrelated kinds of tasks from the
@@ -21,6 +22,9 @@ public final class MultiplexLayer implements Layer {
      */
     private final List<Layer> layers;
 
+    /**
+     * The telemetry used to report debugging info.
+     */
     private Telemetry telemetry;
 
     /**
@@ -45,19 +49,31 @@ public final class MultiplexLayer implements Layer {
         // Concatenates results of component layer update methods into a single stream, then creates
         // an iterator from the stream
         return layers.stream().flatMap(layer -> {
+            // TODO: revert this after debugging; stuffing the ttasks into an ArrayList defeats the
+            // purpose of returning an iterator
             Iterator<Task> tasks = layer.update(completed);
             if (tasks == null) {
-                throw new NullPointerException("Tasks from layer " + layer.getClass().getName() + " is null.");
+                throw new NullPointerException(
+                    String.format(
+                        "Tasks from layer '%s' is null.",
+                        layer.getClass().getName()
+                    )
+                );
             }
             List<Task> taskList = new ArrayList<>();
             tasks.forEachRemaining(taskList::add);
             if (taskList.contains(null)) {
-                throw new NullPointerException("Tasks from layer " + layer.getClass().getName() + " contains null.");
+                throw new NullPointerException(
+                    String.format(
+                        "Tasks from layer '%s' contains null.",
+                        layer.getClass().getName()
+                    )
+                );
             }
 
             return StreamSupport.stream(
                 Spliterators.spliteratorUnknownSize(
-                    taskList.iterator(),//layer.update(completed),
+                    taskList.iterator(), // layer.update(completed),
                     0
                 ),
                 false

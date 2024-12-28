@@ -2,9 +2,9 @@ package org.firstinspires.ftc.teamcode.layer;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 import org.firstinspires.ftc.teamcode.RobotController;
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 /**
  * Contains the information needed to initialize a layer.
@@ -32,17 +32,21 @@ public class LayerSetupInfo {
      */
     private final Gamepad gamepad1;
 
+    /**
+     * Telemetry.
+     */
     private final Telemetry telemetry;
 
     /**
      * Creates a LayerSetupInfo.
      *
-     * @param hardwareMap the source of peripheral interfaces the layer may use to communicate with
+     * @param hardwareMap - the source of peripheral interfaces the layer may use to communicate with
      * hardware.
-     * @param robotController the RobotController that will run the layer.
-     * @param gamepad0 the Gamepad connected to the first slot, or null if no such gamepad is
+     * @param robotController - the RobotController that will run the layer.
+     * @param telemetry - Telemetry used to report debugging info.
+     * @param gamepad0 - the Gamepad connected to the first slot, or null if no such gamepad is
      * available or connected.
-     * @param gamepad1 the Gamepad connected to the second slot, or null if no such gamepad is
+     * @param gamepad1 - the Gamepad connected to the second slot, or null if no such gamepad is
      * available or connected.
      */
     public LayerSetupInfo(HardwareMap hardwareMap, RobotController robotController,
@@ -67,6 +71,7 @@ public class LayerSetupInfo {
 
     /**
      * Gets the Telemetry.
+     *
      * @return the Telemetry.
      */
     public Telemetry getTelemetry() {

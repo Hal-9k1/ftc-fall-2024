@@ -135,8 +135,11 @@ public final class TowerLayer implements Layer {
      * Timestamp for when the claw last began moving.
      */
     private long clawStartTime;
-    private Telemetry telemetry;
 
+    /**
+     * Telemetry.
+     */
+    private Telemetry telemetry;
 
     /**
      * The recent history of tower goal deltas, used to control PID.
@@ -247,7 +250,13 @@ public final class TowerLayer implements Layer {
         return checkDelta(deltaAngle, goalDeltaAngle);
     }
 
-    public final static class InitLayer implements Layer {
+    /**
+     * A top-level layer that emits a TowerForearmTask, needed to prepare the tower for operation.
+     */
+    public static final class InitLayer implements Layer {
+        /**
+         * Constructs an InitLayer.
+         */
         public InitLayer() { }
 
         @Override

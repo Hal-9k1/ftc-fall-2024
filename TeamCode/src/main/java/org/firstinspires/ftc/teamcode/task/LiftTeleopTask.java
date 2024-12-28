@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.task;
 
 /**
- * Extends/retracts or swings a lift using absolute powers.
+ * Extends, retracts, or swings a lift using absolute powers.
  */
 public class LiftTeleopTask implements Task {
     /**
@@ -11,7 +11,7 @@ public class LiftTeleopTask implements Task {
     public final double swing;
 
     /**
-     * The direction andspeed the lift should extend with.
+     * The direction and speed the lift should extend with.
      * Must be in the range [-1, 1]. Negative values indicate retraction.
      */
     public final double extension;

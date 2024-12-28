@@ -72,6 +72,7 @@ public class RobotController {
      *
      * @param hardwareMap - HardwareMap used to retrieve interfaces for robot hardware.
      * @param layerStack - the layer stack to use.
+     * @param telemetry - Telemetry used to report debugging info.
      * @param gamepad0 - the first connected Gamepad, or null if none is connected or available.
      * @param gamepad1 - the second connected Gamepad, or null if none is connected or available.
      */
@@ -135,15 +136,19 @@ public class RobotController {
                 throw new NullPointerException(
                     String.format(
                         "Layer '%s' returned null from update.",
-                        layer.getName()
+                        oldLayer.getName()
                     )
                 );
             }
             while (tasks.hasNext() && layer.isTaskDone()) {
                 Task task = tasks.next();
                 if (task == null) {
-                    throw new NullPointerException("Layer '" + oldLayer.getName()
-                        + "' returned null as a subtask.");
+                    throw new NullPointerException(
+                        String.format(
+                            "Layer '%s' returned null as a subtask.",
+                            oldLayer.getName()
+                        )
+                    );
                 }
                 layer.acceptTask(task);
             }

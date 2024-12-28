@@ -3,16 +3,34 @@ package org.firstinspires.ftc.teamcode.layer;
 import java.util.Iterator;
 import java.util.List;
 
-import org.firstinspires.ftc.teamcode.layer.AbstractFunctionLayer;
-import org.firstinspires.ftc.teamcode.layer.Layer;
-import org.firstinspires.ftc.teamcode.layer.LayerSetupInfo;
 import org.firstinspires.ftc.teamcode.task.Task;
 import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
 
+/**
+ * Contains a sequence of top-level layers.
+ * When each contained layer is exhausted of subtasks, the next layer in the sequence is used. This
+ * layer is completed after reaching and completing the last contained layer.
+ *
+ * <p>A "top-level layer" is a Layer that never accepts a superior task during the program's lifetime.
+ * An OpMode whose layer stack contains one top-level layer ends when that layer is asked for
+ * another subtask but it has none to supply.
+ */
 public final class TopLayerSequence implements Layer {
+    /**
+     * The iterator of contained layers.
+     */
     private Iterator<Layer> layerIter;
+
+    /**
+     * The top-level layer currently being operated on.
+     */
     private Layer layer;
 
+    /**
+     * Constructs a TopLayerSequence.
+     *
+     * @param layers - the list of top-level layers to iterate through.
+     */
     public TopLayerSequence(List<Layer> layers) {
         this.layerIter = layers.iterator();
         layer = layerIter.next();
