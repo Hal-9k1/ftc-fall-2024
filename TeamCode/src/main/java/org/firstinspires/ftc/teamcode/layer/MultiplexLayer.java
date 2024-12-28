@@ -47,12 +47,12 @@ public final class MultiplexLayer implements Layer {
         return layers.stream().flatMap(layer -> {
             Iterator<Task> tasks = layer.update(completed);
             if (tasks == null) {
-                throw new NullPointerException("tasks from layer " + layer.getClass().getName() + " is null");
+                throw new NullPointerException("Tasks from layer " + layer.getClass().getName() + " is null.");
             }
             List<Task> taskList = new ArrayList<>();
             tasks.forEachRemaining(taskList::add);
             if (taskList.contains(null)) {
-                throw new NullPointerException("tasks from layer " + layer.getClass().getName() + " contains null");
+                throw new NullPointerException("Tasks from layer " + layer.getClass().getName() + " contains null.");
             }
 
             return StreamSupport.stream(

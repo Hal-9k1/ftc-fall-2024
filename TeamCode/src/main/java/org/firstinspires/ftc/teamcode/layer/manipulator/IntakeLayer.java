@@ -71,12 +71,11 @@ public final class IntakeLayer implements Layer {
      * The nanosecond timestamp of the start of the last eject action.
      */
     private long ejectStart;
-    private Telemetry telemetry;
 
     /**
      * Telemetry.
      */
-    Telemetry telemetry;
+    private Telemetry telemetry;
 
     /**
      * Constructs an IntakeLayer.
