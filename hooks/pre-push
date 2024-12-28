@@ -37,7 +37,7 @@ rhead=`git fetch-pack --all --no-progress $2 2>&1 | grep -m1 ' HEAD' | cut -f1 -
 # rref = remote ref being pushed to, robj = object pointed to by robj
 while read lref _ _ robj
 do
-  if test $lref = '(deleted)'
+  if test $lref = '(delete)'
   then
     # Nothing to check for deleted refs
     continue
