@@ -69,4 +69,8 @@ public final class Mat2 {
             throw new IllegalArgumentException("Bad row number " + num);
         }
     }
+
+    public double elem(int x, int y) {
+        return mat[y * 2 + x];
+    }
 }

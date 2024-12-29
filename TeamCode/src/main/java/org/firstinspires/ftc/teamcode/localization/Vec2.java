@@ -29,4 +29,12 @@ public final class Vec2 {
     public double dot(Vec2 other) {
         return x * other.x + y * other.y;
     }
+
+    public double len() {
+        return Math.sqrt(dot(this));
+    }
+
+    public boolean isFinite() {
+        return Double.isFinite(x) && !Double.isNaN(x) && Double.isFinite(y) && !Double.isNaN(y);
+    }
 }

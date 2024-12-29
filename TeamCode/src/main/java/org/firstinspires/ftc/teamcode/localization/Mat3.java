@@ -11,6 +11,14 @@ public final class Mat3 {
         mat = new double[]{ m00, m10, m20, m01, m11, m21, m02, m12, m22 };
     }
 
+    public static Mat3 fromTransform(Mat2 rot, Vec2 pos) {
+        return new Mat3(
+            rot.elem(0, 0), rot.elem(1, 0), pos.getX(),
+            rot.elem(0, 1), rot.elem(1, 1), pos.getY(),
+            0.0,            0.0,            1.0
+        );
+    }
+
     public Mat3 mul(Mat3 other) {
         return new Mat3(
             row(0).dot(other.col(0)),
@@ -22,6 +30,14 @@ public final class Mat3 {
             row(2).dot(other.col(0)),
             row(2).dot(other.col(1)),
             row(2).dot(other.col(2))
+        );
+    }
+
+    public Vec2 mul(Vec2 other) {
+        Vec3 extended = new Vec3(other.getX(), other.getY(), 0.0);
+        return new Vec2(
+            row(0).dot(extended),
+            row(1).dot(extended)
         );
     }
 
@@ -105,6 +121,12 @@ public final class Mat3 {
             -minor(2, 1).det(),
             minor(2, 2).det()
         );
+    }
+
+    public double elem(int col, int row) {
+        checkDim(x, true);
+        checkDim(y, false);
+        return mat[y * 3 + x];
     }
 
     public Vec2 getTranslation() {
