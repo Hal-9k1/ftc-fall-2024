@@ -94,7 +94,7 @@ public final class Mat3 {
         );
     }
 
-    public Mat2 minor(int row, int col) {
+    public Mat2 minor(int col, int row) {
         checkDim(row, false);
         checkDim(col, true);
         int startCol = col == 0 ? 1 : 0;
@@ -112,21 +112,21 @@ public final class Mat3 {
     public Mat3 cofactor() {
         return new Mat3(
             minor(0, 0).det(),
-            -minor(0, 1).det(),
-            minor(0, 2).det(),
             -minor(1, 0).det(),
-            minor(1, 1).det(),
-            -minor(1, 2).det(),
             minor(2, 0).det(),
+            -minor(0, 1).det(),
+            minor(1, 1).det(),
             -minor(2, 1).det(),
+            minor(0, 2).det(),
+            -minor(1, 2).det(),
             minor(2, 2).det()
         );
     }
 
     public double elem(int col, int row) {
-        checkDim(x, true);
-        checkDim(y, false);
-        return mat[y * 3 + x];
+        checkDim(col, true);
+        checkDim(row, false);
+        return mat[row * 3 + col];
     }
 
     public Vec2 getTranslation() {

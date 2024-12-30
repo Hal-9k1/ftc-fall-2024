@@ -22,13 +22,13 @@ public abstract class AbstractFinDiffLocalizationData implements LocalizationDat
             } while (!Double.isFinite(product));
             return product;
         }).reduce(1.0, (a, b) -> a * b);
-        return (getPositionProbability(pos.add(new Vec2(epsilon, 0)), ignoreRoots)
-            - getPositionProbability(pos, ignoreRoots)) / epsilon * ignoreRootFactor;
+        return (getPositionProbability(pos.add(new Vec2(epsilon, 0))) - getPositionProbability(pos))
+            / epsilon * ignoreRootFactor;
     }
 
     public final double getPositionProbabilityDy(Vec2 pos, List<Vec2> ignoreRoots) {
-        return (getPositionProbability(pos.add(new Vec2(0, epsilon)), ignoreRoots)
-            - getPositionProbability(pos, ignoreRoots)) / epsilon;
+        return (getPositionProbability(pos.add(new Vec2(0, epsilon))) - getPositionProbability(pos))
+            / epsilon;
     }
 
     public final Vec2 getPositionProbabilityDxGradient(Vec2 pos, List<Vec2> ignoreRoots) {
@@ -59,8 +59,8 @@ public abstract class AbstractFinDiffLocalizationData implements LocalizationDat
             } while (!Double.isFinite(product));
             return product;
         });
-        return (getRotationProbability(rot + epsilon, ignoreRoots)
-            - getRotationProbability(rot, ignoreRoots)) / epsilon * ignoreRootFactor;
+        return (getRotationProbability(rot + epsilon) - getRotationProbability(rot)) / epsilon
+            * ignoreRootFactor;
     }
 
     public final double getRotationProbabilityDx2(double rot, List<Double> ignoreRoots) {
