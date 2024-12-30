@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.Iterator;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
@@ -160,6 +161,7 @@ public final class TowerLayer implements Layer {
         towerZero = tower.getCurrentPosition();
         forearm = setupInfo.getHardwareMap().get(DcMotor.class, "forearm_swing");
         forearm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        forearm.setDirection(DcMotorSimple.Direction.REVERSE);
         forearmZero = forearm.getCurrentPosition();
         //claw = setupInfo.getHardwareMap().get(Servo.class, "claw");
         clawStartTime = 0;
@@ -168,13 +170,21 @@ public final class TowerLayer implements Layer {
                 isSwinging = false;
                 tower.setPower(0.0);
             }
+            if (isInit && checkForearmDone()) {
+                isInit = false;
+                forearm.setPower(0.0);
+            }
         });
     }
 
     @Override
     public boolean isTaskDone() {
         if (isInit) {
-            return checkDelta(getForearmAngle(), FOREARM_INIT_ANGLE);
+            telemetry.addData("forearm angle", getForearmAngle());
+            if (checkForearmDone()) {
+                telemetry.log().add("Forearm done at angle " + getForearmAngle());
+            }
+            return checkForearmDone();
         } else if (isSwinging) {
             return checkTowerDone();
         } else {
@@ -190,11 +200,12 @@ public final class TowerLayer implements Layer {
     @Override
     public void acceptTask(Task task) {
         if (task instanceof TowerForearmTask) {
-            forearm.setPower(1);
+            forearm.setPower(-1);
             isInit = true;
         } else if (task instanceof TowerTask) {
             TowerTask castedTowerTask = (TowerTask)task;
             isSwinging = true;
+            isInit = false;
             if (castedTowerTask.getFullRaise()) {
                 towerGoalAngle = FULL_RAISE_ANGLE;
             } else if (castedTowerTask.getFullLower()) {
@@ -203,6 +214,7 @@ public final class TowerLayer implements Layer {
             towerStartPos = tower.getCurrentPosition();
         } else if (task instanceof TowerTeleopTask) {
             TowerTeleopTask castedTask = (TowerTeleopTask)task;
+            isInit = false;
             boolean isUnsafe = getForearmAngle() > FOREARM_MAX_SAFE_ANGLE
                 && castedTask.getTowerSwingPower() > 1;
             tower.setPower(isUnsafe ? 0 : castedTask.getTowerSwingPower());
@@ -250,25 +262,37 @@ public final class TowerLayer implements Layer {
         return checkDelta(deltaAngle, goalDeltaAngle);
     }
 
+    private boolean checkForearmDone() {
+        return checkDelta(getForearmAngle(), FOREARM_INIT_ANGLE);
+    }
+
     /**
      * A top-level layer that emits a TowerForearmTask, needed to prepare the tower for operation.
      */
     public static final class InitLayer implements Layer {
         /**
+         * Whether the initiailization task has been emitted yet.
+         */
+        private boolean emitted;
+
+        /**
          * Constructs an InitLayer.
          */
-        public InitLayer() { }
+        public InitLayer() {
+            emitted = false;
+        }
 
         @Override
         public void setup(LayerSetupInfo setupInfo) { }
 
         @Override
         public boolean isTaskDone() {
-            return false;
+            return emitted;
         }
 
         @Override
         public Iterator<Task> update(Iterable<Task> completed) {
+            emitted = true;
             return Collections.singleton((Task)new TowerForearmTask()).iterator();
         }
 

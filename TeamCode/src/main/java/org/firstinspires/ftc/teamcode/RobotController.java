@@ -60,6 +60,11 @@ public class RobotController {
     private List<LayerInfo> layers;
 
     /**
+     * The Telemetry used to report debugging info.
+     */
+    private Telemetry telemetry;
+
+    /**
      * Constructs a RobotController.
      */
     public RobotController() {
@@ -84,6 +89,7 @@ public class RobotController {
             layer.setup(setupInfo);
             return new LayerInfo(layer);
         }).collect(Collectors.toList());
+        this.telemetry = telemetry;
     }
 
     /**
@@ -109,6 +115,7 @@ public class RobotController {
         while (true) {
             layer = layerIter.next();
             if (!layer.isTaskDone()) {
+                telemetry.addData("Highest updated layer", layer.getName());
                 break;
             }
             if (!layerIter.hasNext()) {

@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.layer;
 import java.util.Iterator;
 import java.util.List;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
 import org.firstinspires.ftc.teamcode.task.Task;
 import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
 
@@ -17,7 +19,12 @@ import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
  */
 public final class TopLayerSequence implements Layer {
     /**
-     * The iterator of contained layers.
+     * The list of contained layers.
+     */
+    private List<Layer> layers;
+
+    /**
+     * The iterator of contained layers, progressed as they each run to completion.
      */
     private Iterator<Layer> layerIter;
 
@@ -27,13 +34,17 @@ public final class TopLayerSequence implements Layer {
     private Layer layer;
 
     /**
+     * The Telemetry used to report debugging info.
+     */
+    private Telemetry telemetry;
+
+    /**
      * Constructs a TopLayerSequence.
      *
      * @param layers - the list of top-level layers to iterate through.
      */
     public TopLayerSequence(List<Layer> layers) {
-        this.layerIter = layers.iterator();
-        layer = layerIter.next();
+        this.layers = layers;
     }
 
     @Override
@@ -42,7 +53,14 @@ public final class TopLayerSequence implements Layer {
     }
 
     @Override
-    public void setup(LayerSetupInfo setupInfo) { }
+    public void setup(LayerSetupInfo setupInfo) {
+        telemetry = setupInfo.getTelemetry();
+        for (Layer layer : layers) {
+            layer.setup(setupInfo);
+        }
+        this.layerIter = layers.iterator();
+        layer = layerIter.next();
+    }
 
     @Override
     public Iterator<Task> update(Iterable<Task> completed) {

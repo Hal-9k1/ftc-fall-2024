@@ -154,8 +154,6 @@ public final class MecanumDrive implements Layer {
 
     @Override
     public void acceptTask(Task task) {
-        currentTaskDone = false;
-        wheelStartPos = wheels.map((_key, wheel) -> wheel.getDistance());
         boolean isAuto;
         if (task instanceof AxialMovementTask) {
             isAuto = true;
@@ -200,6 +198,8 @@ public final class MecanumDrive implements Layer {
         } else {
             throw new UnsupportedTaskException(this, task);
         }
+        currentTaskDone = false;
+        wheelStartPos = wheels.map((_key, wheel) -> wheel.getDistance());
         if (isAuto) {
             normalizeVelocities(wheelGoalDeltas, true)
                 .forEach((key, velocity) -> wheels.get(key).setVelocity(velocity * AUTO_SPEED_FAC));
