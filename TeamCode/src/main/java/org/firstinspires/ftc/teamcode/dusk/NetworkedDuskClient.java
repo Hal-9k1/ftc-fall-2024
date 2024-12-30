@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.dusk;
 
 import java.net.Socket;
 import java.util.List;
-import java.nio.Charset;
+import java.nio.charset.Charset;
 import java.io.OutputStream;
 
 import org.firstinspires.ftc.teamcode.localization.Vec2;
@@ -59,8 +59,8 @@ public class NetworkedDuskClient implements DuskClient {
         stream.write(TYPE_VEC);
         writeString(label);
         writeString(attachLabel);
-        writeDouble(position.getX());
-        writeDouble(position.getY());
+        writeDouble(vector.getX());
+        writeDouble(vector.getY());
     }
 
     @Override
@@ -87,27 +87,27 @@ public class NetworkedDuskClient implements DuskClient {
     @Override
     public void sendLogs(List<Log> logs) {
         stream.write(TYPE_LOG);
-        stream.write(logs.length > 255 ? 0 : logs.length);
+        stream.write(logs.size() > 255 ? 0 : logs.size());
         logs.forEach(log -> {
             stream.write(log.serialize());
         });
-        if (logs.length > 255) {
+        if (logs.size() > 255) {
             stream.write(0);
         }
     }
 
-    private void sendString(String str) {
+    private void writeString(String str) {
         if (str == null) {
             stream.write(0);
         } else {
-            stream.write(str.length);
+            stream.write(str.length());
             stream.write(str.getBytes(encoding));
         }
     }
 
-    private void sendDouble(double num) {
+    private void writeDouble(double num) {
         for (long bits = Double.doubleToLongBits(num); bits != 0; bits >>= 8) {
-            stream.write(bits & 0xff);
+            stream.write((int)bits); // Only sends LSB
         }
     }
 }

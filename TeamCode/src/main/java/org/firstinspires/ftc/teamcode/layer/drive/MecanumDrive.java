@@ -143,8 +143,8 @@ public final class MecanumDrive implements Layer {
         if (currentTaskDone && !isTeleopTask) {
             wheels.forEach((_key, wheel) -> wheel.setVelocity(0));
         }
-        dawnClient.sendUpdatableObject("MecanumWheelDrive dists", wheels.map((_key, wheel) -> wheel.getDistance()));
-        dawnClient.sendVector("spin", null, Mat2.fromAngle(Math.PI * 2 * System.nanoTime() / 4000000000).mul(new Vec2(1, 0)));
+        duskClient.sendUpdatableObject("MecanumWheelDrive dists", wheels.map((_key, wheel) -> wheel.getDistance()));
+        duskClient.sendVector("spin", null, Mat2.fromAngle(Math.PI * 2.0 * System.nanoTime() / 400000000.0).mul(new Vec2(1, 0)));
         return null;
     }
 
