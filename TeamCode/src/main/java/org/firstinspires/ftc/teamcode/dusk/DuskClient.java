@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.dusk;
 
-public interface DuskClient {
+public interface DuskClient extends Closeable {
     void connect();
     void sendPosition(String label, Vec2 position);
     void sendVector(String label, String attachLabel, Vec2 position);
