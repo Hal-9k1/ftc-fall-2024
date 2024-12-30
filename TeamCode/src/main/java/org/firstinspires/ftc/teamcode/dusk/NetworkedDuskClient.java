@@ -1,6 +1,12 @@
 package org.firstinspires.ftc.teamcode.dusk;
 
 import java.net.Socket;
+import java.util.List;
+import java.nio.Charset;
+import java.io.OutputStream;
+
+import org.firstinspires.ftc.teamcode.localization.Vec2;
+import org.firstinspires.ftc.teamcode.localization.Mat3;
 
 public class NetworkedDuskClient implements DuskClient {
     private static final String HOSTNAME = "Callisto.local";
@@ -9,13 +15,13 @@ public class NetworkedDuskClient implements DuskClient {
 
     private static final byte TYPE_POS = 1;
 
-    private static final byte TYPE_VEC = 1;
+    private static final byte TYPE_VEC = 2;
 
-    private static final byte TYPE_TFM = 1;
+    private static final byte TYPE_TFM = 3;
 
-    private static final byte TYPE_UPD = 1;
+    private static final byte TYPE_UPD = 4;
 
-    private static final byte TYPE_LOG = 1;
+    private static final byte TYPE_LOG = 5;
 
     private Socket socket;
 
