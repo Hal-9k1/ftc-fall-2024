@@ -50,10 +50,15 @@ public final class TowerLayer implements Layer {
      * position.
      */
     private static final double FOREARM_INIT_ANGLE = Units.convert(
-        0.25,
-        Units.Angle.REV,
+        115,
+        Units.Angle.DEG,
         Units.Angle.RAD
     );
+
+    /**
+     * The number of revolutions of the forearm caused by one revolution of the drive shaft.
+     */
+    private static final double FOREARM_GEAR_RATIO = 16.0 / 40.0;
 
     /**
      * The maximum safe angle for the forearm from its resting position.
@@ -85,6 +90,11 @@ public final class TowerLayer implements Layer {
         Units.Angle.REV,
         Units.Angle.RAD
     );
+
+    /**
+     * The number of revolutions of the tower caused by one revolution of the drive shaft.
+     */
+    private static final double TOWER_GEAR_RATIO = 45.0 / 125.0;
 
     /**
      * Motor used to swing the tower.
@@ -162,10 +172,11 @@ public final class TowerLayer implements Layer {
         finishedInit = false;
         tower = setupInfo.getHardwareMap().get(DcMotor.class, "tower_swing");
         tower.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        tower.setDirection(DcMotorSimple.Direction.FORWARD);
         towerZero = tower.getCurrentPosition();
         forearm = setupInfo.getHardwareMap().get(DcMotor.class, "forearm_swing");
         forearm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        forearm.setDirection(DcMotorSimple.Direction.REVERSE);
+        forearm.setDirection(DcMotorSimple.Direction.FORWARD);
         forearmZero = forearm.getCurrentPosition();
         //claw = setupInfo.getHardwareMap().get(Servo.class, "claw");
         clawStartTime = 0;
@@ -178,6 +189,9 @@ public final class TowerLayer implements Layer {
                 isInit = false;
                 finishedInit = true;
                 forearm.setPower(0.0);
+                telemetry.log().add("Forearm done at angle " + getForearmAngle());
+            } else if (isInit) {
+                telemetry.addData("forearm angle", getForearmAngle());
             }
         });
     }
@@ -185,10 +199,6 @@ public final class TowerLayer implements Layer {
     @Override
     public boolean isTaskDone() {
         if (isInit) {
-            telemetry.addData("forearm angle", getForearmAngle());
-            if (checkForearmDone()) {
-                telemetry.log().add("Forearm done at angle " + getForearmAngle());
-            }
             return checkForearmDone();
         } else if (isSwinging) {
             return checkTowerDone();
@@ -205,7 +215,7 @@ public final class TowerLayer implements Layer {
     @Override
     public void acceptTask(Task task) {
         if (task instanceof TowerForearmTask) {
-            forearm.setPower(-1);
+            forearm.setPower(1);
             isInit = true;
         } else if (task instanceof TowerTask) {
             TowerTask castedTowerTask = (TowerTask)task;
@@ -249,7 +259,7 @@ public final class TowerLayer implements Layer {
      */
     private double getForearmAngle() {
         double revs = (forearm.getCurrentPosition() - forearmZero)
-            / forearm.getMotorType().getTicksPerRev();
+            / forearm.getMotorType().getTicksPerRev() * FOREARM_GEAR_RATIO;
         return Units.convert(revs, Units.Angle.REV, Units.Angle.RAD);
     }
 
@@ -260,7 +270,7 @@ public final class TowerLayer implements Layer {
      */
     private boolean checkTowerDone() {
         double revs = (tower.getCurrentPosition() - towerStartPos)
-            / tower.getMotorType().getTicksPerRev();
+            / tower.getMotorType().getTicksPerRev() * TOWER_GEAR_RATIO;
         double deltaAngle = Units.convert(revs, Units.Angle.REV, Units.Angle.RAD);
         double startAngle = towerStartPos / tower.getMotorType().getTicksPerRev();
         double goalDeltaAngle = towerGoalAngle - startAngle;
