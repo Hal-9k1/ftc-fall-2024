@@ -65,16 +65,18 @@ public final class NewtonRobotLocalizer implements RobotLocalizer {
         if (pos && cachedPos == null) {
             List<LocalizationSource> posSources = sources
                 .stream()
-                .filter(LocalizationSource::canLocalizePosition);
+                .filter(LocalizationSource::canLocalizePosition)
+                .collect(Collectors.toList());
             List<Vec2> xRoots = new ArrayList<>();
             for (int i = 0; i < MAX_NEWTON_ROOTS; ++i) {
                 Vec2 xy = new Vec2(0, 0);
                 Vec2 xyMinErr = xy;
                 double minErr = Double.POSITIVE_INFINITY;
                 for (int j = 0; j < MAX_NEWTON_STEPS + 1; ++j) {
+                    Vec2 curXy = xy;
                     double err = posSources
                         .stream()
-                        .mapToDouble(src -> getData(src).getPositionProbabilityDx(xy, xRoots))
+                        .mapToDouble(src -> getData(src).getPositionProbabilityDx(curXy, xRoots))
                         .sum();
                     if (err < minErr) {
                         xyMinErr = xy;
@@ -83,7 +85,7 @@ public final class NewtonRobotLocalizer implements RobotLocalizer {
                     if (j < MAX_NEWTON_STEPS) {
                         Vec2 grad = posSources
                             .stream()
-                            .map(src -> getData(src).getPositionProbabilityDxGradient(xy, xRoots))
+                            .map(src -> getData(src).getPositionProbabilityDxGradient(curXy, xRoots))
                             .reduce(new Vec2(0, 0), Vec2::add);
                         Vec2 delta = grad.mul(-err / grad.len());
                         if (!delta.isFinite()) {
@@ -105,9 +107,10 @@ public final class NewtonRobotLocalizer implements RobotLocalizer {
                 Vec2 xyMinErr = xy;
                 double minErr = Double.POSITIVE_INFINITY;
                 for (int j = 0; j < MAX_NEWTON_STEPS + 1; ++j) {
+                    Vec2 curXy = xy;
                     double err = posSources
                         .stream()
-                        .mapToDouble(src -> getData(src).getPositionProbabilityDy(xy, yRoots))
+                        .mapToDouble(src -> getData(src).getPositionProbabilityDy(curXy, yRoots))
                         .sum();
                     if (err < minErr) {
                         xyMinErr = xy;
@@ -116,7 +119,7 @@ public final class NewtonRobotLocalizer implements RobotLocalizer {
                     if (j < MAX_NEWTON_STEPS) {
                         Vec2 grad = posSources
                             .stream()
-                            .map(src -> getData(src).getPositionProbabilityDyGradient(xy, yRoots))
+                            .map(src -> getData(src).getPositionProbabilityDyGradient(curXy, yRoots))
                             .reduce(new Vec2(0, 0), Vec2::add);
                         Vec2 delta = grad.mul(-err / grad.len());
                         if (!delta.isFinite()) {
@@ -150,20 +153,23 @@ public final class NewtonRobotLocalizer implements RobotLocalizer {
                 );
             });
             cachedPos = Collections.max(extrema.entrySet(), Map.Entry.comparingByValue())
-                .getValue();
+                .getKey();
         }
         if (rot && cachedRot == null) {
             List<LocalizationSource> rotSources = sources
-                .filter(LocalizationSource::canLocalizeRotation);
+                .stream()
+                .filter(LocalizationSource::canLocalizeRotation)
+                .collect(Collectors.toList());
             List<Double> roots = new ArrayList<>();
             for (int i = 0; i < MAX_NEWTON_ROOTS; ++i) {
                 double x = 0;
                 double xMinErr = x;
                 double minErr = Double.POSITIVE_INFINITY;
                 for (int j = 0; j < MAX_NEWTON_STEPS + 1; ++j) {
+                    double curX = x;
                     double err = rotSources
                         .stream()
-                        .mapToDouble(src -> getData(src).getRotationProbabilityDx(x, roots))
+                        .mapToDouble(src -> getData(src).getRotationProbabilityDx(curX, roots))
                         .sum();
                     if (err < minErr) {
                         xMinErr = x;
@@ -172,7 +178,7 @@ public final class NewtonRobotLocalizer implements RobotLocalizer {
                     if (j < MAX_NEWTON_STEPS) {
                         double slope = rotSources
                             .stream()
-                            .mapToDouble(src -> getData(src).getRotationProbabilityDx2(x, roots))
+                            .mapToDouble(src -> getData(src).getRotationProbabilityDx2(curX, roots))
                             .sum();
                         double delta = -err / slope;
                         if (!Double.isFinite(delta)) {
@@ -185,13 +191,13 @@ public final class NewtonRobotLocalizer implements RobotLocalizer {
                 roots.add(xMinErr);
             }
             Map<Double, Double> extrema = new HashMap<>();
-            roots.forEach(x -> extrema.put(rotSources
+            roots.forEach(x -> extrema.put(x, rotSources
                 .stream()
                 .mapToDouble(src -> getData(src).getRotationProbability(x))
                 .sum()
             ));
             cachedRot = Collections.max(extrema.entrySet(), Map.Entry.comparingByValue())
-                .getValue();
+                .getKey();
         }
     }
 
