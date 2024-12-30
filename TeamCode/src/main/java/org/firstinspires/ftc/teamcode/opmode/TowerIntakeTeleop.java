@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.layer.BlockingMultiplexLayer;
 import org.firstinspires.ftc.teamcode.layer.Layer;
 import org.firstinspires.ftc.teamcode.layer.MultiplexLayer;
 import org.firstinspires.ftc.teamcode.layer.TopLayerSequence;
@@ -30,10 +29,11 @@ public final class TowerIntakeTeleop extends AbstractLayerOpMode {
 
     @Override
     protected List<Layer> getLayers() {
+        TowerLayer towerLayer = new TowerLayer();
         return Arrays.asList(
-            new BlockingMultiplexLayer(Arrays.asList(
+            new MultiplexLayer(Arrays.asList(
                 new MecanumDrive(),
-                new TowerLayer(),
+                towerLayer,
                 new IntakeLayer()
             )),
             new MultiplexLayer(Arrays.asList(
@@ -42,7 +42,7 @@ public final class TowerIntakeTeleop extends AbstractLayerOpMode {
                 new TriggerIntakeMapping()
             )),
             new TopLayerSequence(Arrays.asList(
-                new TowerLayer.InitLayer(),
+                towerLayer.new InitLayer(),
                 new GamepadInputGenerator()
             ))
         );

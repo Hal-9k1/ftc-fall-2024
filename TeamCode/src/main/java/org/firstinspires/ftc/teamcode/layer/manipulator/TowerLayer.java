@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.layer.manipulator;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 
@@ -107,6 +108,8 @@ public final class TowerLayer implements Layer {
      */
     private boolean isInit;
 
+    private boolean finishedInit;
+
     /**
      * Whether the tower is currently autonomously swinging to a goal.
      */
@@ -156,6 +159,7 @@ public final class TowerLayer implements Layer {
     public void setup(LayerSetupInfo setupInfo) {
         telemetry = setupInfo.getTelemetry();
         isInit = false;
+        finishedInit = false;
         tower = setupInfo.getHardwareMap().get(DcMotor.class, "tower_swing");
         tower.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         towerZero = tower.getCurrentPosition();
@@ -172,6 +176,7 @@ public final class TowerLayer implements Layer {
             }
             if (isInit && checkForearmDone()) {
                 isInit = false;
+                finishedInit = true;
                 forearm.setPower(0.0);
             }
         });
@@ -268,8 +273,10 @@ public final class TowerLayer implements Layer {
 
     /**
      * A top-level layer that emits a TowerForearmTask, needed to prepare the tower for operation.
+     * TODO: should be static. The tight connection between InitLayer and TowerLayer is a hacky fix
+     * only.
      */
-    public static final class InitLayer implements Layer {
+    public final class InitLayer implements Layer {
         /**
          * Whether the initiailization task has been emitted yet.
          */
@@ -287,11 +294,14 @@ public final class TowerLayer implements Layer {
 
         @Override
         public boolean isTaskDone() {
-            return emitted;
+            return finishedInit;
         }
 
         @Override
         public Iterator<Task> update(Iterable<Task> completed) {
+            if (emitted) {
+                return new ArrayList<Task>().iterator();
+            }
             emitted = true;
             return Collections.singleton((Task)new TowerForearmTask()).iterator();
         }

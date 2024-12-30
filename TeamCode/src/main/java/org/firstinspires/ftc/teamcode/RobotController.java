@@ -147,6 +147,9 @@ public class RobotController {
                     )
                 );
             }
+            if (!tasks.hasNext()) {
+                break; // Nothing to do for now. TODO: hacky fix
+            }
             while (tasks.hasNext() && layer.isTaskDone()) {
                 Task task = tasks.next();
                 if (task == null) {
