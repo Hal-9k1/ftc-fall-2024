@@ -1,19 +1,25 @@
 package org.firstinspires.ftc.teamcode.dusk;
 
-import java.net.Socket;
-import java.util.List;
-import java.nio.charset.StandardCharsets;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
+import java.net.Socket;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
-import org.firstinspires.ftc.teamcode.matrix.Vec2;
-import org.firstinspires.ftc.teamcode.matrix.Mat3;
-import org.firstinspires.ftc.teamcode.logging.LoggerBackend;
 import org.firstinspires.ftc.teamcode.logging.Log;
+import org.firstinspires.ftc.teamcode.logging.LoggerBackend;
+import org.firstinspires.ftc.teamcode.matrix.Mat3;
+import org.firstinspires.ftc.teamcode.matrix.Vec2;
 
-public class DuskClient implements LoggerBackend {
+public final class DuskClient implements LoggerBackend {
     private static final String HOSTNAME = "Callisto.local";
 
     private static final int PORT = 22047;
+
+    private static final int RECONNECT_TIMEOUT = 1000;
 
     private static final byte TYPE_POS = 1;
 
@@ -27,16 +33,40 @@ public class DuskClient implements LoggerBackend {
 
     private Socket socket;
 
-    private OutputStream stream;
+    private ByteArrayOutputStream stream;
 
-    private boolean failed;
+    private OutputStream socketStream;
 
-    public DuskClient() { }
+    private BlockingQueue<byte[]> packetsInFlight;
+
+    private Thread thread;
+
+    private boolean closing;
+
+    public DuskClient() {
+        closing = false;
+        thread = null;
+        packetsInFlight = new LinkedBlockingQueue<>();
+    }
+
+    public void start() {
+        if (thread != null) {
+            throw new IllegalStateException("DuskClient already started.");
+        }
+        thread = new Thread(this::connectLoop);
+        thread.start();
+    }
 
     @Override
     public void close() {
-        if (socket != null) {
-            socket.close();
+        if (thread == null) {
+            throw new IllegalStateException("DuskClient not started.");
+        }
+        thread.interrupt();
+        try {
+            thread.join();
+        } catch (InterruptedException e) {
+            // This shouldn't happen since we're the main thread.
         }
     }
 
@@ -46,6 +76,7 @@ public class DuskClient implements LoggerBackend {
         writeString(label);
         writeDouble(position.getX());
         writeDouble(position.getY());
+        finishPacket();
     }
 
     @Override
@@ -55,6 +86,7 @@ public class DuskClient implements LoggerBackend {
         writeString(attachLabel);
         writeDouble(vector.getX());
         writeDouble(vector.getY());
+        finishPacket();
     }
 
     @Override
@@ -69,6 +101,7 @@ public class DuskClient implements LoggerBackend {
         writeDouble(transform.elem(1, 1));
         writeDouble(transform.elem(2, 1));
         // Don't care about the third row
+        finishPacket();
     }
 
     @Override
@@ -76,23 +109,27 @@ public class DuskClient implements LoggerBackend {
         stream.write(TYPE_UPD);
         writeString(label);
         writeString(object == null ? "<null>" : object.toString());
+        finishPacket();
     }
 
     @Override
     public void sendLogs(List<Log> logs) {
         stream.write(TYPE_LOG);
-        stream.write(logs.size() > 255 ? 0 : logs.size());
+        stream.write(logs.size() > Byte.MAX_VALUE ? 0 : logs.size());
         logs.forEach(log -> {
-            stream.write(log.serialize());
+            byte[] bytes = log.serialize();
+            // Avoid inherited write signature that throws IOException
+            stream.write(bytes, 0, bytes.length);
         });
-        if (logs.size() > 255) {
+        if (logs.size() > Byte.MAX_VALUE) {
             stream.write(0);
         }
+        finishPacket();
     }
 
-    public void connect() {
+    private void connect() throws IOException {
         socket = new Socket(HOSTNAME, PORT);
-        stream = socket.getOutputStream();
+        socketStream = socket.getOutputStream();
     }
 
     private void writeString(String str) {
@@ -100,13 +137,49 @@ public class DuskClient implements LoggerBackend {
             stream.write(0);
         } else {
             stream.write(str.length());
-            stream.write(str.getBytes(StandardCharsets.US_ASCII));
+            byte[] bytes = str.getBytes(StandardCharsets.US_ASCII);
+            stream.write(bytes, 0, bytes.length);
         }
     }
 
     private void writeDouble(double num) {
-        for (long bits = Double.doubleToLongBits(num); bits != 0; bits >>= 8) {
+        for (long bits = Double.doubleToLongBits(num); bits != 0; bits >>= Byte.SIZE) {
             stream.write((int)bits); // Only sends LSB
+        }
+    }
+
+    private void finishPacket() {
+        packetsInFlight.offer(stream.toByteArray());
+        stream.reset();
+    }
+
+    private void connectLoop() {
+        while (!closing) {
+            try {
+                connect();
+                packetPumpLoop();
+            } catch (IOException | InterruptedException e) {
+                // Do nothing, just reconnect (or stop if closing)
+            } finally {
+                try {
+                    socket.close();
+                } catch (IOException | NullPointerException e) {
+                    // We at least tried to close gracefully, so do nothing
+                }
+            }
+            if (!closing) {
+                try {
+                    Thread.sleep(RECONNECT_TIMEOUT);
+                } catch (InterruptedException e) {
+                    // Stopped while reconnecting, so do nothing
+                }
+            }
+        }
+    }
+
+    private void packetPumpLoop() throws IOException, InterruptedException {
+        while (!closing) {
+            socketStream.write(packetsInFlight.take());
         }
     }
 }

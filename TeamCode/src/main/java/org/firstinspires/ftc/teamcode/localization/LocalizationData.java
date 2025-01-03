@@ -21,7 +21,7 @@ public interface LocalizationData {
 
     double getRotationProbabilityDx2(double rot, List<Double> ignoreRoots);
 
-    public double getPositionPrecision();
+    double getPositionPrecision();
 
-    public double getRotationPrecision();
+    double getRotationPrecision();
 }

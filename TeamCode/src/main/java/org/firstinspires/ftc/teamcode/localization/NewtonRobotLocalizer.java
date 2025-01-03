@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.firstinspires.ftc.teamcode.matrix.Mat2;
 import org.firstinspires.ftc.teamcode.matrix.Mat3;
@@ -187,7 +186,7 @@ public final class NewtonRobotLocalizer implements RobotLocalizer {
                         double delta = -err / slope;
                         if (!Double.isFinite(delta)) {
                             // Randomly disturb
-                            delta = Math.signum(Math.random() - 0.5) * NEWTON_DISTURBANCE_SIZE;
+                            delta = Math.signum(Math.random() - 1.0 / 2) * NEWTON_DISTURBANCE_SIZE;
                         }
                         x += delta;
                     }
