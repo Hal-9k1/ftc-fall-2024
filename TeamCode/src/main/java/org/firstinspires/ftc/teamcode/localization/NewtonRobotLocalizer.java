@@ -8,6 +8,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.firstinspires.ftc.teamcode.matrix.Mat2;
+import org.firstinspires.ftc.teamcode.matrix.Mat3;
+import org.firstinspires.ftc.teamcode.matrix.Vec2;
+
 public final class NewtonRobotLocalizer implements RobotLocalizer {
     private static final int MAX_NEWTON_STEPS = 40;
 

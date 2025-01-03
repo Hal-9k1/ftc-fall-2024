@@ -1,11 +1,17 @@
 package org.firstinspires.ftc.teamcode.localization;
 
+import org.firstinspires.ftc.teamcode.matrix.Mat3;
+import org.firstinspires.ftc.teamcode.matrix.Vec2;
+
 public final class DiscLocalizationData extends AbstractFinDiffLocalizationData {
     private static final double EPSILON = 0.001;
 
     private Mat3 transform;
+
     private double accuracy;
+
     private double positionPrecision;
+
     private double rotationPrecision;
 
     public DiscLocalizationData(

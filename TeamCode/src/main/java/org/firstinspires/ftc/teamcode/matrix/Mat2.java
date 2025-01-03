@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.localization;
+package org.firstinspires.ftc.teamcode.matrix;
 
 public final class Mat2 {
     private final double[] mat;

@@ -10,11 +10,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.Units;
-import org.firstinspires.ftc.teamcode.dusk.NetworkedDuskClient;
 import org.firstinspires.ftc.teamcode.layer.Layer;
 import org.firstinspires.ftc.teamcode.layer.LayerSetupInfo;
-import org.firstinspires.ftc.teamcode.localization.Mat2;
-import org.firstinspires.ftc.teamcode.localization.Vec2;
 import org.firstinspires.ftc.teamcode.mechanism.Wheel;
 import org.firstinspires.ftc.teamcode.task.AxialMovementTask;
 import org.firstinspires.ftc.teamcode.task.HolonomicDriveTask;
@@ -92,15 +89,10 @@ public final class MecanumDrive implements Layer {
      */
     private boolean currentTaskDone;
 
-    private NetworkedDuskClient duskClient;
-
     /**
      * Constructs a MecanumDrive layer.
      */
-    public MecanumDrive() {
-        duskClient = new NetworkedDuskClient();
-        duskClient.sendUpdatableObject("test", "yay!");
-    }
+    public MecanumDrive() { }
 
     @Override
     public void setup(LayerSetupInfo initInfo) {
@@ -143,8 +135,6 @@ public final class MecanumDrive implements Layer {
         if (currentTaskDone && !isTeleopTask) {
             wheels.forEach((_key, wheel) -> wheel.setVelocity(0));
         }
-        duskClient.sendUpdatableObject("MecanumWheelDrive dists", wheels.map((_key, wheel) -> wheel.getDistance()));
-        duskClient.sendVector("spin", null, Mat2.fromAngle(Math.PI * 2.0 * System.nanoTime() / 400000000.0).mul(new Vec2(1, 0)));
         return null;
     }
 

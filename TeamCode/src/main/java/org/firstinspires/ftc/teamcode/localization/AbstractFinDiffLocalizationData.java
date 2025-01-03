@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.localization;
 
 import java.util.List;
 
+import org.firstinspires.ftc.teamcode.matrix.Vec2;
+
 public abstract class AbstractFinDiffLocalizationData implements LocalizationData {
     private final double epsilon;
 
