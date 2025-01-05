@@ -3,7 +3,11 @@ package org.firstinspires.ftc.teamcode.localization;
 import org.firstinspires.ftc.teamcode.matrix.Mat3;
 import org.firstinspires.ftc.teamcode.matrix.Vec2;
 
-public final class DiscLocalizationData extends AbstractFinDiffLocalizationData {
+/**
+ * LocalizationData suggesting the robot's transform is "near" a position and/or rotation with a
+ * square distance falloff.
+ */
+public final class SqFalloffLocalizationData extends AbstractFinDiffLocalizationData {
     private static final double EPSILON = 0.001;
 
     private Mat3 transform;
@@ -14,7 +18,7 @@ public final class DiscLocalizationData extends AbstractFinDiffLocalizationData 
 
     private double rotationPrecision;
 
-    public DiscLocalizationData(
+    public SqFalloffLocalizationData(
         Mat3 transform,
         double accuracy,
         double positionPrecision,
@@ -27,14 +31,6 @@ public final class DiscLocalizationData extends AbstractFinDiffLocalizationData 
         this.rotationPrecision = rotationPrecision;
     }
 
-    public Mat3 getTransform() {
-        return transform;
-    }
-
-    public double getAccuracy() {
-        return accuracy;
-    }
-
     public double getPositionProbability(Vec2 pos) {
         Vec2 diff = transform.getTranslation().mul(-1).add(pos);
         return accuracy / ((diff.dot(diff) * positionPrecision) + 1);
@@ -43,13 +39,5 @@ public final class DiscLocalizationData extends AbstractFinDiffLocalizationData 
     public double getRotationProbability(double rot) {
         double diff = rot - transform.getRotation();
         return accuracy / (diff * diff * rotationPrecision + 1);
-    }
-
-    public double getPositionPrecision() {
-        return positionPrecision;
-    }
-
-    public double getRotationPrecision() {
-        return rotationPrecision;
     }
 }

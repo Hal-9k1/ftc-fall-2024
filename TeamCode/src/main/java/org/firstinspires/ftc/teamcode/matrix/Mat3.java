@@ -2,7 +2,13 @@ package org.firstinspires.ftc.teamcode.matrix;
 
 // CSOFF type:MagicNumber
 
+/**
+ * Represents an immutable 3x3 matrix of double-precision floating point numbers.
+ */
 public final class Mat3 {
+    /**
+     * The underlying array storing matrix elements.
+     */
     private final double[] mat;
 
     public Mat3(

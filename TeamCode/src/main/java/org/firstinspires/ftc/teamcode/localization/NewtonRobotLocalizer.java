@@ -79,7 +79,9 @@ public final class NewtonRobotLocalizer implements RobotLocalizer {
                     Vec2 curXy = xy;
                     double err = posSources
                         .stream()
-                        .mapToDouble(src -> getData(src).getPositionProbabilityDx(curXy, xRoots))
+                        .mapToDouble(src
+                            -> getData(src).getPositionProbabilityDx(curXy, xRoots)
+                            + getData(src).getPositionProbabilityDy(curXy, xRoots))
                         .sum();
                     if (err < minErr) {
                         xyMinErr = xy;
@@ -88,7 +90,9 @@ public final class NewtonRobotLocalizer implements RobotLocalizer {
                     if (j < MAX_NEWTON_STEPS) {
                         Vec2 grad = posSources
                             .stream()
-                            .map(src -> getData(src).getPositionProbabilityDxGradient(curXy, xRoots))
+                            .map(src
+                                -> getData(src).getPositionProbabilityDxGradient(curXy, xRoots)
+                                .add(getData(src).getPositionProbabilityDyGradient(curXy, xRoots)))
                             .reduce(new Vec2(0, 0), Vec2::add);
                         Vec2 delta = grad.mul(-err / grad.len());
                         if (!delta.isFinite()) {
