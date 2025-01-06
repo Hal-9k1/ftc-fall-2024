@@ -19,6 +19,7 @@ public abstract class AbstractLayerOpMode extends OpMode {
     @Override
     public final void init() {
         controller = new RobotController();
+        LoggerProvider loggerProvider = new LoggerProvider();
         controller.setup(hardwareMap, getLayers(), gamepad1, gamepad2);
     }
 

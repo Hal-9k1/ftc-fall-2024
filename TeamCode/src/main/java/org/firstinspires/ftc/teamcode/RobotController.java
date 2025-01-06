@@ -73,11 +73,17 @@ public class RobotController {
      * @param layerStack - the layer stack to use.
      * @param gamepad0 - the first connected Gamepad, or null if none is connected or available.
      * @param gamepad1 - the second connected Gamepad, or null if none is connected or available.
+     * @param loggerProvider - the base LoggerProvider whose clones should be passed to the layers.
      */
-    public void setup(HardwareMap hardwareMap, List<Layer> layerStack, Gamepad gamepad0,
-        Gamepad gamepad1
+    public void setup(
+        HardwareMap hardwareMap,
+        List<Layer> layerStack,
+        Gamepad gamepad0,
+        Gamepad gamepad1.
+        LoggerProvider loggerProvider
     ) {
-        LayerSetupInfo setupInfo = new LayerSetupInfo(hardwareMap, this, gamepad0, gamepad1);
+        LayerSetupInfo setupInfo = new LayerSetupInfo(hardwareMap, this, gamepad0, gamepad1,
+            loggerProvider);
         this.layers = layerStack.stream().map(layer -> {
             layer.setup(setupInfo);
             return new LayerInfo(layer);

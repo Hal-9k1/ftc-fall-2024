@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.RobotController;
+import org.firstinspires.ftc.teamcode.logging.LoggerProvider;
 
 /**
  * Contains the information needed to initialize a layer.
@@ -32,6 +33,11 @@ public class LayerSetupInfo {
     private final Gamepad gamepad1;
 
     /**
+     * The base LoggerProvider whose clones are used by layers.
+     */
+    private final LoggerProvider loggerProvider;
+
+    /**
      * Creates a LayerSetupInfo.
      *
      * @param hardwareMap the source of peripheral interfaces the layer may use to communicate with
@@ -41,9 +47,14 @@ public class LayerSetupInfo {
      * available or connected.
      * @param gamepad1 the Gamepad connected to the second slot, or null if no such gamepad is
      * available or connected.
+     * @param loggerProvider the base LoggerProvider whose clones should be passed to the layers.
      */
-    public LayerSetupInfo(HardwareMap hardwareMap, RobotController robotController,
-        Gamepad gamepad0, Gamepad gamepad1
+    public LayerSetupInfo(
+        HardwareMap hardwareMap,
+        RobotController robotController,
+        Gamepad gamepad0,
+        Gamepad gamepad1,
+        LoggerProvider loggerProvider
     ) {
         this.hardwareMap = hardwareMap;
         this.robotController = robotController;
@@ -79,6 +90,15 @@ public class LayerSetupInfo {
      */
     public Gamepad getGamepad1() {
         return gamepad1;
+    }
+
+    /**
+     * Returns a LoggerProvider cloned from the base one given to the RobotController.
+     *
+     * @return A new LoggerProvider with the same configuration as the base one.
+     */
+    public LoggerProvider getLoggerProvider() {
+        return loggerProvider.clone();
     }
 
     /**
