@@ -33,6 +33,7 @@ public final class Log {
     /**
      * Constructs a Log.
      * Parameters must contain only ASCII characters.
+     *
      * @param severity - the severity of the message.
      * @param label - the label attached to the message, unique to the Logger that produced it.
      * @param location - if not null, a string of the format "filename:line_no" describing the
@@ -48,6 +49,7 @@ public final class Log {
 
     /**
      * Returns the message text of the log message.
+     *
      * @return the message text.
      */
     public String getMessage() {
@@ -56,6 +58,7 @@ public final class Log {
 
     /**
      * Serializes this message and writes it to a stream.
+     *
      * @throws IOException - an I/O error occurred while writing to the stream.
      */
     public void writeTo(OutputStream stream) throws IOException {

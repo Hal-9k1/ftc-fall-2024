@@ -4,7 +4,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -110,6 +109,7 @@ public final class DuskClient implements LoggerBackend {
         if (networkThread == null) {
             throw new IllegalStateException("DuskClient not started.");
         }
+        networkThread = null;
         networkThread.interrupt();
         try {
             networkThread.join();
@@ -177,6 +177,7 @@ public final class DuskClient implements LoggerBackend {
 
     /**
      * Attempts to connect to the server via TCP and set up the OutputStream.
+     *
      * @throws IOException - an I/O error occurred when trying to connect to the server.
      */
     private void connect() throws IOException {
@@ -186,6 +187,7 @@ public final class DuskClient implements LoggerBackend {
 
     /**
      * Writes a length-prefixed or null-terminated string to the staging buffer.
+     *
      * @param str - If not null, the ASCII-encoded string to write.
      * @see IOUtil#writeFlexibleString
      */
@@ -199,6 +201,7 @@ public final class DuskClient implements LoggerBackend {
 
     /**
      * Writes a double to the staging buffer as 4 bytes, little-endian.
+     *
      * @param num - the double to write.
      */
     private void writeDouble(double num) {
@@ -235,7 +238,7 @@ public final class DuskClient implements LoggerBackend {
                     // We at least tried to close gracefully, so do nothing
                 }
             }
-            if (!networkThread) {
+            if (networkThread == thisThread) {
                 try {
                     Thread.sleep(RECONNECT_TIMEOUT);
                 } catch (InterruptedException e) {
@@ -248,6 +251,7 @@ public final class DuskClient implements LoggerBackend {
     /**
      * Sends packets from the queue to the server until {@link #close} is called or an I/O error
      * occurs.
+     *
      * @throws IOException - an I/O error occurred when writing to the socket.
      * @throws InterruptedException - the networking thread was interrupted while waiting for a
      * packet to send.

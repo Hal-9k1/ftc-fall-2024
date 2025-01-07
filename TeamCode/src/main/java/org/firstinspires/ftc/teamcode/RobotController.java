@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.layer.Layer;
 import org.firstinspires.ftc.teamcode.layer.LayerSetupInfo;
+import org.firstinspires.ftc.teamcode.logging.LoggerProvider;
 import org.firstinspires.ftc.teamcode.task.Task;
 import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
 
@@ -79,7 +80,7 @@ public class RobotController {
         HardwareMap hardwareMap,
         List<Layer> layerStack,
         Gamepad gamepad0,
-        Gamepad gamepad1.
+        Gamepad gamepad1,
         LoggerProvider loggerProvider
     ) {
         LayerSetupInfo setupInfo = new LayerSetupInfo(hardwareMap, this, gamepad0, gamepad1,

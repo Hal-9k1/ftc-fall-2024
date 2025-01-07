@@ -15,6 +15,7 @@ public final class IOUtil {
 
     /**
      * Writes a length-prefixed or null-terminated string to a stream.
+     *
      * @param stream - the stream to write to.
      * @param str - If not null, the ASCII-encoded string to write. If null, a single NUL is written
      * to the stream (in effect describing a zero-length string). If greater than or equal to 255

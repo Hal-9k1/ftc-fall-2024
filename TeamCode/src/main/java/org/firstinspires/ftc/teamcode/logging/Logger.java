@@ -1,6 +1,9 @@
 package org.firstinspires.ftc.teamcode.logging;
 
-import java.util.Calendar;
+import java.util.Date;
+
+import org.firstinspires.ftc.teamcode.matrix.Mat3;
+import org.firstinspires.ftc.teamcode.matrix.Vec2;
 
 public final class Logger {
     static final String ERROR_SEVERITY = "ERROR";
@@ -29,7 +32,7 @@ public final class Logger {
         String defaultSeverity,
         boolean defaultSeverityOnly,
         SeverityFilter reportLocationsFilter,
-        SeverityFilter reportTimestampFilter,
+        SeverityFilter reportTimestampFilter
     ) {
         this.label = label;
         this.backend = backend;
@@ -72,7 +75,7 @@ public final class Logger {
     }
 
     public void transform(String itemLabel, String attachLabel, Mat3 transform) {
-        backend.processTransform(label, itemLabel, transform);
+        backend.processTransform(label, itemLabel, attachLabel, transform);
     }
 
     public void update(String itemLabel, Object object) {
@@ -87,7 +90,7 @@ public final class Logger {
         String location = null;
         if (reportLocationsFilter.permit(severity)) {
             boolean foundSelf = false;
-            for (StackTraceElement frame : Thread.getCurrent().getStackTrace()) {
+            for (StackTraceElement frame : Thread.currentThread().getStackTrace()) {
                 if (frame.getClassName() == getClass().getName()) {
                     // This may trigger multiple times
                     foundSelf = true;
@@ -115,6 +118,6 @@ public final class Logger {
             msg.append(arg);
             msg.append(" ");
         }
-        backend.sendLog(new Log(severity, label, location, msg.toString()));
+        backend.processLog(new Log(severity, label, location, msg.toString()));
     }
 }

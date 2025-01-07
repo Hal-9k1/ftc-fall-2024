@@ -1,9 +1,13 @@
 package org.firstinspires.ftc.teamcode.logging;
 
-class SeverityFilter {
-    boolean allow;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
-    Set<String> elements;
+class SeverityFilter {
+    private boolean allow;
+
+    private Set<String> elements;
 
     SeverityFilter(boolean allow, Collection<String> elements) {
         this.allow = allow;

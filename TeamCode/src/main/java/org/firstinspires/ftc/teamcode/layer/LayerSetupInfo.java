@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.logging.LoggerProvider;
 /**
  * Contains the information needed to initialize a layer.
  */
-public class LayerSetupInfo {
+public final class LayerSetupInfo {
     /**
      * The HardwareMap for the robot, where peripheral interfaces can be retrieved.
      */
@@ -60,6 +60,7 @@ public class LayerSetupInfo {
         this.robotController = robotController;
         this.gamepad0 = gamepad0;
         this.gamepad1 = gamepad1;
+        this.loggerProvider = loggerProvider;
     }
 
     /**

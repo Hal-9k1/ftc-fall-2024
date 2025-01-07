@@ -10,6 +10,7 @@ import org.firstinspires.ftc.teamcode.matrix.Vec2;
 public interface LocalizationData {
     /**
      * Gets the relative probability of the robot being located at the given field position.
+     *
      * @param pos - the field position to test
      * @return the relative probability of the robot being located at the given position. See the
      * package summary for the significance of this value.
@@ -19,6 +20,7 @@ public interface LocalizationData {
     /**
      * Gets or approximates the partial derivative with respect to x of
      * {@link #getPositionProbability} at the given field position.
+     *
      * @param pos - the field position to compute the derivative at.
      * @param ignoreRoots - a list of roots of this derivative to exclude. This makes the graph of
      * the partial derivative neither approach nor reach zero due to these roots alone.
@@ -29,6 +31,7 @@ public interface LocalizationData {
     /**
      * Gets or approximates the partial derivative with respect to y of
      * {@link #getPositionProbability} at the given field position.
+     *
      * @param pos - the field position to compute the derivative at.
      * @param ignoreRoots - a list of roots of this derivative to exclude. This makes the graph of
      * the partial derivative neither approach nor reach zero due to these roots alone.
@@ -39,6 +42,7 @@ public interface LocalizationData {
     /**
      * Gets or approximates the gradient of the partial derivative with respect to x of
      * {@link #getPositionProbability} at the given field position.
+     *
      * @param pos - the field position to compute the derivative at.
      * @param ignoreRoots - a list of roots of {@link #getPositionProbabilityDx} to exclude. The
      * computed gradient does not suggest the existance of roots in that function at any of these
@@ -54,6 +58,7 @@ public interface LocalizationData {
     /**
      * Gets or approximates the gradient of the partial derivative with respect to x of
      * {@link #getPositionProbability} at the given field position.
+     *
      * @param pos - the field position to compute the derivative at.
      * @param ignoreRoots - a list of roots of {@link #getPositionProbabilityDy} to exclude. The
      * computed gradient does not suggest the existance of roots in that function at any of these
@@ -68,6 +73,7 @@ public interface LocalizationData {
 
     /**
      * Gets the relative probability of the robot bearing the given field orientation.
+     *
      * @param rot - the field orientation to test
      * @return the relative probability of the robot bearing the given field orientation. See the
      * package summary for the significance of this value.
@@ -77,6 +83,7 @@ public interface LocalizationData {
     /**
      * Gets or approximates the derivative of {@link #getPositionProbability} at the given field
      * orientation.
+     *
      * @param rot - the field orientation to compute the derivative at.
      * @param ignoreRoots - a list of roots of this derivative to exclude. This makes the graph of
      * the derivative neither approach nor reach zero due to these roots alone.
@@ -87,6 +94,7 @@ public interface LocalizationData {
     /**
      * Gets or approximates the second derivative of {@link #getPositionProbability} at the given
      * field orientation.
+     *
      * @param rot - the field orientation to compute the derivative at.
      * @param ignoreRoots - a list of roots of the rotation probability derivative to exclude. The
      * computed second derivative does not suggest the existance of roots in that function at any of

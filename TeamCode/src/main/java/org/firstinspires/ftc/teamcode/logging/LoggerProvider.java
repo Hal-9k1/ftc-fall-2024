@@ -1,18 +1,33 @@
 package org.firstinspires.ftc.teamcode.logging;
 
-public class LoggerProvider {
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.firstinspires.ftc.teamcode.matrix.Mat3;
+import org.firstinspires.ftc.teamcode.matrix.Vec2;
+
+public final class LoggerProvider {
     private List<LoggerBackend> backends;
+
     private String defaultSeverityName;
+
     private boolean defaultSeverityOnly;
+
     private boolean useTimestamp;
+
     private Set<String> timestampExceptions;
+
     private boolean useLocation;
+
     private Set<String> locationExceptions;
 
     public LoggerProvider() {
         backends = new ArrayList<>();
         defaultSeverityName = Logger.INFO_SEVERITY;
-        useDefaultSeverityOnly = false;
+        defaultSeverityOnly = false;
         useTimestamp = true;
         timestampExceptions = new HashSet<>();
         useLocation = false;
@@ -23,7 +38,7 @@ public class LoggerProvider {
         LoggerProvider copy = new LoggerProvider();
         copy.backends = backends;
         copy.defaultSeverityName = defaultSeverityName;
-        copy.useDefaultSeverityOnly = useDefaultSeverityOnly;
+        copy.defaultSeverityOnly = defaultSeverityOnly;
         copy.useTimestamp = useTimestamp;
         copy.timestampExceptions = timestampExceptions;
         copy.useLocation = useLocation;
@@ -37,21 +52,24 @@ public class LoggerProvider {
             // No-op backend
             backend = new LoggerBackend() {
                 @Override
-                void processPosition(String loggerLabel, String itemLabel, Vec2 position) { }
+                public void close() { }
 
                 @Override
-                void processVector(String loggerLabel, String itemLabel, String attachLabel,
+                public void processPosition(String loggerLabel, String itemLabel, Vec2 position) { }
+
+                @Override
+                public void processVector(String loggerLabel, String itemLabel, String attachLabel,
                     Vec2 vector) { }
 
                 @Override
-                void processTransform(String loggerLabel, String itemLabel, String attachLabel,
+                public void processTransform(String loggerLabel, String itemLabel, String attachLabel,
                     Mat3 transform) { }
 
                 @Override
-                void processUpdatableObject(String loggerLabel, String itemLabel, Object object) { }
+                public void processUpdatableObject(String loggerLabel, String itemLabel, Object object) { }
 
                 @Override
-                void processLog(Log log) { }
+                public void processLog(Log log) { }
             };
         } else if (backends.size() == 1) {
             backend = backends.get(0);
@@ -60,38 +78,46 @@ public class LoggerProvider {
             ArrayList<LoggerBackend> backendListCopy = new ArrayList<>(backends);
             backend = new LoggerBackend() {
                 @Override
-                void processPosition(String loggerLabel, String itemLabel, Vec2 position) {
+                public void close() throws IOException {
+                    for (LoggerBackend innerBackend : backendListCopy) {
+                        innerBackend.close();
+                    }
+                }
+
+                @Override
+                public void processPosition(String loggerLabel, String itemLabel, Vec2 position) {
                     for (LoggerBackend innerBackend : backendListCopy) {
                         innerBackend.processPosition(loggerLabel, itemLabel, position);
                     }
                 }
 
                 @Override
-                void processVector(String loggerLabel, String itemLabel, String attachLabel,
+                public void processVector(String loggerLabel, String itemLabel, String attachLabel,
                     Vec2 vector) {
                     for (LoggerBackend innerBackend : backendListCopy) {
-                        innerBackend.processVector(loggerLabel, itemLabel, attachLabel, position);
+                        innerBackend.processVector(loggerLabel, itemLabel, attachLabel, vector);
                     }
                 }
 
                 @Override
-                void processTransform(String loggerLabel, String itemLabel, String attachLabel,
-                    Mat3 transform) {
+                public void processTransform(String loggerLabel, String itemLabel,
+                    String attachLabel, Mat3 transform) {
                     for (LoggerBackend innerBackend : backendListCopy) {
-                        innerBackend.processPosition(loggerLabel, itemLabel, attachLabel,
+                        innerBackend.processTransform(loggerLabel, itemLabel, attachLabel,
                             transform);
                     }
                 }
 
                 @Override
-                void processUpdatableObject(String loggerLabel, String itemLabel, Object object) {
+                public void processUpdatableObject(String loggerLabel, String itemLabel,
+                    Object object) {
                     for (LoggerBackend innerBackend : backendListCopy) {
                         innerBackend.processUpdatableObject(loggerLabel, itemLabel, object);
                     }
                 }
 
                 @Override
-                void processLog(Log log) {
+                public void processLog(Log log) {
                     for (LoggerBackend innerBackend : backendListCopy) {
                         innerBackend.processLog(log);
                     }
@@ -109,86 +135,105 @@ public class LoggerProvider {
             ),
             new SeverityFilter(
                 useTimestamp,
-                timetstampExceptions
+                timestampExceptions
             )
         );
     }
 
     public LoggerProvider addBackend(LoggerBackend backend) {
         backends.add(backend);
+        return this;
     }
 
     public LoggerProvider defaultSeverity(String severity) {
         defaultSeverityName = severity;
+        return this;
     }
 
     public LoggerProvider defaultSeverityError() {
         defaultSeverityName = Logger.ERROR_SEVERITY;
+        return this;
     }
 
     public LoggerProvider defaultSeverityWarn() {
         defaultSeverityName = Logger.WARN_SEVERITY;
+        return this;
     }
 
     public LoggerProvider defaultSeverityInfo() {
         defaultSeverityName = Logger.INFO_SEVERITY;
+        return this;
     }
 
     public LoggerProvider defaultSeverityTrace() {
         defaultSeverityName = Logger.TRACE_SEVERITY;
+        return this;
     }
 
     public LoggerProvider useDefaultSeverityOnly(boolean enable) {
         defaultSeverityOnly = enable;
+        return this;
     }
 
     public LoggerProvider timestamp(boolean enable) {
         useTimestamp = enable;
         timestampExceptions.clear();
+        return this;
     }
 
     public LoggerProvider exceptTimestamp(String severity) {
         timestampExceptions.add(severity);
+        return this;
     }
 
     public LoggerProvider exceptTimestampError() {
         timestampExceptions.add(Logger.ERROR_SEVERITY);
+        return this;
     }
 
     public LoggerProvider exceptTimestampWarn() {
         timestampExceptions.add(Logger.WARN_SEVERITY);
+        return this;
     }
 
     public LoggerProvider exceptTimestampInfo() {
         timestampExceptions.add(Logger.INFO_SEVERITY);
+        return this;
     }
 
     public LoggerProvider exceptTimestampTrace() {
         timestampExceptions.add(Logger.TRACE_SEVERITY);
+        return this;
     }
 
     public LoggerProvider location(boolean enable) {
         useLocation = enable;
         locationExceptions.clear();
+        return this;
     }
 
     public LoggerProvider exceptLocation(String severity) {
         locationExceptions.add(severity);
+        return this;
     }
 
     public LoggerProvider exceptLocationError() {
         locationExceptions.add(Logger.ERROR_SEVERITY);
+        return this;
     }
 
     public LoggerProvider exceptLocationWarn() {
         locationExceptions.add(Logger.WARN_SEVERITY);
+        return this;
     }
 
     public LoggerProvider exceptLocationInfo() {
         locationExceptions.add(Logger.INFO_SEVERITY);
+        return this;
     }
 
     public LoggerProvider exceptLocationTrace() {
         locationExceptions.add(Logger.TRACE_SEVERITY);
+        return this;
     }
 }
