@@ -35,8 +35,7 @@ public final class TestMotorOpMode extends LinearOpMode {
         "right_front_drive",
         "right_back_drive",
         "forearm_swing",
-        "tower_swing",
-        "intake"
+        "tower_swing"
     );
 
     /**
