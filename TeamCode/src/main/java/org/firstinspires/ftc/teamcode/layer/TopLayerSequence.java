@@ -55,8 +55,8 @@ public final class TopLayerSequence implements Layer {
     @Override
     public void setup(LayerSetupInfo setupInfo) {
         telemetry = setupInfo.getTelemetry();
-        for (Layer layer : layers) {
-            layer.setup(setupInfo);
+        for (Layer l : layers) {
+            l.setup(setupInfo);
         }
         this.layerIter = layers.iterator();
         layer = layerIter.next();

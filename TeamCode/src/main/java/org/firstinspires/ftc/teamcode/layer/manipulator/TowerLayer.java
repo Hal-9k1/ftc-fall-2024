@@ -118,6 +118,9 @@ public final class TowerLayer implements Layer {
      */
     private boolean isInit;
 
+    /**
+     * Whether the forearm has finished moving to its initialized location.
+     */
     private boolean finishedInit;
 
     /**
@@ -264,7 +267,7 @@ public final class TowerLayer implements Layer {
     }
 
     /**
-     * Calculates whether the tower has finished swinging to {@link towerGoalAngle}.
+     * Calculates whether the tower has finished swinging to {@link #towerGoalAngle}.
      *
      * @return Whether the tower has finished its most recent autonomous swing action.
      */
@@ -277,6 +280,11 @@ public final class TowerLayer implements Layer {
         return checkDelta(deltaAngle, goalDeltaAngle);
     }
 
+    /**
+     * Calculates whether the forearm has finished swinging to the initialized position.
+     *
+     * @return Whether the forearm angle has reached {@link #FOREARM_INIT_ANGLE}.
+     */
     private boolean checkForearmDone() {
         return checkDelta(getForearmAngle(), FOREARM_INIT_ANGLE);
     }

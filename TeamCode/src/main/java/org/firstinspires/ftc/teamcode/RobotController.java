@@ -62,7 +62,7 @@ public class RobotController {
     /**
      * The Telemetry used to report debugging info.
      */
-    private Telemetry telemetry;
+    private Telemetry telem;
 
     /**
      * Constructs a RobotController.
@@ -89,7 +89,7 @@ public class RobotController {
             layer.setup(setupInfo);
             return new LayerInfo(layer);
         }).collect(Collectors.toList());
-        this.telemetry = telemetry;
+        this.telem = telemetry;
     }
 
     /**
@@ -115,7 +115,7 @@ public class RobotController {
         while (true) {
             layer = layerIter.next();
             if (!layer.isTaskDone()) {
-                telemetry.addData("Highest updated layer", layer.getName());
+                telem.addData("Highest updated layer", layer.getName());
                 break;
             }
             if (!layerIter.hasNext()) {
