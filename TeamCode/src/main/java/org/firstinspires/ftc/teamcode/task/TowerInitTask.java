@@ -4,9 +4,9 @@ package org.firstinspires.ftc.teamcode.task;
  * Unfolds the tower's forearm.
  * Should be issued before any other tower tasks to initialize the tower.
  */
-public final class TowerForearmTask implements Task {
+public final class TowerInitTask implements Task {
     /**
-     * Constructs a TowerForearmTask.
+     * Constructs a TowerInitTask.
      */
-    public TowerForearmTask() { }
+    public TowerInitTask() { }
 }

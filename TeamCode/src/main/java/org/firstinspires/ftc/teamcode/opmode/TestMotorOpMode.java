@@ -164,7 +164,9 @@ public final class TestMotorOpMode extends LinearOpMode {
                 lastEncoderReading = encoderReading;
                 lastNanoTime = nanoTime;
                 didResetEncReads = false;
-                currentMotor.setPower(Math.abs(gamepad1.right_stick_y) > EPSILON ? 1.0f : 0.0f);
+                currentMotor.setPower(Math.abs(gamepad1.right_stick_y) > EPSILON
+                    ? Math.signum(gamepad1.right_stick_y)
+                    : 0.0f);
 
                 telemetry.addData("Current motor speed", "%4.2f ticks/sec", computeMotorSpeed());
                 telemetry.addData("Sampled encoder readings", "%d", recordedEncoderReadings);

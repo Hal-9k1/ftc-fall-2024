@@ -25,7 +25,8 @@ public final class TowerIntakeTeleop extends AbstractLayerOpMode {
     /**
      * Constructs a TowerIntakeTeleop opmode.
      */
-    public TowerIntakeTeleop() { }
+    //public class TowerIntakeTeleop{  } changed to a class to see what happens
+    //make sure to add () after if changing back
 
     @Override
     protected List<Layer> getLayers() {
