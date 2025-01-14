@@ -237,6 +237,7 @@ public final class TowerLayer implements Layer {
             boolean isUnsafe = getForearmAngle() > FOREARM_MAX_SAFE_ANGLE
                 && castedTask.getTowerSwingPower() > 1;
             tower.setPower(isUnsafe ? 0 : castedTask.getTowerSwingPower());
+            forearm.setPower(isUnsafe ? 0 : castedTask.getForearmSwingPower());
             telemetry.addData("tower", castedTask.getTowerSwingPower());
         } else {
             throw new UnsupportedTaskException(this, task);
