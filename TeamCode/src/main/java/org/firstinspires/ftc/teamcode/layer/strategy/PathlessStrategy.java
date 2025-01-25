@@ -66,9 +66,9 @@ public final class PathlessStrategy extends AbstractQueuedLayer {
 
     @Override
     public void acceptTask(Task task) {
-/**        if (task instanceof WinTask) {
-             setSubtasks(Arrays.asList(
-                 // Spike closest to submersible
+        if (task instanceof WinTask) {
+            setSubtasks(Arrays.asList(
+                // Spike closest to submersible
                 new LinearMovementTask(Units.convert(FIRST_RUSH_DIST, Units.Distance.TILE, Units.Distance.M), 0),
                 new LinearMovementTask(0, Units.convert(-STRAFE_DIST, Units.Distance.TILE, Units.Distance.M)),
                 new LinearMovementTask(Units.convert(-RUSH_DIST + FIRST_SHORT_STOP, Units.Distance.TILE, Units.Distance.M), 0),
@@ -87,6 +87,6 @@ public final class PathlessStrategy extends AbstractQueuedLayer {
             ));
         } else {
             throw new UnsupportedTaskException(this, task);
-        }*/
+        }
     }
 }

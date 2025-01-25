@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.Units;
 import org.firstinspires.ftc.teamcode.layer.Layer;
 import org.firstinspires.ftc.teamcode.layer.LayerSetupInfo;
 import org.firstinspires.ftc.teamcode.task.Task;
-import org.firstinspires.ftc.teamcode.task.TowerInitTask;
+import org.firstinspires.ftc.teamcode.task.TowerForearmTask;
 import org.firstinspires.ftc.teamcode.task.TowerTask;
 import org.firstinspires.ftc.teamcode.task.TowerTeleopTask;
 import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
@@ -22,7 +22,7 @@ import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
 /**
  * Controls a tower: a multi-jointed arm with a folding forearm and a claw that can hold specimens
  * if aligned by a human player.
- * The forearm should be "initialized" with a TowerInitTask before it is first used. This unfolds
+ * The forearm should be "initialized" with a TowerForearmTask before it is first used. This unfolds
  * it from the position it starts in to fit in the sizing cube. The forearm remains in its unfolded
  * position throughout the lifetime of the program.
  */
@@ -59,7 +59,7 @@ public final class TowerLayer implements Layer {
      *
      * The number of revolutions of the forearm caused by one revolution of the drive shaft.
      */
-    private static final double FOREARM_GEAR_RATIO = 1.0 / 320.0 * 10;
+    private static final double FOREARM_GEAR_RATIO = 1.0 / 120.0;
 
     /**
      * The maximum safe angle for the forearm from its resting position.
@@ -218,8 +218,8 @@ public final class TowerLayer implements Layer {
 
     @Override
     public void acceptTask(Task task) {
-        if (task instanceof TowerInitTask) {
-            forearm.setPower(0); //Changed from 1 to 0 to not power forearm when initalized.
+        if (task instanceof TowerForearmTask) {
+            forearm.setPower(1);
             isInit = true;
         } else if (task instanceof TowerTask) {
             TowerTask castedTowerTask = (TowerTask)task;
@@ -292,7 +292,7 @@ public final class TowerLayer implements Layer {
     }
 
     /**
-     * A top-level layer that emits a TowerInitTask, needed to prepare the tower for operation.
+     * A top-level layer that emits a TowerForearmTask, needed to prepare the tower for operation.
      * TODO: should be static. The tight connection between InitLayer and TowerLayer is a hacky fix
      * only.
      */
@@ -323,7 +323,7 @@ public final class TowerLayer implements Layer {
                 return new ArrayList<Task>().iterator();
             }
             emitted = true;
-            return Collections.singleton((Task)new TowerInitTask()).iterator();
+            return Collections.singleton((Task)new TowerForearmTask()).iterator();
         }
 
         @Override
