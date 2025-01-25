@@ -33,6 +33,9 @@ public abstract class AbstractQueuedLayer implements Layer {
 
     @Override
     public final Iterator<Task> update(Iterable<Task> completed) {
+        if (isTaskDone()) {
+            throw new IllegalStateException("No subtasks remaining.");
+        }
         return Collections.singleton(subtaskIter.next()).iterator();
     }
 

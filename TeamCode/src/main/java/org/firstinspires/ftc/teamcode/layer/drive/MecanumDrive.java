@@ -105,11 +105,7 @@ public final class MecanumDrive implements Layer {
         telemetry = initInfo.getTelemetry();
         wheels = DRIVE_MOTOR_NAMES.map((key, motorName) -> {
             DcMotor motor = initInfo.getHardwareMap().get(DcMotor.class, motorName);
-            if (key == WheelProperty.WheelKey.LEFT_BACK) {
-                motor.setDirection(DcMotorSimple.Direction.FORWARD);
-            } else {
-                motor.setDirection(DcMotorSimple.Direction.REVERSE);
-            }
+            motor.setDirection(DcMotorSimple.Direction.REVERSE);
             return new Wheel(
                 motor,
                 WHEEL_RADIUS
