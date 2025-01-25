@@ -50,10 +50,10 @@ public final class TowerLayer implements Layer {
      * position.
      */
     private static final double FOREARM_INIT_ANGLE = Units.convert(
-       0,
-        Units.Angle.DEG,
+       115,
+       Units.Angle.DEG,
        Units.Angle.RAD
-    ); //changed value from 115 to 0 to prevent arm opening on initialization.
+    );
 
     /**
      *
