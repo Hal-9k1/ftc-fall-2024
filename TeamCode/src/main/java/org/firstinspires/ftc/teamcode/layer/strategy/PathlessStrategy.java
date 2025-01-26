@@ -54,8 +54,11 @@ public final class PathlessStrategy extends AbstractQueuedLayer {
      * The distance in tiles the robot should "shove" the first preset sample into the net zone at
      * an angle.
      */
-    private static final double FIRST_SHOVE_DIST = 0.4;
+    private static final double FIRST_SHOVE_DIST = 0.2;
 
+    /**
+     * A list of actions to build.
+     */
     private ArrayList<Task> queue;
 
     /**
@@ -101,6 +104,6 @@ public final class PathlessStrategy extends AbstractQueuedLayer {
         //queue.add(new LinearMovementTask(0, Units.convert(-STRAFE_DIST, Units.Distance.TILE, Units.Distance.M)));
         queue.add(new TurnTask(Units.convert(-0.25, Units.Angle.REV, Units.Angle.RAD)));
         queue.add(new LinearMovementTask(Units.convert(-STRAFE_DIST, Units.Distance.TILE, Units.Distance.M), 0));
-        queue.add(new TurnTask(Units.convert(0.25, Units.Angle.REV, Units.Angle.RAD)));
+        queue.add(new TurnTask(Units.convert(0.20, Units.Angle.REV, Units.Angle.RAD)));
     }
 }

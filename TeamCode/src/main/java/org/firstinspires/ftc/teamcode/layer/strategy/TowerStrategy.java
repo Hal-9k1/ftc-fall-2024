@@ -33,7 +33,7 @@ public class TowerStrategy extends AbstractQueuedLayer {
     @Override
     public void acceptTask(Task task) {
         if (task instanceof WinTask) {
-            // Unfold forearm
+            // Forearm unfolded
             // Drive to basket
             queue.add(new LinearMovementTask(Units.convert(12, Units.Distance.IN, Units.Distance.M), 0));
             queue.add(new TurnTask(QUARTER_TURN));
@@ -49,7 +49,7 @@ public class TowerStrategy extends AbstractQueuedLayer {
             score();
             setSubtasks(queue);
         } else if (task instanceof TowerForearmTask) {
-           setSubtasks(Arrays.asList(task)); // Forward task to inferior layer
+           setSubtasks(Arrays.asList(task)); // Forward task to lower layer
         } else {
             throw new UnsupportedTaskException(this, task);
         }
