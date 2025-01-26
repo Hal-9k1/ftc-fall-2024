@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.layer.strategy;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 
 import org.firstinspires.ftc.teamcode.Units;
 import org.firstinspires.ftc.teamcode.layer.AbstractQueuedLayer;
@@ -82,7 +82,7 @@ public final class PathlessStrategy extends AbstractQueuedLayer {
             // Third closest
             queue.add(new LinearMovementTask(Units.convert(RUSH_DIST, Units.Distance.TILE, Units.Distance.M), 0));
             strafeToNextSpike();
-            queue.add(new LinearMovementTask(Units.convert(-RUSH_DIST, Units.Distance.TILE, Units.Distance.M), 0);
+            queue.add(new LinearMovementTask(Units.convert(-RUSH_DIST, Units.Distance.TILE, Units.Distance.M), 0));
             setSubtasks(queue);
         } else {
             throw new UnsupportedTaskException(this, task);

@@ -129,7 +129,8 @@ public final class TestMotorOpMode extends LinearOpMode {
         while (opModeIsActive()) {
             boolean shouldChangeMotor = Math.abs(gamepad1.left_stick_y) > EPSILON;
             if (shouldChangeMotor && !didChangeMotor) {
-                currentMotorIdx = (currentMotorIdx + 1) % motors.size();
+                currentMotorIdx = (motors.size() + currentMotorIdx
+                    - (int)Math.signum(gamepad1.left_stick_y)) % motors.size();
                 currentMotor.setPower(0.0f);
                 updateCurrentMotor();
                 resetEncoderReadings();

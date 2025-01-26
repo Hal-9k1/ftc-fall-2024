@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.task;
 /**
  * Controls the sample intake.
  */
-public class IntakeTask {
+public class IntakeTask implements Task {
     /**
      * Whether the intake should run until a sample has been predicted to be acquired.
      * Depending on the intake implementation, this may be a simple delay or rely on a sensor to
