@@ -35,7 +35,7 @@ public final class PathlessStrategy extends AbstractQueuedLayer {
      * The distance in tiles the robot must travel sideways to position itself in front of the next
      * preset sample.
      */
-    private static final double STRAFE_DIST = 0.25;
+    private static final double STRAFE_DIST = 0.20;
 
     /**
      * The distance in tiles the robot should stop short of RUSH_DIST because it will have to turn
@@ -74,18 +74,21 @@ public final class PathlessStrategy extends AbstractQueuedLayer {
     @Override
     public void acceptTask(Task task) {
         if (task instanceof WinTask) {
-            // Spike closest to submersible
-            queue.add(new LinearMovementTask(Units.convert(FIRST_RUSH_DIST, Units.Distance.TILE, Units.Distance.M), 0));
-            strafeToNextSpike();
-            shoveFirstSpike();
-            // Second closest
-            queue.add(new LinearMovementTask(Units.convert(RUSH_DIST - FIRST_SHORT_STOP, Units.Distance.TILE, Units.Distance.M), 0));
-            strafeToNextSpike();
-            queue.add(new LinearMovementTask(Units.convert(-RUSH_DIST, Units.Distance.TILE, Units.Distance.M), 0));
-            // Third closest
-            queue.add(new LinearMovementTask(Units.convert(RUSH_DIST, Units.Distance.TILE, Units.Distance.M), 0));
-            strafeToNextSpike();
-            queue.add(new LinearMovementTask(Units.convert(-RUSH_DIST, Units.Distance.TILE, Units.Distance.M), 0));
+            queue.add(new LinearMovementTask(1, 0));
+            queue.add(new TurnTask(Units.convert(0.25, Units.Angle.REV, Units.Angle.RAD)));
+            queue.add(new LinearMovementTask(1, 0));
+            //// Spike closest to submersible
+            //queue.add(new LinearMovementTask(Units.convert(FIRST_RUSH_DIST, Units.Distance.TILE, Units.Distance.M), 0));
+            //strafeToNextSpike();
+            //shoveFirstSpike();
+            //// Second closest
+            //queue.add(new LinearMovementTask(Units.convert(RUSH_DIST - FIRST_SHORT_STOP, Units.Distance.TILE, Units.Distance.M), 0));
+            //strafeToNextSpike();
+            //queue.add(new LinearMovementTask(Units.convert(-RUSH_DIST, Units.Distance.TILE, Units.Distance.M), 0));
+            //// Third closest
+            //queue.add(new LinearMovementTask(Units.convert(RUSH_DIST, Units.Distance.TILE, Units.Distance.M), 0));
+            //strafeToNextSpike();
+            //queue.add(new LinearMovementTask(Units.convert(-RUSH_DIST, Units.Distance.TILE, Units.Distance.M), 0));
             setSubtasks(queue);
         } else {
             throw new UnsupportedTaskException(this, task);
@@ -104,6 +107,6 @@ public final class PathlessStrategy extends AbstractQueuedLayer {
         //queue.add(new LinearMovementTask(0, Units.convert(-STRAFE_DIST, Units.Distance.TILE, Units.Distance.M)));
         queue.add(new TurnTask(Units.convert(-0.25, Units.Angle.REV, Units.Angle.RAD)));
         queue.add(new LinearMovementTask(Units.convert(-STRAFE_DIST, Units.Distance.TILE, Units.Distance.M), 0));
-        queue.add(new TurnTask(Units.convert(0.22, Units.Angle.REV, Units.Angle.RAD)));
+        queue.add(new TurnTask(Units.convert(0.21, Units.Angle.REV, Units.Angle.RAD)));
     }
 }

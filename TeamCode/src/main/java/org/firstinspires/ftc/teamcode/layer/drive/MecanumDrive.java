@@ -67,7 +67,7 @@ public final class MecanumDrive implements Layer {
     /**
      * Factor to multiply velocities by before they are sent to motors in autonomous mode.
      */
-    private static final double AUTO_SPEED_FAC = 0.5;
+    private static final double AUTO_SPEED_FAC = 0.2;
 
     /**
      * The robot's wheels.
