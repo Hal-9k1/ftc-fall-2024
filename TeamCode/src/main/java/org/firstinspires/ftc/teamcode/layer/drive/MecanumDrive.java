@@ -55,7 +55,7 @@ public final class MecanumDrive implements Layer {
     /**
      * Half the distance between the driving wheels in meters.
      */
-    private static final double WHEEL_SPAN_RADIUS = Units.convert(15.0 / 2, Units.Distance.IN, Units.Distance.M);
+    private static final double WHEEL_SPAN_RADIUS = Units.convert(34.2 / 2, Units.Distance.CM, Units.Distance.M);
 
     /**
      * Unitless, experimentally determined constant (ew) measuring lack of friction.
@@ -67,7 +67,7 @@ public final class MecanumDrive implements Layer {
     /**
      * Factor to multiply velocities by before they are sent to motors in autonomous mode.
      */
-    private static final double AUTO_SPEED_FAC = 0.2;
+    private static final double AUTO_SPEED_FAC = 0.5;
 
     /**
      * The robot's wheels.
