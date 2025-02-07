@@ -16,7 +16,11 @@ import org.firstinspires.ftc.teamcode.task.Task;
 import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
 
 /**
- * Controls an extendable lift operated by a pulley.
+ * Controls an extendable, swingable lift operated by a pulley.
+ * "Swing" is rotation about the robot's lateral axis and allows the lift to pitch forward and a
+ * limited angle backward.
+ * Extension is use of the pulley to extend or retract the linear slide so the intake is further
+ * from the axle.
  */
 public final class LiftLayer implements Layer {
     /**

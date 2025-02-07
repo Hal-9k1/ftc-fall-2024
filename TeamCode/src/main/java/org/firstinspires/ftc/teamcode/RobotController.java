@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 import org.firstinspires.ftc.teamcode.layer.Layer;
 import org.firstinspires.ftc.teamcode.layer.LayerSetupInfo;
@@ -59,6 +60,11 @@ public class RobotController {
     private List<LayerInfo> layers;
 
     /**
+     * The Telemetry used to report debugging info.
+     */
+    private Telemetry telem;
+
+    /**
      * Constructs a RobotController.
      */
     public RobotController() {
@@ -71,17 +77,19 @@ public class RobotController {
      *
      * @param hardwareMap - HardwareMap used to retrieve interfaces for robot hardware.
      * @param layerStack - the layer stack to use.
+     * @param telemetry - Telemetry used to report debugging info.
      * @param gamepad0 - the first connected Gamepad, or null if none is connected or available.
      * @param gamepad1 - the second connected Gamepad, or null if none is connected or available.
      */
-    public void setup(HardwareMap hardwareMap, List<Layer> layerStack, Gamepad gamepad0,
-        Gamepad gamepad1
-    ) {
-        LayerSetupInfo setupInfo = new LayerSetupInfo(hardwareMap, this, gamepad0, gamepad1);
+    public void setup(HardwareMap hardwareMap, List<Layer> layerStack, Telemetry telemetry,
+        Gamepad gamepad0, Gamepad gamepad1) {
+        LayerSetupInfo setupInfo = new LayerSetupInfo(hardwareMap, this, telemetry,
+            gamepad0, gamepad1);
         this.layers = layerStack.stream().map(layer -> {
             layer.setup(setupInfo);
             return new LayerInfo(layer);
         }).collect(Collectors.toList());
+        this.telem = telemetry;
     }
 
     /**
@@ -107,6 +115,7 @@ public class RobotController {
         while (true) {
             layer = layerIter.next();
             if (!layer.isTaskDone()) {
+                telem.addData("Highest updated layer", layer.getName());
                 break;
             }
             if (!layerIter.hasNext()) {
@@ -134,12 +143,24 @@ public class RobotController {
                 throw new NullPointerException(
                     String.format(
                         "Layer '%s' returned null from update.",
-                        layer.getName()
+                        oldLayer.getName()
                     )
                 );
             }
+            if (!tasks.hasNext()) {
+                break; // Nothing to do for now. TODO: hacky fix
+            }
             while (tasks.hasNext() && layer.isTaskDone()) {
-                layer.acceptTask(tasks.next());
+                Task task = tasks.next();
+                if (task == null) {
+                    throw new NullPointerException(
+                        String.format(
+                            "Layer '%s' returned null as a subtask.",
+                            oldLayer.getName()
+                        )
+                    );
+                }
+                layer.acceptTask(task);
             }
             if (tasks.hasNext()) {
                 String errMsg = "Layer '" + layer.getName() + "' did not consume all"
