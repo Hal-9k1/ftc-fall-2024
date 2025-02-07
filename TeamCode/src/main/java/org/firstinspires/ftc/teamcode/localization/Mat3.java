@@ -8,14 +8,14 @@ public final class Mat3 {
         double m01, double m11, double m21,
         double m02, double m12, double m22
     ) {
-        mat = new double[]{ m00, m10, m20, m01, m11, m21, m02, m12, m22 };
+        mat = new double[] { m00, m10, m20, m01, m11, m21, m02, m12, m22 };
     }
 
     public static Mat3 fromTransform(Mat2 rot, Vec2 pos) {
         return new Mat3(
             rot.elem(0, 0), rot.elem(1, 0), pos.getX(),
             rot.elem(0, 1), rot.elem(1, 1), pos.getY(),
-            0.0,            0.0,            1.0
+            0.0, 0.0, 1.0
         );
     }
 

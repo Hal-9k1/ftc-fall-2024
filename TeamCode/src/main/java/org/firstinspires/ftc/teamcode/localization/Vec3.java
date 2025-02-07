@@ -4,7 +4,7 @@ public final class Vec3 {
     private final double[] vec;
 
     public Vec3(double x, double y, double z) {
-        vec = new double[] { x, y, z };
+        vec = new double[] {x, y, z};
     }
 
     public double getX() {

@@ -1,6 +1,14 @@
 package org.firstinspires.ftc.teamcode.layer.pathfinding;
 
-public class PathfindingLayer extends Layer {
+import org.firstinspires.ftc.teamcode.layer.Layer;
+import org.firstinspires.ftc.teamcode.layer.LayerSetupInfo;
+import org.firstinspires.ftc.teamcode.localization.Mat3;
+import org.firstinspires.ftc.teamcode.localization.Vec2;
+import org.firstinspires.ftc.teamcode.task.Task;
+
+import java.util.Iterator;
+
+public class PathfindingLayer implements Layer {
     public PathfindingLayer() { }
 
     @Override
@@ -50,9 +58,12 @@ public class PathfindingLayer extends Layer {
 
     private class Trajectory {
         private double axial;
+
         private double lateral;
+
         private double yaw;
-        public Trajectory(double axial, double lateral, double yaw) {
+
+        Trajectory(double axial, double lateral, double yaw) {
             this.axial = axial;
             this.lateral = lateral;
             this.yaw = yaw;
@@ -77,6 +88,7 @@ public class PathfindingLayer extends Layer {
 
     private class DynObstacle implements Obstacle {
         private Mat3 transform;
+
         private double size;
 
         @Override
@@ -87,6 +99,7 @@ public class PathfindingLayer extends Layer {
 
     private class StaticObstacle implements Obstacle {
         private Mat3 transform;
+
         private Vec2 size;
 
         @Override

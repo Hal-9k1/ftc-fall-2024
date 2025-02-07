@@ -56,6 +56,8 @@ public final class PathlessStrategy extends AbstractQueuedLayer {
      */
     private static final double FIRST_SHOVE_DIST = 0.2;
 
+    private static final double STRAFE_REPLACEMENT_TURN_ANGLE = 0.25;
+
     /**
      * A list of actions to build.
      */
@@ -101,9 +103,10 @@ public final class PathlessStrategy extends AbstractQueuedLayer {
     }
 
     private void strafeToNextSpike() {
-        //queue.add(new LinearMovementTask(0, Units.convert(-STRAFE_DIST, Units.Distance.TILE, Units.Distance.M)));
-        queue.add(new TurnTask(Units.convert(-0.25, Units.Angle.REV, Units.Angle.RAD)));
+        // Replaces code like:
+        // queue.add(new LinearMovementTask(0, Units.convert(-STRAFE_DIST, Units.Distance.TILE, Units.Distance.M)));
+        queue.add(new TurnTask(Units.convert(-STRAFE_REPLACEMENT_TURN_ANGLE, Units.Angle.REV, Units.Angle.RAD)));
         queue.add(new LinearMovementTask(Units.convert(-STRAFE_DIST, Units.Distance.TILE, Units.Distance.M), 0));
-        queue.add(new TurnTask(Units.convert(0.25, Units.Angle.REV, Units.Angle.RAD)));
+        queue.add(new TurnTask(Units.convert(STRAFE_REPLACEMENT_TURN_ANGLE, Units.Angle.REV, Units.Angle.RAD)));
     }
 }

@@ -4,8 +4,11 @@ public final class DiscLocalizationData extends AbstractFinDiffLocalizationData 
     private static final double EPSILON = 0.001;
 
     private Mat3 transform;
+
     private double accuracy;
+
     private double positionPrecision;
+
     private double rotationPrecision;
 
     public DiscLocalizationData(
