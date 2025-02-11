@@ -53,16 +53,15 @@ public class PathfindingLayer implements Layer {
     }
 
     private void calculatePath() {
+        // Keeps track of the best-scored trajectory and the score it had.
         Trajectory bestTrajectory;
         double bestScore = Double.NEGATIVE_INFINITY;
 
-        // Creates two Vec3 to represent the top right upper corner of the rectangular search space.
-        // Another to represent the bottom left lower corner of the rectangular search space.
-        // I don't understand why we need z for this.
+        // Represents bounds of the search space.
         Trajectory maxBounds = new Trajectory(1, 1, 1);
         Trajectory minBounds = new Trajectory(-1, -1, -1);
 
-        // Implement for loop or something.
+        // Veeeeeeery slow search loop.
         for (double a = minBounds.getAxial(); a < maxBounds.getAxial(); a += TRAJECTORY_SEARCH_INCREMENT) {
             for (double l = minBounds.getLateral(); l < maxBounds.getLateral(); l += TRAJECTORY_SEARCH_INCREMENT) {
                 for (double y = minBounds.getYaw(); y < maxBounds.getYaw(); y += TRAJECTORY_SEARCH_INCREMENT) {
@@ -78,7 +77,9 @@ public class PathfindingLayer implements Layer {
             }
         }
         if (bestScore == Double.NEGATIVE_INFINITY) {
-            throw new RuntimeException("AAAAAAAAAAAAAAA (panic.)");
+            // Dynamic window was empty of trajectories (all valid ones interesct obstacles)
+            // Spin until the dynamic window isn't empty
+            bestTrajectory = new Trajectory(0, 0, 1);
         }
         currentTrajectory = bestTrajectory;
     }
