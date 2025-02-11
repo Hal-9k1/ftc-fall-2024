@@ -157,7 +157,6 @@ public final class PathfindingLayer implements Layer {
 		double weightedSpeed = evaluateSpeed(t) * SPEED_COEFF;
 		return weightedTargetAngle + weightedClearance + weightedSpeed;
     }
-	
 
     /**
      * Computes a comparable score for a trajectory on the grounds of final angle to target.
@@ -173,7 +172,6 @@ public final class PathfindingLayer implements Layer {
         double angle = finalDirection.angleWith(finalDelta);
 		return TARGET_ANGLE_SMOOTHING_C / (angle + TARGET_ANGLE_SMOOTHING_K);
     }
-
 
     /**
      * Computes a comparable score for a trajectory on the grounds of minimum clearance to
