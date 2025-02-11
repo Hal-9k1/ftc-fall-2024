@@ -10,6 +10,10 @@ import org.firstinspires.ftc.teamcode.task.Task;
 import java.util.Iterator;
 
 public class PathfindingLayer implements Layer {
+    private static final double TRAJECTORY_SEARCH_INCREMENT = 0.01;
+
+    private Trajectory currentTrajectory;
+
     public PathfindingLayer() { }
 
     @Override
@@ -47,27 +51,38 @@ public class PathfindingLayer implements Layer {
     private double evaluateSpeed(Trajectory t) {
 
     }
+
     private void calculatePath() {
-        // Two trajectory fields, one stores current, another stores best. We can probably reassign them during the loop later.
-        Trajectory currentTrajectory;
         Trajectory bestTrajectory;
-        
+        double bestScore = Double.NEGATIVE_INFINITY;
+
         // Creates two Vec3 to represent the top right upper corner of the rectangular search space.
         // Another to represent the bottom left lower corner of the rectangular search space.
         // I don't understand why we need z for this.
-        Vec3 topRightUpper = new Vec3(placeholderX, placeholderY, placeholderZ);
-        Vec3 bottomLeftLower = new Vec3(placeholderX2, placeholderY2, placeholderZ2);
+        Trajectory maxBounds = new Trajectory(1, 1, 1);
+        Trajectory minBounds = new Trajectory(-1, -1, -1);
 
-        // Using those two points, we can find the x, y, and z lengths of the rectangular prism.
-        double lengthX = topRightUpper.getX() - bottomLeftLower.getX();
-        double lengthY = topRightUpper.getY() - bottomLeftLower.getY();
-        double lengthZ = topRightUpper.getZ() - bottomLeftLower.getZ();
-
-        // Constant for only searching fixed distanced points in the search space.
-        final int fixedDistance = placeholder;
-        
         // Implement for loop or something.
+        for (double a = minBounds.getAxial(); a < maxBounds.getAxial(); a += TRAJECTORY_SEARCH_INCREMENT) {
+            for (double l = minBounds.getLateral(); l < maxBounds.getLateral(); l += TRAJECTORY_SEARCH_INCREMENT) {
+                for (double y = minBounds.getYaw(); y < maxBounds.getYaw(); y += TRAJECTORY_SEARCH_INCREMENT) {
+                    if (!checkDynamicWindow(t)) {
+                        continue;
+                    }
+                    double score = evaluateTrajectory(t);
+                    if (score > bestScore) {
+                        bestScore = score;
+                        bestTrajectory = t;
+                    }
+                }
+            }
+        }
+        if (bestScore == Double.NEGATIVE_INFINITY) {
+            throw new RuntimeException("AAAAAAAAAAAAAAA (panic.)");
+        }
+        currentTrajectory = bestTrajectory;
     }
+
     private boolean checkDynamicWindow(Trajectory t) {
         // hit something?
         // axial and lateral and yaw are possible?
