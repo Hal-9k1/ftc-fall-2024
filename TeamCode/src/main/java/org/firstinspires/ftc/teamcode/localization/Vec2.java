@@ -34,6 +34,10 @@ public final class Vec2 {
         return Math.sqrt(dot(this));
     }
 
+    public double getAngle() {
+        return Math.atan2(y, x);
+    }
+
     public boolean isFinite() {
         return Double.isFinite(x) && !Double.isNaN(x) && Double.isFinite(y) && !Double.isNaN(y);
     }
