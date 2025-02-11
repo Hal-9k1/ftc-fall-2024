@@ -1,23 +1,32 @@
 package org.firstinspires.ftc.teamcode.layer.pathfinding;
 
-import java.awt.geom;
-import java.awt.geom.Point2D;
-import java.lang.Object;
-import java.lang.Math;
+import org.firstinspires.ftc.teamcode.layer.Layer;
+import org.firstinspires.ftc.teamcode.layer.LayerSetupInfo;
+import org.firstinspires.ftc.teamcode.localization.Mat3;
+import org.firstinspires.ftc.teamcode.localization.Vec2;
+import org.firstinspires.ftc.teamcode.task.Task;
+
+import java.util.ArrayList;
+import java.util.Iterator;
 
 public class PathfindingLayer extends Layer {
-	private static final double a = 0.5;
-	private static final double b = 1.2;
-	private static final double g = 0.5;
-	private static final double sigma = 1;
-	private static final double time = 0.25;
-	
-	
+	private static final double TARGET_ANGLE_COEFF = 0.5;
+	private static final double CLEARENCE_COEFF = 1.2;
+	private static final double SPEED_COEFF = 0.5;
+	private static final double SIGMA = 1;
+	private static final double SEARCH_TIME_INCREMENT = 0.25;
+    private static final double TARGET_ANGLE_SMOOTHING_C = 1000;
+    private static final double TARGET_ANGLE_SMOOTHING_K = 1;
+    private static final double CLEARENCE_STEP = 0.05;
+
+    private Mat3 goal;
+    private List<Obstacle> obstacles;
+
     public PathfindingLayer() { }
 
     @Override
     public void setup(LayerSetupInfo setupInfo) {
-
+        obstacles = new ArrayList<>();
     }
 
     @Override
@@ -36,42 +45,66 @@ public class PathfindingLayer extends Layer {
     }
 
     private double evaluateTrajectory(Trajectory t) {
-		double weightedTargetAngle = evaluateTargetAngle(Trajectory t)*a;
-		double weightedClearance = evaluateClearence(Trajectory t)*b;
-		double weightedSpeed = evaluateSpeed(Trajectory t)*g;
-
-		return sigma*(weightedTargetAngle + weightedClearance + weightedSpeed);
+		double weightedTargetAngle = evaluateTargetAngle(t) * a;
+		double weightedClearance = evaluateClearence(t) * b;
+		double weightedSpeed = evaluateSpeed(t) * g;
+		return SIGMA * (weightedTargetAngle + weightedClearance + weightedSpeed);
     }
 	
 
 	
     private double evaluateTargetAngle(Trajectory t) {
-		double targetSlope = target.getXp()/target.getYp();
-		double angle; 
-		int c = 1000;
-		int k = 1;
-		if (t.getYaw() == 0){
-		angle = Math.toDegrees(Math.atan((target.getYp()-0)/(target.getXp()-0)))}
-//		else { 
-		return c/(angle+k);
+        Mat3 finalTransform = getTrajectoryTransform(t, 1);
+        Vec2 finalDirection = finalTransform.getDirection();
+        Vec2 finalDelta = finalTransform.getTranslation().mul(-1).add(goal.getTranslation());
+        double angle = finalDirection.angleWith(finalDelta);
+		return TARGET_ANGLE_SMOOTHING_C / (angle + TARGET_ANGLE_SMOOTHING_K);
     }
 
     private double evaluateClearence(Trajectory t) {
-		
+        double minClearence = Double.NEGATIVE_INFINITY;
+		for (double frac = 0; frac < 1; frac += CLEARENCE_STEP) {
+            Vec2 translation = getTrajectoryTransform(t, frac).getTranslation();
+            for (Obstacle obstacle : obstacles) {
+                double clearenceToObstacle = obstacle.getDistanceTo(translation);
+                if (minClearence > clearenceToObstacle) {
+                    minClearence = clearenceToObstacle;
+                }
+            }
+        }
+        return minClearence;
     }
 
     private double evaluateSpeed(Trajectory t) {
-		double speed = t.getTrajectoryVelocity;  
-		return speed;
+		return t.getTrajectoryVelocity().getTranslation().len();  
     }
 
     private boolean checkDynamicWindow(Trajectory t) {
-        // hit something?
+		for (double frac = 0; frac < 1; frac += CLEARENCE_STEP) {
+            Vec2 translation = getTrajectoryTransform(t, frac).getTranslation();
+            for (Obstacle obstacle : obstacles) {
+                double clearenceToObstacle = obstacle.getDistanceTo(translation);
+                if (clearenceToObstacle < 0) {
+                    return false;
+                }
+            }
+        }
+        return Math.abs(t.getAxial()) + Math.abs(t.getLateral()) + Math.abs(t.getYaw()) < 1;
         // axial and lateral and yaw are possible?
     }
 
     private void addObstacle(Obstacle obstacle) {
+        obstacles.add(obstacle);
+    }
 
+    private Mat3 getTrajectoryTransform(Trajectory t, double frac) {
+        // TODO: implement
+        return new Mat3();
+    }
+
+    private Mat3 getTrajectoryVelocity(Trajectory t, double frac) {
+        // TODO: implement
+        return new Mat3();
     }
 
     private class Trajectory {

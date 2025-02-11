@@ -34,6 +34,14 @@ public final class Vec2 {
         return Math.sqrt(dot(this));
     }
 
+    public Vec2 unit() {
+        return mul(1 / len());
+    }
+
+    public double angleWith(Vec2 other) {
+        return Math.acos(unit().dot(other.unit()));
+    }
+
     public boolean isFinite() {
         return Double.isFinite(x) && !Double.isNaN(x) && Double.isFinite(y) && !Double.isNaN(y);
     }
