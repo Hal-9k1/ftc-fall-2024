@@ -94,6 +94,16 @@ public final class PathfindingLayer implements Layer {
     private long lastCalcTime;
 
     /**
+     * The field transform of the robot before the current trajectory was applied.
+     */
+    private Mat3 initialTransform;
+
+    /**
+     * The robot space velocity of the robot before the current trajectory was applied.
+     */
+    private Mat3 initialVelocity;
+
+    /**
      * Constructs a PathfindingLayer.
      */
     public PathfindingLayer() { }
@@ -280,13 +290,39 @@ public final class PathfindingLayer implements Layer {
      * @return The predicted transform of the robot.
      */
     private Mat3 getTrajectoryTransform(Trajectory t, double frac) {
-        // TODO: implement
-        return new Mat3();
+        double za = t.getAxial();
+        double zl = t.getLateral();
+        double zth = t.getYaw(); // t for theta
+        double c = Math.cos(zth);
+        double s = Math.sin(zth);
+        double zx = c * za - s * zl;
+        double zy = s * za + c * zl;
+        double tf = frac * CALCULATE_INTERVAL;
+        double x0 = initialTransform.getTranslation().getX();
+        double vx0 = initialVelocity.getTranslation().getX();
+        double y0 = initialTransform.getTranslation().getY();
+        double vy0 = initialVelocity.getTranslation().getY();
+        double vth0 = initialVelocity.getDirection().getAngle();
+        double th0 = initialTransform.getDirection().getAngle();
+
+        double x = x0 + vx0 * tf
+            + tf * (
+                za * (Math.sin(th0 + vth0 * tf + zth * tf * tf / 2) - Math.sin(th0))
+                + zl * (Math.cos(th0 + vth0 * tf + zth * tf * tf / 2) - Math.cos(th0)))
+            / Math.sqrt(vth0 * vth0 - 2 * zth0);
+        double y = y0 + vy0 * tf
+            + tf * (
+                -za * (Math.cos(th0 + vth0 * tf + zth * tf * tf / 2) - Math.cos(th0))
+                + zl * (Math.sin(th0 + vth0 * tf + zth * tf * tf / 2) - Math.sin(th0)))
+            / Math.sqrt(vth0 * vth0 - 2 * zth0);
+        double th = th0 + vth0 * tf + zth * tf * tf / 2;
+
+        return Mat3.fromTransform(Mat2.fromAngle(th), new Vec2(x, y));
     }
 
     /**
-     * Gets the predicted robot translation and rotational velocity after applying the given set of
-     * accelerations (trajectory) over the given fraction of the time interval.
+     * Gets the predicted field space robot translation and rotational velocity after applying the
+     * given set of accelerations (trajectory) over the given fraction of the time interval.
      *
      * @param t - the trajectory to simulate applying.
      * @param frac - the fraction of the trajectory along which the robot is to have traveled.
@@ -295,11 +331,26 @@ public final class PathfindingLayer implements Layer {
      * rotational velocity.
      */
     private Mat3 getTrajectoryVelocity(Trajectory t, double frac) {
+        double tf = frac * CALCULATE_INTERVAL;
+        double tfz = Mat3.fromTransform(
+            Mat2.fromAngle(t.getYaw() * tf),
+            new Vec2(t.getAxial(), t.getLateral()).mul(t)
+        );
+        return getVelocity().mul(tfz);
+    }
+
+    /**
+     * Gets the current field transform of the robot.
+     */
+    private Mat3 getTransform() {
         // TODO: implement
         return new Mat3();
     }
 
-    private Mat3 getTransform() {
+    /**
+     * Gets the current field space velocity of the robot.
+     */
+    private Mat3 getVelocity() {
         // TODO: implement
         return new Mat3();
     }
