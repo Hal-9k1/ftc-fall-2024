@@ -134,7 +134,7 @@ public final class Mat3 {
     }
 
     public Vec2 getDirection() {
-        return Mat3.fromTransform(minor(2, 2), new Vec2()).mul(new Vec2(1, 0));
+        return Mat3.fromTransform(minor(2, 2), new Vec2(0, 0)).mul(new Vec2(1, 0));
     }
 
     private void checkDim(int num, boolean col) {

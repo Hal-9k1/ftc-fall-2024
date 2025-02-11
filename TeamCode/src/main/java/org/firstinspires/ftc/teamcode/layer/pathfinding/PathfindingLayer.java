@@ -1,14 +1,19 @@
 package org.firstinspires.ftc.teamcode.layer.pathfinding;
 
+import org.firstinspires.ftc.teamcode.Units;
 import org.firstinspires.ftc.teamcode.layer.Layer;
 import org.firstinspires.ftc.teamcode.layer.LayerSetupInfo;
 import org.firstinspires.ftc.teamcode.localization.Mat3;
 import org.firstinspires.ftc.teamcode.localization.Vec2;
 import org.firstinspires.ftc.teamcode.localization.Vec3;
+import org.firstinspires.ftc.teamcode.task.HolonomicDriveTask;
+import org.firstinspires.ftc.teamcode.task.MoveToFieldTask;
 import org.firstinspires.ftc.teamcode.task.Task;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Computes holonomic drive powers to pathfind around obstacles to a goal transform.
@@ -19,21 +24,6 @@ public final class PathfindingLayer implements Layer {
      * before the robot is considered arrived.
      */
     private static final double GOAL_COMPLETE_EPSILON = 0.01;
-
-    /**
-     * The goal robot transform in field space.
-     */
-    private Mat3 goal;
-
-    /**
-     * The current trajectory the robot should take.
-     */
-    private Trajectory currentTrajectory;
-
-    /**
-     * The timestamp in nanoseconds the current trajectory was calculated.
-     */
-    private long lastCalcTime;
 
     /**
      * The trajectory parameter increment to use between trajectories when numerically maximizing.
@@ -48,7 +38,7 @@ public final class PathfindingLayer implements Layer {
     /**
      * The coefficient of the clearance term in the objective function.
      */
-	private static final double CLEARENCE_COEFF = 1.2;
+	private static final double CLEARANCE_COEFF = 1.2;
 
     /**
      * The coefficient of the speed term in the objective function.
@@ -78,9 +68,9 @@ public final class PathfindingLayer implements Layer {
 
     /**
      * The fraction of a trajectory that should be between successive points checked for the
-     * clearence term.
+     * clearance term.
      */
-    private static final double CLEARENCE_STEP = 0.05;
+    private static final double CLEARANCE_STEP = 0.05;
 
     /**
      * The goal field transform the robot should pathfind to.
@@ -88,10 +78,20 @@ public final class PathfindingLayer implements Layer {
     private Mat3 goal;
 
     /**
-     * The list of obstacles to consider in the clearence objective function term and dynamic window
+     * The list of obstacles to consider in the clearance objective function term and dynamic window
      * culling.
      */
     private List<Obstacle> obstacles;
+
+    /**
+     * The current trajectory the robot should take.
+     */
+    private Trajectory currentTrajectory;
+
+    /**
+     * The timestamp in nanoseconds the current trajectory was calculated.
+     */
+    private long lastCalcTime;
 
     /**
      * Constructs a PathfindingLayer.
@@ -113,15 +113,15 @@ public final class PathfindingLayer implements Layer {
     @Override
     public Iterator<Task> update(Iterable<Task> completed) {
         long nowNano = System.nanoTime();
-        if (nowNano - lastCalcTime > Units.convert(CALC_TIME_INTERVAL, Units.Time.SEC, Units.Time.NANO)) {
+        if (nowNano - lastCalcTime > Units.convert(CALCULATE_INTERVAL, Units.Time.SEC, Units.Time.NANO)) {
             calculatePath();
             lastCalcTime = nowNano;
         }
-        return Collections.singleton(new HolonomicDriveTask(
+        return Collections.singleton((Task)(new HolonomicDriveTask(
             currentTrajectory.getAxial(),
             -currentTrajectory.getLateral(),
             currentTrajectory.getYaw()
-        )).iterator();
+        ))).iterator();
     }
 
     @Override
@@ -142,9 +142,9 @@ public final class PathfindingLayer implements Layer {
      * @return A comparable score for the trajectory.
      */
     private double evaluateTrajectory(Trajectory t) {
-		double weightedTargetAngle = evaluateTargetAngle(t) * a;
-		double weightedClearance = evaluateClearence(t) * b;
-		double weightedSpeed = evaluateSpeed(t) * g;
+		double weightedTargetAngle = evaluateTargetAngle(t) * TARGET_ANGLE_COEFF;
+		double weightedClearance = evaluateClearence(t) * CLEARANCE_COEFF;
+		double weightedSpeed = evaluateSpeed(t) * SPEED_COEFF;
 		return weightedTargetAngle + weightedClearance + weightedSpeed;
     }
 	
@@ -166,21 +166,21 @@ public final class PathfindingLayer implements Layer {
 
 
     /**
-     * Computes a comparable score for a trajectory on the grounds of minimum clearence to
+     * Computes a comparable score for a trajectory on the grounds of minimum clearance to
      * obstacles.
      *
      * @param t - the trajectory to evaluate.
      * @return A comparable score for the trajectory which is higher the greater the minimum
-     * clearence the robot has to any obstacle at any point during the evaluated trajectory.
+     * clearance the robot has to any obstacle at any point during the evaluated trajectory.
      */
     private double evaluateClearence(Trajectory t) {
         double minClearence = Double.NEGATIVE_INFINITY;
-		for (double frac = 0; frac < 1; frac += CLEARENCE_STEP) {
+		for (double frac = 0; frac < 1; frac += CLEARANCE_STEP) {
             Vec2 translation = getTrajectoryTransform(t, frac).getTranslation();
             for (Obstacle obstacle : obstacles) {
-                double clearenceToObstacle = obstacle.getDistanceTo(translation);
-                if (minClearence > clearenceToObstacle) {
-                    minClearence = clearenceToObstacle;
+                double clearanceToObstacle = obstacle.getDistanceTo(translation);
+                if (minClearence > clearanceToObstacle) {
+                    minClearence = clearanceToObstacle;
                 }
             }
         }
@@ -195,7 +195,7 @@ public final class PathfindingLayer implements Layer {
      * translational velocity at the end of the evaluated trajectory..
      */
     private double evaluateSpeed(Trajectory t) {
-		return t.getTrajectoryVelocity().getTranslation().len();
+		return getTrajectoryVelocity(t, 1).getTranslation().len();
     }
 
     /**
@@ -219,6 +219,7 @@ public final class PathfindingLayer implements Layer {
         for (double a = minBounds.getAxial(); a < maxBounds.getAxial(); a += TRAJECTORY_SEARCH_INCREMENT) {
             for (double l = minBounds.getLateral(); l < maxBounds.getLateral(); l += TRAJECTORY_SEARCH_INCREMENT) {
                 for (double y = minBounds.getYaw(); y < maxBounds.getYaw(); y += TRAJECTORY_SEARCH_INCREMENT) {
+                    Trajectory t = new Trajectory(a, l, y);
                     if (!checkDynamicWindow(t)) {
                         continue;
                     }
@@ -249,11 +250,11 @@ public final class PathfindingLayer implements Layer {
      * not cause the robot to crash into an obstacle.
      */
     private boolean checkDynamicWindow(Trajectory t) {
-		for (double frac = 0; frac < 1; frac += CLEARENCE_STEP) {
+		for (double frac = 0; frac < 1; frac += CLEARANCE_STEP) {
             Vec2 translation = getTrajectoryTransform(t, frac).getTranslation();
             for (Obstacle obstacle : obstacles) {
-                double clearenceToObstacle = obstacle.getDistanceTo(translation);
-                if (clearenceToObstacle < 0) {
+                double clearanceToObstacle = obstacle.getDistanceTo(translation);
+                if (clearanceToObstacle < 0) {
                     return false;
                 }
             }
@@ -294,6 +295,11 @@ public final class PathfindingLayer implements Layer {
      * rotational velocity.
      */
     private Mat3 getTrajectoryVelocity(Trajectory t, double frac) {
+        // TODO: implement
+        return new Mat3();
+    }
+
+    private Mat3 getTransform() {
         // TODO: implement
         return new Mat3();
     }
@@ -404,8 +410,8 @@ public final class PathfindingLayer implements Layer {
         @Override
         public double getDistanceTo(Vec2 point) {
             Vec2 delta = transform.getTranslation().add(point.mul(-1));
-            double axialProj = transform.getDirection().proj(delta);
-            double lateralProj = transform.getDirection().getPerpendicular().proj(delta);
+            double axialProj = transform.getDirection().proj(delta).len();
+            double lateralProj = transform.getDirection().getPerpendicular().proj(delta).len();
             if (lateralProj < size / 2) {
                 return axialProj;
             }
@@ -437,7 +443,7 @@ public final class PathfindingLayer implements Layer {
          * @param transform - the transform of the center of the segment, given in units of meters.
          * @param size - the width and height of the rectangle expressed as a 2D vector.
          */
-        DynamicObstacle(Mat3 transform, Vec2 size) {
+        StaticObstacle(Mat3 transform, Vec2 size) {
             this.transform = transform;
             this.size = size;
         }
@@ -449,7 +455,7 @@ public final class PathfindingLayer implements Layer {
             double m2 = -m1;
             boolean useHeight = Math.signum(p.getY() - m1) == Math.signum(p.getY() - m2);
             double dim = useHeight ? size.getY() : size.getX();
-            return p.len() - dim / (2 * Math.cos(p.angle()));
+            return p.len() - dim / (2 * Math.cos(p.getAngle()));
         }
     }
 }

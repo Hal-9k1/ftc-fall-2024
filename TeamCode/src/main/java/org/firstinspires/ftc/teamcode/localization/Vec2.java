@@ -49,4 +49,12 @@ public final class Vec2 {
     public boolean isFinite() {
         return Double.isFinite(x) && !Double.isNaN(x) && Double.isFinite(y) && !Double.isNaN(y);
     }
+
+    public Vec2 proj(Vec2 projectee) {
+        return mul(dot(projectee) / dot(this));
+    }
+
+    public Vec2 getPerpendicular() {
+        return new Vec2(1, -y / x);
+    }
 }
