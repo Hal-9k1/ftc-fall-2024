@@ -13,7 +13,7 @@ import java.util.Iterator;
 /**
  * Computes holonomic drive powers to pathfind around obstacles to a goal transform.
  */
-public class PathfindingLayer implements Layer {
+public final class PathfindingLayer implements Layer {
     /**
      * The distance in meters and offset in radians the robot's transform may be from the goal
      * before the robot is considered arrived.
@@ -35,18 +35,62 @@ public class PathfindingLayer implements Layer {
      */
     private long lastCalcTime;
 
+    /**
+     * The trajectory parameter increment to use between trajectories when numerically maximizing.
+     */
     private static final double TRAJECTORY_SEARCH_INCREMENT = 0.01;
 
+    /**
+     * The coefficient of the target angle term in the objective function.
+     */
 	private static final double TARGET_ANGLE_COEFF = 0.5;
+
+    /**
+     * The coefficient of the clearance term in the objective function.
+     */
 	private static final double CLEARENCE_COEFF = 1.2;
+
+    /**
+     * The coefficient of the speed term in the objective function.
+     */
 	private static final double SPEED_COEFF = 0.5;
-	private static final double SIGMA = 1;
-	private static final double SEARCH_TIME_INCREMENT = 0.25;
+
+    /**
+     * How often to recalculate the optimal trajectory.
+     */
+	private static final double CALCULATE_INTERVAL = 0.25;
+
+    /**
+     * A constant in the smoothing function used on the target angle term of the objective function.
+     *
+     * c / k = maximum score of target angle term.
+     */
     private static final double TARGET_ANGLE_SMOOTHING_C = 1000;
+
+    /**
+     * A constant in the smoothing function used on the target angle term of the objective function.
+     *
+     * Controls speed of decay as target angle moves away from 0.
+     *
+     * @see #TARGET_ANGLE_SMOOTHING_C
+     */
     private static final double TARGET_ANGLE_SMOOTHING_K = 1;
+
+    /**
+     * The fraction of a trajectory that should be between successive points checked for the
+     * clearence term.
+     */
     private static final double CLEARENCE_STEP = 0.05;
 
+    /**
+     * The goal field transform the robot should pathfind to.
+     */
     private Mat3 goal;
+
+    /**
+     * The list of obstacles to consider in the clearence objective function term and dynamic window
+     * culling.
+     */
     private List<Obstacle> obstacles;
 
     /**
@@ -101,7 +145,7 @@ public class PathfindingLayer implements Layer {
 		double weightedTargetAngle = evaluateTargetAngle(t) * a;
 		double weightedClearance = evaluateClearence(t) * b;
 		double weightedSpeed = evaluateSpeed(t) * g;
-		return SIGMA * (weightedTargetAngle + weightedClearance + weightedSpeed);
+		return weightedTargetAngle + weightedClearance + weightedSpeed;
     }
 	
 
@@ -143,7 +187,6 @@ public class PathfindingLayer implements Layer {
         return minClearence;
     }
 
-
     /**
      * Computes a comparable score for a trajectory on the grounds of final speed of the robot.
      *
@@ -152,9 +195,17 @@ public class PathfindingLayer implements Layer {
      * translational velocity at the end of the evaluated trajectory..
      */
     private double evaluateSpeed(Trajectory t) {
-		return t.getTrajectoryVelocity().getTranslation().len();  
+		return t.getTrajectoryVelocity().getTranslation().len();
     }
 
+    /**
+     * Maximizes the objective function inside the dynamic window, setting
+     * {@link #currentTrajectory} to the result.
+     *
+     * Searches for the trajectory with the highest score from the objective function within a small
+     * rectangular region. Trajectories outside the dynamic window are culled before calling the
+     * objective function.
+     */
     private void calculatePath() {
         // Keeps track of the best-scored trajectory and the score it had.
         Trajectory bestTrajectory;
@@ -208,7 +259,6 @@ public class PathfindingLayer implements Layer {
             }
         }
         return Math.abs(t.getAxial()) + Math.abs(t.getLateral()) + Math.abs(t.getYaw()) < 1;
-        // axial and lateral and yaw are possible?
     }
 
     /**
@@ -220,11 +270,29 @@ public class PathfindingLayer implements Layer {
         obstacles.add(obstacle);
     }
 
+    /**
+     * Gets the predicted robot transform after applying the given set of accelerations (trajectory)
+     * over the given fraction of the time interval.
+     *
+     * @param t - the trajectory to simulate applying.
+     * @param frac - the fraction of the trajectory along which the robot is to have traveled.
+     * @return The predicted transform of the robot.
+     */
     private Mat3 getTrajectoryTransform(Trajectory t, double frac) {
         // TODO: implement
         return new Mat3();
     }
 
+    /**
+     * Gets the predicted robot translation and rotational velocity after applying the given set of
+     * accelerations (trajectory) over the given fraction of the time interval.
+     *
+     * @param t - the trajectory to simulate applying.
+     * @param frac - the fraction of the trajectory along which the robot is to have traveled.
+     * @return The predicted velocities of the robot, encoded as a transformation matrix where the
+     * translation component is the translational velocity and the rotation component is the
+     * rotational velocity.
+     */
     private Mat3 getTrajectoryVelocity(Trajectory t, double frac) {
         // TODO: implement
         return new Mat3();
@@ -236,40 +304,98 @@ public class PathfindingLayer implements Layer {
      * Alternately, a 3D point in the search space of trajectories.
      */
     private static class Trajectory {
+        /**
+         * The axial acceleration to apply to the robot.
+         *
+         * Positive values indicate forward acceleration.
+         */
         private double axial;
 
+        /**
+         * The lateral acceleration to apply to the robot.
+         *
+         * Positive values indicate leftward acceleration.
+         */
         private double lateral;
 
+        /**
+         * The rotational acceleration to apply to the robot.
+         *
+         * Positive value indicate counterclockwise acceleration.
+         */
         private double yaw;
 
+        /**
+         * Constructs a Trajectory.
+         *
+         * @param a - the axial acceleration to apply to the robot.
+         * @param l - the lateral acceleration to apply to the robot.
+         * @param y - the rotational acceleration to apply to the robot.
+         */
         Trajectory(double axial, double lateral, double yaw) {
             this.axial = axial;
             this.lateral = lateral;
             this.yaw = yaw;
         }
 
+        /**
+         * The axial acceleration to apply to the robot.
+         */
         public double getAxial() {
             return axial;
         }
 
+        /**
+         * The lateral acceleration to apply to the robot.
+         */
         public double getLateral() {
             return lateral;
         }
 
+        /**
+         * The rotational acceleration to apply to the robot.
+         */
         public double getYaw() {
             return yaw;
         }
     }
 
+    /**
+     * Represents an impassable obstacle on the field.
+     */
     private static interface Obstacle {
+        /**
+         * Returns the signed distance in to the given field space.
+         *
+         * @param point - the field point to calculate the distance to, given in units of meters.
+         * @return The signed distance to the closest surface of the obstacle in meters.
+         */
         double getDistanceTo(Vec2 point);
     }
 
-    private static class DynamicObstacle implements Obstacle {
+    /**
+     * Represents an obstacle detected by a distance sensor.
+     *
+     * These obstacles are represented by line segments that are oriented to face the robot and have
+     * length dependent on the distance from the robot, both at the time of detection.
+     */
+    private static final class DynamicObstacle implements Obstacle {
+        /**
+         * The transform of the center of the segment, given in units of meters.
+         */
         private Mat3 transform;
 
+        /**
+         * The length of the segment in meters.
+         */
         private double size;
 
+        /**
+         * Constructs a DynamicObstacle.
+         *
+         * @param transform - the transform of the center of the segment, given in units of meters.
+         * @param size - the length of the segment in meters.
+         */
         DynamicObstacle(Mat3 transform, double size) {
             this.transform = transform;
             this.size = size;
@@ -289,11 +415,28 @@ public class PathfindingLayer implements Layer {
         }
     }
 
+    /**
+     * Represents a rectangular obstacle whose transform and size is definitely known.
+     *
+     * The robot is prepopulated with these obstacles to represent impassible parts of the field.
+     */
     private static class StaticObstacle implements Obstacle {
+        /**
+         * The transform of the center of the segment, given in units of meters.
+         */
         private Mat3 transform;
 
+        /**
+         * The width and height of the rectangle contained in the x and y components of a 2D vector.
+         */
         private Vec2 size;
 
+        /**
+         * Constructs a DynamicObstacle.
+         *
+         * @param transform - the transform of the center of the segment, given in units of meters.
+         * @param size - the width and height of the rectangle expressed as a 2D vector.
+         */
         DynamicObstacle(Mat3 transform, Vec2 size) {
             this.transform = transform;
             this.size = size;
