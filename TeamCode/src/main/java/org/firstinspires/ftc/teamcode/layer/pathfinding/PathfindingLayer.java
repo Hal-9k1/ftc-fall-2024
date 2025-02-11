@@ -26,7 +26,9 @@ public class PathfindingLayer implements Layer {
 
     @Override
     public boolean isTaskDone() {
-
+        Mat3 delta = getTransform().inv().mul(goal);
+        return delta.getTranslation().len() < GOAL_COMPLETE_EPSILON
+            && delta.getDirection().getAngle() < GOAL_COMPLETE_EPSILON;
     }
 
     @Override
