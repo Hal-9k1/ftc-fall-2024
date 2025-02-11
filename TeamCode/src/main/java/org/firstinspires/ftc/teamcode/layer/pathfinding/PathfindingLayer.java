@@ -4,6 +4,7 @@ import org.firstinspires.ftc.teamcode.layer.Layer;
 import org.firstinspires.ftc.teamcode.layer.LayerSetupInfo;
 import org.firstinspires.ftc.teamcode.localization.Mat3;
 import org.firstinspires.ftc.teamcode.localization.Vec2;
+import org.firstinspires.ftc.teamcode.localization.Vec3;
 import org.firstinspires.ftc.teamcode.task.Task;
 
 import java.util.Iterator;
@@ -32,6 +33,8 @@ public class PathfindingLayer implements Layer {
      * The timestamp in nanoseconds the current trajectory was calculated.
      */
     private long lastCalcTime;
+
+    private static final double TRAJECTORY_SEARCH_INCREMENT = 0.01;
 
     /**
      * Constructs a PathfindingLayer.
@@ -119,6 +122,38 @@ public class PathfindingLayer implements Layer {
      */
     private double evaluateSpeed(Trajectory t) {
 
+    }
+
+    private void calculatePath() {
+        // Keeps track of the best-scored trajectory and the score it had.
+        Trajectory bestTrajectory;
+        double bestScore = Double.NEGATIVE_INFINITY;
+
+        // Represents bounds of the search space.
+        Trajectory maxBounds = new Trajectory(1, 1, 1);
+        Trajectory minBounds = new Trajectory(-1, -1, -1);
+
+        // Veeeeeeery slow search loop.
+        for (double a = minBounds.getAxial(); a < maxBounds.getAxial(); a += TRAJECTORY_SEARCH_INCREMENT) {
+            for (double l = minBounds.getLateral(); l < maxBounds.getLateral(); l += TRAJECTORY_SEARCH_INCREMENT) {
+                for (double y = minBounds.getYaw(); y < maxBounds.getYaw(); y += TRAJECTORY_SEARCH_INCREMENT) {
+                    if (!checkDynamicWindow(t)) {
+                        continue;
+                    }
+                    double score = evaluateTrajectory(t);
+                    if (score > bestScore) {
+                        bestScore = score;
+                        bestTrajectory = t;
+                    }
+                }
+            }
+        }
+        if (bestScore == Double.NEGATIVE_INFINITY) {
+            // Dynamic window was empty of trajectories (all valid ones interesct obstacles)
+            // Spin until the dynamic window isn't empty
+            bestTrajectory = new Trajectory(0, 0, 1);
+        }
+        currentTrajectory = bestTrajectory;
     }
 
     /**
