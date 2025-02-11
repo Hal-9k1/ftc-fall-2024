@@ -7,6 +7,7 @@ import org.firstinspires.ftc.teamcode.localization.Vec2;
 import org.firstinspires.ftc.teamcode.localization.Vec3;
 import org.firstinspires.ftc.teamcode.task.Task;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 
 /**
@@ -36,6 +37,18 @@ public class PathfindingLayer implements Layer {
 
     private static final double TRAJECTORY_SEARCH_INCREMENT = 0.01;
 
+	private static final double TARGET_ANGLE_COEFF = 0.5;
+	private static final double CLEARENCE_COEFF = 1.2;
+	private static final double SPEED_COEFF = 0.5;
+	private static final double SIGMA = 1;
+	private static final double SEARCH_TIME_INCREMENT = 0.25;
+    private static final double TARGET_ANGLE_SMOOTHING_C = 1000;
+    private static final double TARGET_ANGLE_SMOOTHING_K = 1;
+    private static final double CLEARENCE_STEP = 0.05;
+
+    private Mat3 goal;
+    private List<Obstacle> obstacles;
+
     /**
      * Constructs a PathfindingLayer.
      */
@@ -43,7 +56,7 @@ public class PathfindingLayer implements Layer {
 
     @Override
     public void setup(LayerSetupInfo setupInfo) {
-
+        obstacles = new ArrayList<>();
     }
 
     @Override
@@ -85,8 +98,12 @@ public class PathfindingLayer implements Layer {
      * @return A comparable score for the trajectory.
      */
     private double evaluateTrajectory(Trajectory t) {
-
+		double weightedTargetAngle = evaluateTargetAngle(t) * a;
+		double weightedClearance = evaluateClearence(t) * b;
+		double weightedSpeed = evaluateSpeed(t) * g;
+		return SIGMA * (weightedTargetAngle + weightedClearance + weightedSpeed);
     }
+	
 
     /**
      * Computes a comparable score for a trajectory on the grounds of final angle to target.
@@ -96,7 +113,11 @@ public class PathfindingLayer implements Layer {
      * would face the goal at the end of the evaluated trajectory.
      */
     private double evaluateTargetAngle(Trajectory t) {
-
+        Mat3 finalTransform = getTrajectoryTransform(t, 1);
+        Vec2 finalDirection = finalTransform.getDirection();
+        Vec2 finalDelta = finalTransform.getTranslation().mul(-1).add(goal.getTranslation());
+        double angle = finalDirection.angleWith(finalDelta);
+		return TARGET_ANGLE_SMOOTHING_C / (angle + TARGET_ANGLE_SMOOTHING_K);
     }
 
 
@@ -109,7 +130,17 @@ public class PathfindingLayer implements Layer {
      * clearence the robot has to any obstacle at any point during the evaluated trajectory.
      */
     private double evaluateClearence(Trajectory t) {
-
+        double minClearence = Double.NEGATIVE_INFINITY;
+		for (double frac = 0; frac < 1; frac += CLEARENCE_STEP) {
+            Vec2 translation = getTrajectoryTransform(t, frac).getTranslation();
+            for (Obstacle obstacle : obstacles) {
+                double clearenceToObstacle = obstacle.getDistanceTo(translation);
+                if (minClearence > clearenceToObstacle) {
+                    minClearence = clearenceToObstacle;
+                }
+            }
+        }
+        return minClearence;
     }
 
 
@@ -121,7 +152,7 @@ public class PathfindingLayer implements Layer {
      * translational velocity at the end of the evaluated trajectory..
      */
     private double evaluateSpeed(Trajectory t) {
-
+		return t.getTrajectoryVelocity().getTranslation().len();  
     }
 
     private void calculatePath() {
@@ -167,7 +198,16 @@ public class PathfindingLayer implements Layer {
      * not cause the robot to crash into an obstacle.
      */
     private boolean checkDynamicWindow(Trajectory t) {
-        // hit something?
+		for (double frac = 0; frac < 1; frac += CLEARENCE_STEP) {
+            Vec2 translation = getTrajectoryTransform(t, frac).getTranslation();
+            for (Obstacle obstacle : obstacles) {
+                double clearenceToObstacle = obstacle.getDistanceTo(translation);
+                if (clearenceToObstacle < 0) {
+                    return false;
+                }
+            }
+        }
+        return Math.abs(t.getAxial()) + Math.abs(t.getLateral()) + Math.abs(t.getYaw()) < 1;
         // axial and lateral and yaw are possible?
     }
 
@@ -177,7 +217,17 @@ public class PathfindingLayer implements Layer {
      * @param obstacle - the obstacle to add.
      */
     private void addObstacle(Obstacle obstacle) {
+        obstacles.add(obstacle);
+    }
 
+    private Mat3 getTrajectoryTransform(Trajectory t, double frac) {
+        // TODO: implement
+        return new Mat3();
+    }
+
+    private Mat3 getTrajectoryVelocity(Trajectory t, double frac) {
+        // TODO: implement
+        return new Mat3();
     }
 
     /**
