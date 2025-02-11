@@ -8,10 +8,16 @@
 // please think carefully as to whether such customizations are really necessary
 // before doing so.
 
+import org.ajoberstar.gradle.git.tasks.*
 
 // Custom definitions may go here
 plugins {
   id 'checkstyle'
+}
+
+buildscript {
+    repositories { mavenCentral() }
+    dependencies { classpath 'org.ajoberstar:gradle-git:0.2.3' }
 }
 
 // Creates a copy of the releaseCompileClasspath configuration because the original can't be
@@ -129,8 +135,29 @@ tasks.register('getJavadocPackageLists') {
     }
   }
 }
+
+
+tasks.register('cloneMathJax', GitClone) {
+    def destination = layout.buildDirectory.dir('intermediates/cloneMathJax').get().getAsFile()
+    uri = 'https://github.com/mathjax/MathJax.git'
+    destinationPath = destination
+    bare = false
+    enabled = !destination.exists()
+}
+
+tasks.register('copyMathJax', Copy) {
+    dependsOn 'cloneMathJax'
+    from layout.buildDirectory.dir('intermediates/cloneMathJax/es6').get().getAsFile()
+    into layout.buildDirectory.dir('reports/docs/mathjax')
+}
+
+tasks.register('installMathJax') {
+
+}
+
 def configureJavadocTask = {
   dependsOn 'getJavadocPackageLists'
+  dependsOn 'installMathjax'
   description = 'Generates javadocs for the TeamCode subproject'
   group = 'build'
   source = 'src/main/java'
