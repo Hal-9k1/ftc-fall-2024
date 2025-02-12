@@ -7,6 +7,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * Combines localization data by using Newton's method to numerically approximate the transform with
+ * highest probability.
+ * This implementation allows position and rotation to be resolved independently, while only
+ * consulting sources relevant to the required attribute.
+ */
 public final class NewtonRobotLocalizer implements RobotLocalizer {
     private static final int MAX_NEWTON_STEPS = 40;
 
@@ -16,10 +22,24 @@ public final class NewtonRobotLocalizer implements RobotLocalizer {
 
     private ArrayList<LocalizationSource> sources;
 
+    /**
+     * Holds localization data cached from sources so repeated calls within the same invocation of a
+     * resolve method return the same values.
+     */
     private Map<LocalizationSource, LocalizationData> cachedData;
 
+    /**
+     * Holds the last computed position of the robot so repeated calls to resolve methods return the
+     * same values until {@link #invalidateCache} is called.
+     * May be null if none is computed yet.
+     */
     private Vec2 cachedPos;
 
+    /**
+     * Holds the last computed rotation of the robot so repeated calls to resolve methods return the
+     * same values until {@link #invalidateCache} is called.
+     * May be null if none is computed yet.
+     */
     private Double cachedRot;
 
     public NewtonRobotLocalizer() {
