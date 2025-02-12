@@ -23,11 +23,10 @@ public final class TowerHangMapping extends AbstractFunctionLayer {
     public Task map(Task task) {
         if (task instanceof GamepadInputTask) {
             GamepadInputTask castedTask = (GamepadInputTask) task;
-            // Not sure if this will be automatically set to false if another button is pressed. May need to check.
             boolean hang = castedTask.gamepad0.buttons.y;
             boolean unhang = castedTask.gamepad0.buttons.a;
-
-            return new TowerHangTask(hang, unhang);
+            boolean valid = !(hang && unhang);
+            return new TowerHangTask(hang && valid, unhang && valid);
         } else {
             throw new UnsupportedTaskException(this, task);
         }

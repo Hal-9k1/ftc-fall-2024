@@ -11,6 +11,7 @@ import org.firstinspires.ftc.teamcode.layer.Layer;
 import org.firstinspires.ftc.teamcode.layer.LayerSetupInfo;
 import org.firstinspires.ftc.teamcode.task.Task;
 import org.firstinspires.ftc.teamcode.task.TowerForearmTask;
+import org.firstinspires.ftc.teamcode.task.TowerHangTask;
 import org.firstinspires.ftc.teamcode.task.TowerTask;
 import org.firstinspires.ftc.teamcode.task.TowerTeleopTask;
 import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
@@ -83,6 +84,11 @@ public final class TowerLayer implements Layer {
     );
 
     /**
+     * The tower motor power to use when hanging mode is enabled.
+     */
+    private static final double HANG_POWER = 1.0;
+
+    /**
      * Motor used to swing the tower.
      * The zero power behavior is set to brake.
      */
@@ -140,6 +146,13 @@ public final class TowerLayer implements Layer {
     private CircularBuffer<Double> deltaHistory;
 
     /**
+     * Whether the tower is currently hanging.
+     * When hanging, teleop controls are overriden and the tower clamps downwards with maximum
+     * power.
+     */
+    private boolean hanging;
+
+    /**
      * Constructs a TowerLayer.
      */
     public TowerLayer() { }
@@ -147,6 +160,7 @@ public final class TowerLayer implements Layer {
     @Override
     public void setup(LayerSetupInfo setupInfo) {
         isInit = false;
+        hanging = false;
         tower = setupInfo.getHardwareMap().get(DcMotor.class, "tower_swing");
         tower.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         towerZero = tower.getCurrentPosition();
@@ -194,10 +208,17 @@ public final class TowerLayer implements Layer {
             }
             towerStartPos = tower.getCurrentPosition();
         } else if (task instanceof TowerTeleopTask) {
+            if (hanging) {
+                // Disable input
+                return;
+            }
             TowerTeleopTask castedTask = (TowerTeleopTask)task;
             boolean isUnsafe = getForearmAngle() > FOREARM_MAX_SAFE_ANGLE
                 && castedTask.getTowerSwingPower() > 1;
             tower.setPower(isUnsafe ? 0 : castedTask.getTowerSwingPower());
+        } else if (task instanceof TowerHangTask) {
+            TowerHangTask castedTask = (TowerHangTask)task;
+            tower.setPower(HANG_POWER);
         } else {
             throw new UnsupportedTaskException(this, task);
         }
