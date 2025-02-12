@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.localization;
 
 public final class Mat3 {
+    // CSOFF:MagicNumber
     private final double[] mat;
 
     public Mat3(
@@ -8,7 +9,7 @@ public final class Mat3 {
         double m01, double m11, double m21,
         double m02, double m12, double m22
     ) {
-        mat = new double[] { m00, m10, m20, m01, m11, m21, m02, m12, m22 };
+        mat = new double[] {m00, m10, m20, m01, m11, m21, m02, m12, m22};
     }
 
     public static Mat3 fromTransform(Mat2 rot, Vec2 pos) {

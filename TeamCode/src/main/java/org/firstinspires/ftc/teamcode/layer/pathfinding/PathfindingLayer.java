@@ -1,19 +1,19 @@
 package org.firstinspires.ftc.teamcode.layer.pathfinding;
 
-import org.firstinspires.ftc.teamcode.Units;
-import org.firstinspires.ftc.teamcode.layer.Layer;
-import org.firstinspires.ftc.teamcode.layer.LayerSetupInfo;
-import org.firstinspires.ftc.teamcode.localization.Mat3;
-import org.firstinspires.ftc.teamcode.localization.Vec2;
-import org.firstinspires.ftc.teamcode.localization.Vec3;
-import org.firstinspires.ftc.teamcode.task.HolonomicDriveTask;
-import org.firstinspires.ftc.teamcode.task.MoveToFieldTask;
-import org.firstinspires.ftc.teamcode.task.Task;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+
+import org.firstinspires.ftc.teamcode.Units;
+import org.firstinspires.ftc.teamcode.layer.Layer;
+import org.firstinspires.ftc.teamcode.layer.LayerSetupInfo;
+import org.firstinspires.ftc.teamcode.localization.Mat2;
+import org.firstinspires.ftc.teamcode.localization.Mat3;
+import org.firstinspires.ftc.teamcode.localization.Vec2;
+import org.firstinspires.ftc.teamcode.task.HolonomicDriveTask;
+import org.firstinspires.ftc.teamcode.task.MoveToFieldTask;
+import org.firstinspires.ftc.teamcode.task.Task;
 
 /**
  * Computes holonomic drive powers to pathfind around obstacles to a goal transform.
@@ -33,33 +33,31 @@ public final class PathfindingLayer implements Layer {
     /**
      * The coefficient of the target angle term in the objective function.
      */
-	private static final double TARGET_ANGLE_COEFF = 0.5;
+    private static final double TARGET_ANGLE_COEFF = 0.5;
 
     /**
      * The coefficient of the clearance term in the objective function.
      */
-	private static final double CLEARANCE_COEFF = 1.2;
+    private static final double CLEARANCE_COEFF = 1.2;
 
     /**
      * The coefficient of the speed term in the objective function.
      */
-	private static final double SPEED_COEFF = 0.5;
+    private static final double SPEED_COEFF = 0.5;
 
     /**
      * How often to recalculate the optimal trajectory.
      */
-	private static final double CALCULATE_INTERVAL = 0.25;
+    private static final double CALCULATE_INTERVAL = 0.25;
 
     /**
      * A constant in the smoothing function used on the target angle term of the objective function.
-     *
-     * c / k = maximum score of target angle term.
+     * $\frac{c}{k}$ = maximum score of target angle term.
      */
     private static final double TARGET_ANGLE_SMOOTHING_C = 1000;
 
     /**
      * A constant in the smoothing function used on the target angle term of the objective function.
-     *
      * Controls speed of decay as target angle moves away from 0.
      *
      * @see #TARGET_ANGLE_SMOOTHING_C
@@ -138,24 +136,23 @@ public final class PathfindingLayer implements Layer {
     public void acceptTask(Task task) {
         if (task instanceof MoveToFieldTask) {
             MoveToFieldTask castedTask = (MoveToFieldTask)task;
-            goal = castedTask.goal;
+            goal = castedTask.getGoalTransform();
             lastCalcTime = -1;
         }
     }
 
     /**
      * Computes a comparable score for a trajectory considering three factors.
-     *
      * This is the objective function the dynamic window approach optimizes.
      *
      * @param t - the trajectory to evaluate.
      * @return A comparable score for the trajectory.
      */
     private double evaluateTrajectory(Trajectory t) {
-		double weightedTargetAngle = evaluateTargetAngle(t) * TARGET_ANGLE_COEFF;
-		double weightedClearance = evaluateClearence(t) * CLEARANCE_COEFF;
-		double weightedSpeed = evaluateSpeed(t) * SPEED_COEFF;
-		return weightedTargetAngle + weightedClearance + weightedSpeed;
+        double weightedTargetAngle = evaluateTargetAngle(t) * TARGET_ANGLE_COEFF;
+        double weightedClearance = evaluateClearence(t) * CLEARANCE_COEFF;
+        double weightedSpeed = evaluateSpeed(t) * SPEED_COEFF;
+        return weightedTargetAngle + weightedClearance + weightedSpeed;
     }
 
     /**
@@ -170,7 +167,7 @@ public final class PathfindingLayer implements Layer {
         Vec2 finalDirection = finalTransform.getDirection();
         Vec2 finalDelta = finalTransform.getTranslation().mul(-1).add(goal.getTranslation());
         double angle = finalDirection.angleWith(finalDelta);
-		return TARGET_ANGLE_SMOOTHING_C / (angle + TARGET_ANGLE_SMOOTHING_K);
+        return TARGET_ANGLE_SMOOTHING_C / (angle + TARGET_ANGLE_SMOOTHING_K);
     }
 
     /**
@@ -183,7 +180,7 @@ public final class PathfindingLayer implements Layer {
      */
     private double evaluateClearence(Trajectory t) {
         double minClearence = Double.NEGATIVE_INFINITY;
-		for (double frac = 0; frac < 1; frac += CLEARANCE_STEP) {
+        for (double frac = 0; frac < 1; frac += CLEARANCE_STEP) {
             Vec2 translation = getTrajectoryTransform(t, frac).getTranslation();
             for (Obstacle obstacle : obstacles) {
                 double clearanceToObstacle = obstacle.getDistanceTo(translation);
@@ -203,13 +200,12 @@ public final class PathfindingLayer implements Layer {
      * translational velocity at the end of the evaluated trajectory..
      */
     private double evaluateSpeed(Trajectory t) {
-		return getTrajectoryVelocity(t, 1).getTranslation().len();
+        return getTrajectoryVelocity(t, 1).getTranslation().len();
     }
 
     /**
      * Maximizes the objective function inside the dynamic window, setting
      * {@link #currentTrajectory} to the result.
-     *
      * Searches for the trajectory with the highest score from the objective function within a small
      * rectangular region. Trajectories outside the dynamic window are culled before calling the
      * objective function.
@@ -249,7 +245,6 @@ public final class PathfindingLayer implements Layer {
 
     /**
      * Checks if a trajectory is within the dynamic window.
-     *
      * During optimization, trajectories not within the dynamic window may be culled from the
      * search.
      *
@@ -258,7 +253,7 @@ public final class PathfindingLayer implements Layer {
      * not cause the robot to crash into an obstacle.
      */
     private boolean checkDynamicWindow(Trajectory t) {
-		for (double frac = 0; frac < 1; frac += CLEARANCE_STEP) {
+        for (double frac = 0; frac < 1; frac += CLEARANCE_STEP) {
             Vec2 translation = getTrajectoryTransform(t, frac).getTranslation();
             for (Obstacle obstacle : obstacles) {
                 double clearanceToObstacle = obstacle.getDistanceTo(translation);
@@ -282,6 +277,7 @@ public final class PathfindingLayer implements Layer {
     /**
      * Gets the predicted robot transform after applying the given set of accelerations (trajectory)
      * over the given fraction of the time interval.
+     *
      * <p>To derive this hairy bit of math, first express the velocity over the course of the
      * trajectory in terms of the initial velocity, trajectory taken (expressed as a vector
      * \(\vec{z}=\langle z_a,z_l,z_\theta\rangle\) where the components represent constant axial,
@@ -354,7 +350,7 @@ public final class PathfindingLayer implements Layer {
         double tf = frac * CALCULATE_INTERVAL;
         double tfz = Mat3.fromTransform(
             Mat2.fromAngle(t.getYaw() * tf),
-            new Vec2(t.getAxial(), t.getLateral()).mul(t)
+            new Vec2(t.getAxial(), t.getLateral()).mul(tf)
         );
         return getVelocity().mul(tfz);
     }
@@ -377,27 +373,23 @@ public final class PathfindingLayer implements Layer {
 
     /**
      * A set of accelerations that the robot can take.
-     *
      * Alternately, a 3D point in the search space of trajectories.
      */
     private static class Trajectory {
         /**
          * The axial acceleration to apply to the robot.
-         *
          * Positive values indicate forward acceleration.
          */
         private double axial;
 
         /**
          * The lateral acceleration to apply to the robot.
-         *
          * Positive values indicate leftward acceleration.
          */
         private double lateral;
 
         /**
          * The rotational acceleration to apply to the robot.
-         *
          * Positive value indicate counterclockwise acceleration.
          */
         private double yaw;
@@ -440,7 +432,7 @@ public final class PathfindingLayer implements Layer {
     /**
      * Represents an impassable obstacle on the field.
      */
-    private static interface Obstacle {
+    private interface Obstacle {
         /**
          * Returns the signed distance in to the given field space.
          *
@@ -452,7 +444,6 @@ public final class PathfindingLayer implements Layer {
 
     /**
      * Represents an obstacle detected by a distance sensor.
-     *
      * These obstacles are represented by line segments that are oriented to face the robot and have
      * length dependent on the distance from the robot, both at the time of detection.
      */
@@ -494,7 +485,6 @@ public final class PathfindingLayer implements Layer {
 
     /**
      * Represents a rectangular obstacle whose transform and size is definitely known.
-     *
      * The robot is prepopulated with these obstacles to represent impassible parts of the field.
      */
     private static class StaticObstacle implements Obstacle {

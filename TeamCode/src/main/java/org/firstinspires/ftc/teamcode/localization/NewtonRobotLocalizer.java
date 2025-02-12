@@ -137,7 +137,10 @@ public final class NewtonRobotLocalizer implements RobotLocalizer {
                         double delta = -err / slope;
                         if (!Double.isFinite(delta)) {
                             // Randomly disturb
+                            // CSOFF:MagicNumber
+                            // (Come on how is 0.5 is a magic number)
                             delta = Math.signum(Math.random() - 0.5) * NEWTON_DISTURBANCE_SIZE;
+                            // CSON:MagicNumber
                         }
                         x += delta;
                     }
