@@ -14,12 +14,32 @@ import java.util.stream.Collectors;
  * consulting sources relevant to the required attribute.
  */
 public final class NewtonRobotLocalizer implements RobotLocalizer {
+    /**
+     * The number of steps to take when finding a root of the probability sum derivative.
+     * The greater this number, the greater the likelihood that each identified "root" is actually
+     * near an extremum of the probability sum.
+     */
     private static final int MAX_NEWTON_STEPS = 40;
 
+    /**
+     * The number of roots of the probability sum derivative that will be found during maximization.
+     * The greater this number, the greater the number of local extrema that may be filtered out.
+     */
     private static final int MAX_NEWTON_ROOTS = 10;
 
+    /**
+     * The size of the random disturbance that is added to the working root when it reaches an
+     * extremum or saddle point.
+     * The intended effect of this is to nudge the root off of saddle points. While this could also
+     * "nudge" the working root away from a true extremum, this does not affect the result because
+     * the root with minimum error is used from each root search instead of the final value of the
+     * working root.
+     */
     private static final double NEWTON_DISTURBANCE_SIZE = 1;
 
+    /**
+     * The list of sources of localization data to collect data from.
+     */
     private ArrayList<LocalizationSource> sources;
 
     /**
@@ -42,6 +62,9 @@ public final class NewtonRobotLocalizer implements RobotLocalizer {
      */
     private Double cachedRot;
 
+    /**
+     * Constructs a NewtonRobotLocalizer.
+     */
     public NewtonRobotLocalizer() {
         sources = new ArrayList<>();
         cachedData = new HashMap<>();
@@ -77,6 +100,14 @@ public final class NewtonRobotLocalizer implements RobotLocalizer {
         return cachedRot;
     }
 
+    /**
+     * Resolves the robot's position, rotation, or both.
+     * The requested values are stored in {@link #cachedPos} and {@link #cachedRot} as
+     * appropriate.
+     *
+     * @param pos whether the resolve the robot's position.
+     * @param rot whether the resolve the robot's rotation.
+     */
     private void resolve(boolean pos, boolean rot) {
         if (pos && cachedPos == null) {
             List<LocalizationSource> posSources = sources
@@ -116,8 +147,9 @@ public final class NewtonRobotLocalizer implements RobotLocalizer {
                 }
                 roots.add(xyMinErr);
             }
-            // Also contains saddle points and extrema in only one variable. We're going to take the
-            // maximum of the function at every combination, though, so we don't care.
+            // Also contains saddle points and points where we ran out of steps even without
+            // reaching an extremum. We're going to take the maximum of the function at every
+            // combination, though, so we don't care.
             Map<Vec2, Double> extrema = new HashMap<>();
             roots.forEach(root -> {
                 extrema.put(root, posSources
@@ -175,6 +207,13 @@ public final class NewtonRobotLocalizer implements RobotLocalizer {
         }
     }
 
+    /**
+     * Collects data from a localization source, caching the result for that source.
+     *
+     * @param source the source to collect from.
+     * @return The cached data from the source, cleared when {@link #invalidateCache} is called.
+     *
+     */
     private LocalizationData getData(LocalizationSource source) {
         if (!cachedData.containsKey(source)) {
             cachedData.put(source, source.collectData());
