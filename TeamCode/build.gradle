@@ -262,10 +262,6 @@ tasks.register('checkstyle') {
 }
 
 afterEvaluate {
-  tasks.named('build') {
-    dependsOn 'javadoc'
-    //dependsOn -= 'check'
-  }
   tasks.named('check') {
     dependsOn 'javadocWerror'
     dependsOn 'checkstyle'
