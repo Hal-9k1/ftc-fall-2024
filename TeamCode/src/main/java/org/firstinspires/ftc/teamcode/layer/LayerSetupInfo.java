@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.RobotController;
+import org.firstinspires.ftc.teamcode.localization.RobotLocalizer;
 
 /**
  * Contains the information needed to initialize a layer.
@@ -18,6 +19,11 @@ public class LayerSetupInfo {
      * The RobotController setting up the layer.
      */
     private final RobotController robotController;
+
+    /**
+     * The RobotLocalizer keeping track of the robot's field space transform.
+     */
+    private final RobotLocalizer robotLocalizer;
 
     /**
      * The gamepad connected to the first port.
@@ -37,16 +43,23 @@ public class LayerSetupInfo {
      * @param hardwareMap the source of peripheral interfaces the layer may use to communicate with
      * hardware.
      * @param robotController the RobotController that will run the layer.
+     * @param robotLocalizer the RobotLocalizer to get robot transformation info from during the
+     * execution.
      * @param gamepad0 the Gamepad connected to the first slot, or null if no such gamepad is
      * available or connected.
      * @param gamepad1 the Gamepad connected to the second slot, or null if no such gamepad is
      * available or connected.
      */
-    public LayerSetupInfo(HardwareMap hardwareMap, RobotController robotController,
-        Gamepad gamepad0, Gamepad gamepad1
+    public LayerSetupInfo(
+        HardwareMap hardwareMap,
+        RobotController robotController,
+        RobotLocalizer robotLocalizer,
+        Gamepad gamepad0,
+        Gamepad gamepad1
     ) {
         this.hardwareMap = hardwareMap;
         this.robotController = robotController;
+        this.robotLocalizer = robotLocalizer;
         this.gamepad0 = gamepad0;
         this.gamepad1 = gamepad1;
     }
@@ -59,6 +72,15 @@ public class LayerSetupInfo {
      */
     public HardwareMap getHardwareMap() {
         return hardwareMap;
+    }
+
+    /**
+     * Returns the RobotLocalizer.
+     *
+     * @return A RobotLocalizer keeping track of the robot's field space transform.
+     */
+    public RobotLocalizer getLocalizer() {
+        return robotLocalizer;
     }
 
     /**
