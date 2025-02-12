@@ -282,6 +282,32 @@ public final class PathfindingLayer implements Layer {
     /**
      * Gets the predicted robot transform after applying the given set of accelerations (trajectory)
      * over the given fraction of the time interval.
+     * <p>To derive this hairy bit of math, first express the velocity over the course of the
+     * trajectory in terms of the initial velocity, trajectory taken (expressed as a vector
+     * \(\vec{z}=\langle z_a,z_l,z_\theta\rangle\) where the components represent constant axial,
+     * lateral, and rotational accelerations), and duration spent on the trajectory:
+     * \[\vec{v}(\vec{z} ,t_f) = \vec{v}(0, 0) + t_f\vec{z}\]
+     * Adding the initial angle and integrating the \(\theta\) component with respect to \(t\) gives:
+     * \[\theta(\vec{z}, t_f) = \theta(0,0) + v_\theta(0, 0) t_f + \frac{z_\theta t_f^2}{2}\]
+     * which is reminiscient of a motion equation with constant acceleration. This result is
+     * directly used to find the rotation component of the transform.
+     *
+     * <p>The constant axial and lateral accelerations \(z_a\) and \(z_l\) are easily converted to
+     * accelerations along the field axes, though they vary with \(\theta\):
+     * \[z_x = z_a\cos(\theta) - z_l\sin(\theta)\]
+     * \[z_y = z_a\sin(\theta) + z_l\cos(\theta)\]
+     * Now the field space coordinates of the robot may be found given using the initial position,
+     * velocity, and integrating the corrosponding field axis accelerations:
+     * \[x(\vec{z},t_f)=x(0,0)+\int_0^{t_f}\left(v_x(0,0)+\int_0^{t_f}z_xdt\right)dt\]
+     * which, after substituting above values (\(\theta(\vec{z}, t)\) left unsubstituted for brevity)
+     * and evaluating the definite integrals, yields:
+     * \[x(\vec{z},t_f)=x(0,0)+v_x(0,0)t_f+t_f\frac{z_a(\sin(\theta(\vec{z},t_f))-\sin(\theta(0,0)))
+     * +z_l(\cos(\theta(\vec{z},t_f))-\cos(\theta(0,0)))}{\sqrt{v_\theta^2(0,0)-2z_\theta(0,0)}}\]
+     * \(y(\vec{z},t_f)\) is similarly found:
+     * \[y(\vec{z},t_f)=y(0,0)+v_y(0,0)t_f+t_f\frac{-z_a(\cos(\theta(\vec{z},t_f))-\cos(\theta(0,0))
+     * )+z_l(\sin(\theta(\vec{z},t_f))-\sin(\theta(0,0)))}{\sqrt{v_\theta^2(0,0)-2z_\theta(0,0)}}\]
+     * These values are combined with the earlier result from \(\theta(\vec{z}, t_f)\) to produce
+     * the returned transformation.
      *
      * @param t - the trajectory to simulate applying.
      * @param frac - the fraction of the trajectory along which the robot is to have traveled.
@@ -290,11 +316,7 @@ public final class PathfindingLayer implements Layer {
     private Mat3 getTrajectoryTransform(Trajectory t, double frac) {
         double za = t.getAxial();
         double zl = t.getLateral();
-        double zth = t.getYaw(); // t for theta
-        double c = Math.cos(zth);
-        double s = Math.sin(zth);
-        double zx = c * za - s * zl;
-        double zy = s * za + c * zl;
+        double zth = t.getYaw();
         double tf = frac * CALCULATE_INTERVAL;
         double x0 = initialTransform.getTranslation().getX();
         double vx0 = initialVelocity.getTranslation().getX();
