@@ -298,10 +298,12 @@ public final class PathfindingLayer implements Layer {
      * which, after substituting above values (\(\theta(\vec{z}, t)\) left unsubstituted for brevity)
      * and evaluating the definite integrals, yields:
      * \[x(\vec{z},t_f)=x(0,0)+v_x(0,0)t_f+t_f\frac{z_a(\sin(\theta(\vec{z},t_f))-\sin(\theta(0,0)))
-     * +z_l(\cos(\theta(\vec{z},t_f))-\cos(\theta(0,0)))}{\sqrt{v_\theta^2(0,0)-2z_\theta(0,0)}}\]
+     * +z_l(\cos(\theta(\vec{z},t_f))-\cos(\theta(0,0)))}{\sqrt{v_\theta^2(0,0)-2z_\theta\theta(0,0)
+     * }}\]
      * \(y(\vec{z},t_f)\) is similarly found:
      * \[y(\vec{z},t_f)=y(0,0)+v_y(0,0)t_f+t_f\frac{-z_a(\cos(\theta(\vec{z},t_f))-\cos(\theta(0,0))
-     * )+z_l(\sin(\theta(\vec{z},t_f))-\sin(\theta(0,0)))}{\sqrt{v_\theta^2(0,0)-2z_\theta(0,0)}}\]
+     * )+z_l(\sin(\theta(\vec{z},t_f))-\sin(\theta(0,0)))}{\sqrt{v_\theta^2(0,0)-2z_\theta\theta(0,0
+     * )}}\]
      * These values are combined with the earlier result from \(\theta(\vec{z}, t_f)\) to produce
      * the returned transformation.
      *
@@ -325,12 +327,12 @@ public final class PathfindingLayer implements Layer {
             + tf * (
                 za * (Math.sin(th0 + vth0 * tf + zth * tf * tf / 2) - Math.sin(th0))
                 + zl * (Math.cos(th0 + vth0 * tf + zth * tf * tf / 2) - Math.cos(th0)))
-            / Math.sqrt(vth0 * vth0 - 2 * zth0);
+            / Math.sqrt(vth0 * vth0 - 2 * zth * th0);
         double y = y0 + vy0 * tf
             + tf * (
                 -za * (Math.cos(th0 + vth0 * tf + zth * tf * tf / 2) - Math.cos(th0))
                 + zl * (Math.sin(th0 + vth0 * tf + zth * tf * tf / 2) - Math.sin(th0)))
-            / Math.sqrt(vth0 * vth0 - 2 * zth0);
+            / Math.sqrt(vth0 * vth0 - 2 * zth * th0);
         double th = th0 + vth0 * tf + zth * tf * tf / 2;
 
         return Mat3.fromTransform(Mat2.fromAngle(th), new Vec2(x, y));
