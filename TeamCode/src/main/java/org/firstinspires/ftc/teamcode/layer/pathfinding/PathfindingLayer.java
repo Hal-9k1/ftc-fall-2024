@@ -383,9 +383,9 @@ public final class PathfindingLayer implements Layer {
         /**
          * Constructs a Trajectory.
          *
-         * @param a - the axial acceleration to apply to the robot.
-         * @param l - the lateral acceleration to apply to the robot.
-         * @param y - the rotational acceleration to apply to the robot.
+         * @param axial - the axial acceleration to apply to the robot.
+         * @param lateral - the lateral acceleration to apply to the robot.
+         * @param yaw - the rotational acceleration to apply to the robot.
          */
         Trajectory(double axial, double lateral, double yaw) {
             this.axial = axial;

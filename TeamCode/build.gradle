@@ -8,16 +8,10 @@
 // please think carefully as to whether such customizations are really necessary
 // before doing so.
 
-import org.ajoberstar.gradle.git.tasks.*
-
 // Custom definitions may go here
+
 plugins {
   id 'checkstyle'
-}
-
-buildscript {
-    repositories { mavenCentral() }
-    dependencies { classpath 'org.ajoberstar:gradle-git:0.2.3' }
 }
 
 // Creates a copy of the releaseCompileClasspath configuration because the original can't be
@@ -88,7 +82,7 @@ tasks.register('getJavadocPackageLists') {
       File packageList = getDownloadedPackageList it
       if (!packageList.exists()) {
         try {
-          packageList.getParentFile().mkdirs()
+          packageList.createParentDirectories()
           packageList.createNewFile()
           packageList.withOutputStream {output ->
             boolean success = false
@@ -113,14 +107,11 @@ tasks.register('getJavadocPackageLists') {
                 throw new RuntimeException('HTTPS protocol not supported by URL constructor.')
               } catch (IOException e) {
                 return '  Tried ' + pkgListPath + ' -- ' + e.toString()
-              } finally {
-                if (!success) {
-                  packageList.delete()
-                }
               }
               return "  Success. If you can see this message, file a bug report."
             }).toList()
             if (!success) {
+              packageList.delete()
               println 'Failed to download package-list for ' + it.name + '.\n' + String.join(
                 '\n',
                 errs
@@ -136,28 +127,36 @@ tasks.register('getJavadocPackageLists') {
   }
 }
 
+def mathJaxArchivePath = layout.buildDirectory.dir('intermediates/downloadMathJax/MathJax.zip')
 
-tasks.register('cloneMathJax', GitClone) {
-    def destination = layout.buildDirectory.dir('intermediates/cloneMathJax').get().getAsFile()
-    uri = 'https://github.com/mathjax/MathJax.git'
-    destinationPath = destination
-    bare = false
-    enabled = !destination.exists()
-}
+tasks.register('downloadMathJax') {
+  configure(outputs) {
+    file mathJaxArchivePath
+    upToDateWhen {
+      mathJaxArchivePath.get().getAsFile().exists()
+    }
+  }
 
-tasks.register('copyMathJax', Copy) {
-    dependsOn 'cloneMathJax'
-    from layout.buildDirectory.dir('intermediates/cloneMathJax/es6').get().getAsFile()
-    into layout.buildDirectory.dir('reports/docs/mathjax')
-}
-
-tasks.register('installMathJax') {
-
+  doFirst {
+    mathJaxArchivePath.get().getAsFile().withOutputStream {output ->
+      try {
+        new URL('https://github.com/mathjax/MathJax/archive/refs/tags/3.2.2.zip').withInputStream {input ->
+          // Synchronously pipe, then close both
+          output << input
+        }
+      } catch (MalformedURLException e) {
+        throw new RuntimeException('HTTPS protocol not supported by URL constructor.')
+      } catch (IOException e) {
+        // Can't do anything about that
+        throw new UncheckedIOException(e);
+      }
+    }
+  }
 }
 
 def configureJavadocTask = {
   dependsOn 'getJavadocPackageLists'
-  dependsOn 'installMathjax'
+  dependsOn 'downloadMathJax'
   description = 'Generates javadocs for the TeamCode subproject'
   group = 'build'
   source = 'src/main/java'
@@ -168,6 +167,7 @@ def configureJavadocTask = {
   // Controls the name of the index file
   title = 'TeamCode'
   destinationDir = layout.buildDirectory.dir('reports/docs').get().getAsFile()
+  outputs.dir new File(destinationDir, 'mathjax')
   options {
     // Small text in the top-right corner of the screen
     header = 'FTC 22047 "Tell-Tale Parts"'
@@ -182,6 +182,10 @@ def configureJavadocTask = {
     //addBooleanOption 'linksource', true
     // Lints javadoc comments. Might be enabled by default.
     addBooleanOption 'Xdoclint', true
+    // Hopefully includes MathJax
+    def script = layout.buildDirectory.dir('reports/docs/mathjax/es5').get().file('tex-chtml.js').getAsFile()
+    header += '<script>createElem(document, "script", "mathjax/es5/tex-chtml.js");</script>'
+    addBooleanOption '-allow-script-in-comments', true
   }
   doFirst {
     options {
@@ -196,6 +200,17 @@ def configureJavadocTask = {
     }
   }
   doLast {
+    copy {
+      from zipTree(mathJaxArchivePath), {
+        include '*/**'
+        eachFile {
+          it.relativePath = new RelativePath(true, it.relativePath.segments.drop(1))
+        }
+        includeEmptyDirs = false
+      }
+      into layout.buildDirectory.dir('reports/docs/mathjax')
+      //duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    }
     println 'Javadoc generated at ' + destinationDir.getPath()
     File homepage = new File(destinationDir, 'index.html')
     URI uri = homepage.toURI()
