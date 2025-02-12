@@ -4,7 +4,7 @@ public final class Mat2 {
     private final double[] mat;
 
     public Mat2(double m00, double m10, double m01, double m11) {
-        mat = new double[]{ m00, m10, m01, m11 };
+        mat = new double[] {m00, m10, m01, m11};
     }
 
     public static Mat2 fromAngle(double angle) {

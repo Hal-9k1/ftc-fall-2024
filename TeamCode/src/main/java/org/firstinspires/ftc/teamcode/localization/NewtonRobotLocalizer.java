@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public final class NewtonRobotLocalizer implements RobotLocalizer {
     private static final int MAX_NEWTON_STEPS = 40;
@@ -100,7 +99,7 @@ public final class NewtonRobotLocalizer implements RobotLocalizer {
             // Also contains saddle points and extrema in only one variable. We're going to take the
             // maximum of the function at every combination, though, so we don't care.
             Map<Vec2, Double> extrema = new HashMap<>();
-            xRoots.forEach(root -> {
+            roots.forEach(root -> {
                 extrema.put(root, posSources
                     .stream()
                     .mapToDouble(src -> getData(src).getPositionProbability(root))
