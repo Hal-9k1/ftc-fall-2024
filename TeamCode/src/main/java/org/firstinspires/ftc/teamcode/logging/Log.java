@@ -59,6 +59,7 @@ public final class Log {
     /**
      * Serializes this message and writes it to a stream.
      *
+     * @param stream the stream to write to.
      * @throws IOException - an I/O error occurred while writing to the stream.
      */
     public void writeTo(OutputStream stream) throws IOException {

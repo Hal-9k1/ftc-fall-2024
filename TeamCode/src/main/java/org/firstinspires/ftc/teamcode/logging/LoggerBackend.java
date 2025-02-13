@@ -53,7 +53,7 @@ public interface LoggerBackend extends Closeable {
     /**
      * Processes a formatted log message.
      *
-     * @param logs - the log message to process.
+     * @param log - the log message to process.
      */
     void processLog(Log log);
 }
