@@ -121,7 +121,9 @@ public final class PathfindingLayer implements Layer {
     @Override
     public Iterator<Task> update(Iterable<Task> completed) {
         long nowNano = System.nanoTime();
-        if (nowNano - lastCalcTime > Units.convert(CALCULATE_INTERVAL, Units.Time.SEC, Units.Time.NANO)) {
+        if (nowNano - lastCalcTime > Units.convert(CALCULATE_INTERVAL, Units.Time.SEC,
+            Units.Time.NANO))
+        {
             calculatePath();
             lastCalcTime = nowNano;
         }
@@ -137,7 +139,8 @@ public final class PathfindingLayer implements Layer {
         if (task instanceof MoveToFieldTask) {
             MoveToFieldTask castedTask = (MoveToFieldTask)task;
             goal = castedTask.getGoalTransform();
-            lastCalcTime = -1;
+            lastCalcTime = System.nanoTime() - Units.convert(CALCULATE_INTERVAL, Units.Time.SEC,
+                Units.Time.NANO);
         }
     }
 
@@ -179,7 +182,7 @@ public final class PathfindingLayer implements Layer {
      * clearance the robot has to any obstacle at any point during the evaluated trajectory.
      */
     private double evaluateClearence(Trajectory t) {
-        double minClearence = Double.NEGATIVE_INFINITY;
+        double minClearence = Double.POSITIVE_INFINITY;
         for (double frac = 0; frac < 1; frac += CLEARANCE_STEP) {
             Vec2 translation = getTrajectoryTransform(t, frac).getTranslation();
             for (Obstacle obstacle : obstacles) {
@@ -350,11 +353,10 @@ public final class PathfindingLayer implements Layer {
      */
     private Mat3 getTrajectoryVelocity(Trajectory t, double frac) {
         double tf = frac * CALCULATE_INTERVAL;
-        double tfz = Mat3.fromTransform(
-            Mat2.fromAngle(t.getYaw() * tf),
-            new Vec2(t.getAxial(), t.getLateral()).mul(tf)
+        return Mat3.fromTransform(
+            Mat2.fromAngle(t.getYaw() * tf + initialVelocity.getDirection().getAngle()),
+            new Vec2(t.getAxial(), t.getLateral()).mul(tf).add(initialVelocity.getTranslation())
         );
-        return getVelocity().mul(tfz);
     }
 
     /**
