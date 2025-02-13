@@ -186,7 +186,7 @@ public final class LoggerProvider {
 
     /**
      * Sets the default severity of built loggers.
-     * 
+     *
      * @param severity the new default severity.
      * @return This LoggerProvider.
      */

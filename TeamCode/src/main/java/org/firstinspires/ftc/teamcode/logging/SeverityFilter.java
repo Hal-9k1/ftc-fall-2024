@@ -20,7 +20,7 @@ class SeverityFilter {
 
     /**
      * Constructs a SeverityFilter.
-     * 
+     *
      * @param allow the default configuration value.
      * @param elements severities which are exceptions to the default value.
      */
