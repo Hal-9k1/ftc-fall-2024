@@ -4,6 +4,7 @@ package org.firstinspires.ftc.teamcode.matrix;
 
 /**
  * Represents an immutable 2x2 matrix of double-precision floating point numbers.
+ * Commonly used to express 2D rotations.
  */
 public final class Mat2 {
     /**
@@ -20,26 +21,26 @@ public final class Mat2 {
      * @param m11 - the element in the 1st row and 1st column
      */
     public Mat2(double m00, double m10, double m01, double m11) {
-        mat = new double[]{m00, m10, m01, m11};
+        mat = new double[] {m00, m10, m01, m11};
     }
 
     /**
-     * Creates a rotation matrix for the given angle.
+     * Creates a 2D rotation matrix for a given angle.
      *
-     * @param angle - the counterclockwise angle in radians to create a rotation matrix for.
-     * @return the created rotation matrix.
+     * @param angle an angle in radians. Positive values indicates counterclockwise rotation.
+     * @return The created rotation matrix.
      */
     public static Mat2 fromAngle(double angle) {
         return new Mat2(Math.cos(angle), -Math.sin(angle), Math.sin(angle), Math.cos(angle));
     }
 
     /**
-     * Returns a matrix which is the product of this and another matrix.
+     * Returns a matrix which is the product of this and the given matrix.
      * If the matrices represent transformations, their product is the transformation matrix
      * equivalent to applying the first factor's transformation and then the second one's.
      *
-     * @param other - the matrix to multiply by.
-     * @return the product.
+     * @param other the matrix to postmultiply by.
+     * @return A new matrix that is the product of the multiplication.
      */
     public Mat2 mul(Mat2 other) {
         return new Mat2(
@@ -51,13 +52,13 @@ public final class Mat2 {
     }
 
     /**
-     * Returns a vector which is the product of this and another matrix.
+     * Returns the product of this matrix and the given vector.
      * If the matrix represents a rotation, their product is the vector rotated about the origin by
      * this rotation. This product could also represent the transformation of a 1D point, but this
      * has no obvious use on our robot.
      *
-     * @param other - the vector to multiply by.
-     * @return the product.
+     * @param other the vector factor.
+     * @return A new vector that is the product of the multiplication.
      */
     public Vec2 mul(Vec2 other) {
         return new Vec2(
@@ -69,8 +70,8 @@ public final class Mat2 {
     /**
      * Returns a matrix which is the elementwise product of this matrix and a scalar.
      *
-     * @param other - the scalar to multiply each element by.
-     * @return the scalar product.
+     * @param other the scalar factor.
+     * @return A new matrix that is the product of the multiplication.
      */
     public Mat2 mul(double other) {
         return new Mat2(
@@ -82,9 +83,9 @@ public final class Mat2 {
     }
 
     /**
-     * Computes the determinant of the matrix.
+     * Calculates the determinant of the matrix.
      *
-     * @return the determinant of this matrix.
+     * @return The matrix's determinant.
      */
     public double det() {
         return mat[0] * mat[3] - mat[1] * mat[2];
@@ -119,10 +120,11 @@ public final class Mat2 {
     }
 
     /**
-     * Returns the given column of the matrix.
+     * Returns a column of the matrix as a vector.
      *
-     * @param num - the number of column to return.
-     * @return the specified column as a vector.
+     * @param num the index of column to return. 0 indicates the left column and 1 the right.
+     * @return The requested column as a new vector.
+     * @throws IllegalArgumentException If the index is out of bounds.
      */
     public Vec2 col(int num) {
         if (num == 0) {
@@ -135,10 +137,11 @@ public final class Mat2 {
     }
 
     /**
-     * Returns the given row of the matrix.
+     * Returns a row of the matrix as a vector.
      *
-     * @param num - the number of row to return.
-     * @return the specified row as a vector.
+     * @param num the index of row to return. 1 indicates the top row and 0 the bottom.
+     * @return The requested row as a new vector.
+     * @throws IllegalArgumentException If the index is out of bounds.
      */
     public Vec2 row(int num) {
         if (num == 0) {
@@ -151,13 +154,13 @@ public final class Mat2 {
     }
 
     /**
-     * Returns the element at the given column and row.
+     * Gets an element of the matrix.
      *
-     * @param col - the column number.
-     * @param row - the row number.
-     * @return the element at the given position.
+     * @param x the column index of the element to get.
+     * @param y the row index of the element to get.
+     * @return The requested element.
      */
-    public double elem(int col, int row) {
-        return mat[row * 2 + col];
+    public double elem(int x, int y) {
+        return mat[y * 2 + x];
     }
 }
