@@ -74,7 +74,8 @@ public interface LocalizationData {
     /**
      * Gets the relative probability of the robot bearing the given field orientation.
      *
-     * @param rot - the field orientation to test
+     * @param rot - the field orientation to test in radians. Zero indicates the positive x
+     * direction, and increasing values are counterclockwise.
      * @return the relative probability of the robot bearing the given field orientation. See the
      * package summary for the significance of this value.
      */
@@ -84,7 +85,8 @@ public interface LocalizationData {
      * Gets or approximates the derivative of {@link #getPositionProbability} at the given field
      * orientation.
      *
-     * @param rot - the field orientation to compute the derivative at.
+     * @param rot - the field orientation to compute the derivative at in radians. Zero indicates
+     * the positive x direction, and increasing values are counterclockwise.
      * @param ignoreRoots - a list of roots of this derivative to exclude. This makes the graph of
      * the derivative neither approach nor reach zero due to these roots alone.
      * @return the derivative of the probability at the given field orientation.
@@ -95,7 +97,8 @@ public interface LocalizationData {
      * Gets or approximates the second derivative of {@link #getPositionProbability} at the given
      * field orientation.
      *
-     * @param rot - the field orientation to compute the derivative at.
+     * @param rot - the field orientation to compute the derivative at in radians. Zero indicates
+     * the positive x direction, and increasing values are counterclockwise.
      * @param ignoreRoots - a list of roots of the rotation probability derivative to exclude. The
      * computed second derivative does not suggest the existance of roots in that function at any of
      * these points.

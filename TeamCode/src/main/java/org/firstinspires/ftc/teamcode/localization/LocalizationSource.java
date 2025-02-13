@@ -1,7 +1,9 @@
 package org.firstinspires.ftc.teamcode.localization;
 
 /**
- * Represents a source of localization information.
+ * Represents a source of localization data.
+ * Often a sensor, but can represent calculated heuristics (such as the tendency of robots to not
+ * teleport around the field, making positions closer to previous ones more likely.)
  */
 public interface LocalizationSource {
     /**

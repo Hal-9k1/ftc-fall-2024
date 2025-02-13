@@ -11,6 +11,12 @@ import org.firstinspires.ftc.teamcode.matrix.Mat2;
 import org.firstinspires.ftc.teamcode.matrix.Mat3;
 import org.firstinspires.ftc.teamcode.matrix.Vec2;
 
+/**
+ * Combines localization data by using Newton's method to numerically approximate the transform with
+ * highest probability.
+ * This implementation allows position and rotation to be resolved independently, while only
+ * consulting sources relevant to the required attribute.
+ */
 public final class NewtonRobotLocalizer implements RobotLocalizer {
     private static final int MAX_NEWTON_STEPS = 40;
 
@@ -20,10 +26,24 @@ public final class NewtonRobotLocalizer implements RobotLocalizer {
 
     private ArrayList<LocalizationSource> sources;
 
+    /**
+     * Holds localization data cached from sources so repeated calls within the same invocation of a
+     * resolve method return the same values.
+     */
     private Map<LocalizationSource, LocalizationData> cachedData;
 
+    /**
+     * Holds the last computed position of the robot so repeated calls to resolve methods return the
+     * same values until {@link #invalidateCache} is called.
+     * May be null if none is computed yet.
+     */
     private Vec2 cachedPos;
 
+    /**
+     * Holds the last computed rotation of the robot so repeated calls to resolve methods return the
+     * same values until {@link #invalidateCache} is called.
+     * May be null if none is computed yet.
+     */
     private Double cachedRot;
 
     public NewtonRobotLocalizer() {
@@ -62,15 +82,12 @@ public final class NewtonRobotLocalizer implements RobotLocalizer {
     }
 
     private void resolve(boolean pos, boolean rot) {
-        // TODO: BROKEN. Dx and dy roots will not be a discrete set of points. Maybe try adding
-        // gradients and using Newton's method on that?
-        // Also extract Newton's method because it's used here three times
         if (pos && cachedPos == null) {
             List<LocalizationSource> posSources = sources
                 .stream()
                 .filter(LocalizationSource::canLocalizePosition)
                 .collect(Collectors.toList());
-            List<Vec2> xRoots = new ArrayList<>();
+            List<Vec2> roots = new ArrayList<>();
             for (int i = 0; i < MAX_NEWTON_ROOTS; ++i) {
                 Vec2 xy = new Vec2(0, 0);
                 Vec2 xyMinErr = xy;
@@ -105,54 +122,12 @@ public final class NewtonRobotLocalizer implements RobotLocalizer {
                         xy = xy.add(delta);
                     }
                 }
-                xRoots.add(xyMinErr);
+                roots.add(xyMinErr);
             }
-
-            List<Vec2> yRoots = new ArrayList<>();
-            for (int i = 0; i < MAX_NEWTON_ROOTS; ++i) {
-                Vec2 xy = new Vec2(0, 0);
-                Vec2 xyMinErr = xy;
-                double minErr = Double.POSITIVE_INFINITY;
-                for (int j = 0; j < MAX_NEWTON_STEPS + 1; ++j) {
-                    Vec2 curXy = xy;
-                    double err = posSources
-                        .stream()
-                        .mapToDouble(src -> getData(src).getPositionProbabilityDy(curXy, yRoots))
-                        .sum();
-                    if (err < minErr) {
-                        xyMinErr = xy;
-                        minErr = err;
-                    }
-                    if (j < MAX_NEWTON_STEPS) {
-                        Vec2 grad = posSources
-                            .stream()
-                            .map(src -> getData(src).getPositionProbabilityDyGradient(curXy, yRoots))
-                            .reduce(new Vec2(0, 0), Vec2::add);
-                        Vec2 delta = grad.mul(-err / grad.len());
-                        if (!delta.isFinite()) {
-                            double dir = Math.random() * 2 * Math.PI;
-                            delta = new Vec2(
-                                Math.cos(dir) * NEWTON_DISTURBANCE_SIZE,
-                                Math.sin(dir) * NEWTON_DISTURBANCE_SIZE
-                            );
-                        }
-                        xy = xy.add(delta);
-                    }
-                }
-                yRoots.add(xyMinErr);
-            }
-
             // Also contains saddle points and extrema in only one variable. We're going to take the
             // maximum of the function at every combination, though, so we don't care.
             Map<Vec2, Double> extrema = new HashMap<>();
-            xRoots.forEach(root -> {
-                extrema.put(root, posSources
-                    .stream()
-                    .mapToDouble(src -> getData(src).getPositionProbability(root))
-                    .sum()
-                );
-            });
-            yRoots.forEach(root -> {
+            roots.forEach(root -> {
                 extrema.put(root, posSources
                     .stream()
                     .mapToDouble(src -> getData(src).getPositionProbability(root))

@@ -17,7 +17,7 @@ public abstract class AbstractFinDiffLocalizationData implements LocalizationDat
     /**
      * Constructs an AbstractFinDiffLocalizationData.
      *
-     * @param epsilon - the finite input difference to use when computing differences. Smaller
+     * @param epsilon the finite input difference to use when computing differences. Smaller
      * values will produce more accurate derivatives until running into floating point precision
      * errors, so test which value of epsilon produces the best results.
      */

@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.layer.Layer;
 import org.firstinspires.ftc.teamcode.layer.LayerSetupInfo;
+import org.firstinspires.ftc.teamcode.localization.RobotLocalizer;
 import org.firstinspires.ftc.teamcode.logging.LoggerProvider;
 import org.firstinspires.ftc.teamcode.task.Task;
 import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
@@ -71,6 +72,8 @@ public class RobotController {
      * Initializes the controller with the given layers.
      *
      * @param hardwareMap - HardwareMap used to retrieve interfaces for robot hardware.
+     * @param robotLocalizer - the RobotLocalizer to get robot transformation info from during the
+     * execution.
      * @param layerStack - the layer stack to use.
      * @param gamepad0 - the first connected Gamepad, or null if none is connected or available.
      * @param gamepad1 - the second connected Gamepad, or null if none is connected or available.
@@ -78,13 +81,20 @@ public class RobotController {
      */
     public void setup(
         HardwareMap hardwareMap,
+        RobotLocalizer robotLocalizer,
         List<Layer> layerStack,
         Gamepad gamepad0,
         Gamepad gamepad1,
         LoggerProvider loggerProvider
     ) {
-        LayerSetupInfo setupInfo = new LayerSetupInfo(hardwareMap, this, gamepad0, gamepad1,
-            loggerProvider);
+        LayerSetupInfo setupInfo = new LayerSetupInfo(
+            hardwareMap,
+            this,
+            robotLocalizer,
+            gamepad0,
+            gamepad1,
+            loggerProvider
+        );
         this.layers = layerStack.stream().map(layer -> {
             layer.setup(setupInfo);
             return new LayerInfo(layer);
