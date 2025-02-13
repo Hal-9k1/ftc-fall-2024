@@ -147,7 +147,7 @@ public final class Mat3 {
      * The inverse of a matrix M is M^-1 such that M * M^-1 = M^-1 * M = I, where I is the identity
      * matrix (IM = MI = M for all M). Multiplying by these is useful when converting between
      * spaces.
-     * 
+     *
      * @return A new matrix that is the inverse of this one. If this matrix is non-invertable, the
      * elements of the resulting matrix will be NaN.
      */
@@ -241,8 +241,8 @@ public final class Mat3 {
     /**
      * Gets an element of the matrix.
      *
-     * @param x the column index of the element to get.
-     * @param y the row index of the element to get.
+     * @param col the column index of the element to get.
+     * @param row the row index of the element to get.
      * @return The requested element.
      * @throws IllegalArgumentException if either index is out of range.
      */
