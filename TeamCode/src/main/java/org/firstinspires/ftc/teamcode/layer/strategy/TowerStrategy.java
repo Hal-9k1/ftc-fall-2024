@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.layer.strategy;
 
-import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.firstinspires.ftc.teamcode.Units;
 import org.firstinspires.ftc.teamcode.layer.AbstractQueuedLayer;
@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.task.TurnTask;
 import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
 import org.firstinspires.ftc.teamcode.task.WinTask;
 
-public class TowerStrategy extends AbstractQueuedLayer {
+public final class TowerStrategy extends AbstractQueuedLayer {
     private static final double QUARTER_TURN = Units.convert(0.25, Units.Angle.REV, Units.Angle.RAD);
 
     private ArrayList<Task> queue;
@@ -49,7 +49,7 @@ public class TowerStrategy extends AbstractQueuedLayer {
             score();
             setSubtasks(queue);
         } else if (task instanceof TowerForearmTask) {
-           setSubtasks(Arrays.asList(task)); // Forward task to lower layer
+            setSubtasks(Arrays.asList(task)); // Forward task to lower layer
         } else {
             throw new UnsupportedTaskException(this, task);
         }

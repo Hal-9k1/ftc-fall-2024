@@ -50,13 +50,12 @@ public final class TowerLayer implements Layer {
      * position.
      */
     private static final double FOREARM_INIT_ANGLE = Units.convert(
-       90,
-       Units.Angle.DEG,
-       Units.Angle.RAD
+        90,
+        Units.Angle.DEG,
+        Units.Angle.RAD
     );
 
     /**
-     *
      * The number of revolutions of the forearm caused by one revolution of the drive shaft.
      */
     private static final double FOREARM_GEAR_RATIO = 1.0 / 480.0 * 8.0 * 140.0 / 90.0;
