@@ -1,15 +1,12 @@
 package org.firstinspires.ftc.teamcode.localization;
 
-<<<<<<< HEAD
 import org.firstinspires.ftc.teamcode.matrix.Mat3;
 import org.firstinspires.ftc.teamcode.matrix.Vec2;
 
-=======
 /**
  * Collects data from localization sources to calculate a best guess for the robot's field-space
  * transformation.
  */
->>>>>>> github/main
 public interface RobotLocalizer {
     /**
      * Indicates to the localizer that any cached localization datums or resolution results are no
