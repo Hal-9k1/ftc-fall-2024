@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.layer;
 import java.util.Iterator;
 import java.util.List;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
+//import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 import org.firstinspires.ftc.teamcode.task.Task;
 import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
@@ -36,7 +36,7 @@ public final class TopLayerSequence implements Layer {
     /**
      * The Telemetry used to report debugging info.
      */
-    private Telemetry telemetry;
+    //private Telemetry telemetry;
 
     /**
      * Constructs a TopLayerSequence.
@@ -54,7 +54,7 @@ public final class TopLayerSequence implements Layer {
 
     @Override
     public void setup(LayerSetupInfo setupInfo) {
-        telemetry = setupInfo.getTelemetry();
+        //telemetry = setupInfo.getTelemetry();
         for (Layer l : layers) {
             l.setup(setupInfo);
         }

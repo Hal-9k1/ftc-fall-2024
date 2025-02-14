@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import org.firstinspires.ftc.robotcore.external.Telemetry;
+//import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 import org.firstinspires.ftc.teamcode.layer.Layer;
 import org.firstinspires.ftc.teamcode.layer.LayerSetupInfo;
@@ -64,7 +64,7 @@ public class RobotController {
     /**
      * The Telemetry used to report debugging info.
      */
-    private Telemetry telem;
+    //private Telemetry telem;
 
     /**
      * Constructs a RobotController.
@@ -106,7 +106,7 @@ public class RobotController {
             layer.setup(setupInfo);
             return new LayerInfo(layer);
         }).collect(Collectors.toList());
-        this.telem = telemetry;
+        //this.telem = telemetry;
     }
 
     /**
