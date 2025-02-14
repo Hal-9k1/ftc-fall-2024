@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.RobotController;
 import org.firstinspires.ftc.teamcode.layer.Layer;
+import org.firstinspires.ftc.teamcode.logging.LoggerProvider;
 import org.firstinspires.ftc.teamcode.localization.RobotLocalizer;
 
 /**
@@ -24,7 +25,8 @@ public abstract class AbstractLayerOpMode extends OpMode {
         //telemetry.setAutoClear(true);
         controller = new RobotController();
         finished = false;
-        controller.setup(hardwareMap, getLocalizer(), getLayers(), gamepad1, gamepad2);
+        LoggerProvider loggerProvider = new LoggerProvider();
+        controller.setup(hardwareMap, getLocalizer(), getLayers(), gamepad1, gamepad2, loggerProvider);
     }
 
     @Override

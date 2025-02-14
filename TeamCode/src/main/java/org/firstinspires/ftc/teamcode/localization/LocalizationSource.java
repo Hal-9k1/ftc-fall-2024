@@ -7,23 +7,26 @@ package org.firstinspires.ftc.teamcode.localization;
  */
 public interface LocalizationSource {
     /**
-     * Returns whether this source can determine the robot's position.
+     * Gets whether this source is capable of detemining the robot's position.
      *
-     * @return Whether this source is a source of position information.
+     * @return whether this localization source can localize position. If false, the position
+     * component of the data returned by {@link #collectData} is not meaningful.
      */
     boolean canLocalizePosition();
 
     /**
-     * Returns whether this source can determine the robot's rotation.
+     * Gets whether this source is capable of detemining the robot's rotation.
      *
-     * @return Whether this source is a source of rotation information.
+     * @return whether this localization source can localize rotation. If false, the rotation
+     * component of the data returned by {@link #collectData} is not meaningful.
      */
     boolean canLocalizeRotation();
 
     /**
-     * Collects localization data.
+     * Collects data from this localization source.
      *
-     * @return the collected localization data.
+     * @return localization data detailing this source's best guess for the robot's position and/or
+     * rotation.
      */
     LocalizationData collectData();
 }

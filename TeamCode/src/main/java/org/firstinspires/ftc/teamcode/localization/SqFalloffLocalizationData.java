@@ -1,10 +1,13 @@
 package org.firstinspires.ftc.teamcode.localization;
 
+import org.firstinspires.ftc.teamcode.matrix.Mat3;
+import org.firstinspires.ftc.teamcode.matrix.Vec2;
+
 /**
- * Represents an uncertain robot position and rotation using a smooth falloff around the best-guess
- * value for both.
+ * LocalizationData suggesting the robot's transform is "near" a position and/or rotation with a
+ * square distance falloff.
  */
-public final class DiscLocalizationData extends AbstractFinDiffLocalizationData {
+public final class SqFalloffLocalizationData extends AbstractFinDiffLocalizationData {
     /**
      * The epsilon to give to the superclass AbstractFinDiffLocalizationData to automatically
      * compute the probability derivatives.
@@ -40,7 +43,7 @@ public final class DiscLocalizationData extends AbstractFinDiffLocalizationData 
      * @param positionPrecision the precision of the position data.
      * @param rotationPrecision the precision of the rotation data.
      */
-    public DiscLocalizationData(
+    public SqFalloffLocalizationData(
         Mat3 transform,
         double accuracy,
         double positionPrecision,
