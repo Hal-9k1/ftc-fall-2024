@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Spliterators;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-//import org.firstinspires.ftc.robotcore.external.Telemetry;
-
+import org.firstinspires.ftc.teamcode.logging.Logger;
 import org.firstinspires.ftc.teamcode.task.Task;
 import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
 
@@ -23,7 +23,10 @@ public final class MultiplexLayer implements Layer {
      */
     private final List<Layer> layers;
 
-    //private Telemetry telemetry;
+    /**
+     * The logger.
+     */
+    private Logger logger;
 
     /**
      * Constructs a MultiplexLayer.
@@ -36,10 +39,14 @@ public final class MultiplexLayer implements Layer {
 
     @Override
     public void setup(LayerSetupInfo setupInfo) {
+        String name = "MultiplexLayer[" + layers.stream()
+            .map(Object::getClass)
+            .map(Class<?>::getName)
+            .collect(Collectors.joining()) + "]";
+        logger = setupInfo.getLogger(name);
         for (Layer layer : layers) {
             layer.setup(setupInfo);
         }
-        //telemetry = setupInfo.getTelemetry();
     }
 
     @Override

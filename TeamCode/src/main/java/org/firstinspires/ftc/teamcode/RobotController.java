@@ -9,11 +9,11 @@ import java.util.stream.Collectors;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-//import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 import org.firstinspires.ftc.teamcode.layer.Layer;
 import org.firstinspires.ftc.teamcode.layer.LayerSetupInfo;
 import org.firstinspires.ftc.teamcode.localization.RobotLocalizer;
+import org.firstinspires.ftc.teamcode.logging.Logger;
 import org.firstinspires.ftc.teamcode.logging.LoggerProvider;
 import org.firstinspires.ftc.teamcode.task.Task;
 import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
@@ -61,7 +61,10 @@ public class RobotController {
      */
     private List<LayerInfo> layers;
 
-    //private Telemetry telem;
+    /**
+     * The logger.
+     */
+    private Logger logger;
 
     /**
      * Constructs a RobotController.
@@ -90,6 +93,7 @@ public class RobotController {
         Gamepad gamepad1,
         LoggerProvider loggerProvider
     ) {
+        logger = loggerProvider.getLogger("RobotController");
         LayerSetupInfo setupInfo = new LayerSetupInfo(
             hardwareMap,
             this,
@@ -102,7 +106,6 @@ public class RobotController {
             layer.setup(setupInfo);
             return new LayerInfo(layer);
         }).collect(Collectors.toList());
-        //this.telem = telemetry;
     }
 
     /**
@@ -128,7 +131,7 @@ public class RobotController {
         while (true) {
             layer = layerIter.next();
             if (!layer.isTaskDone()) {
-                //telem.addData("Highest updated layer", layer.getName());
+                logger.update("Highest updated layer", layer.getName());
                 break;
             }
             if (!layerIter.hasNext()) {

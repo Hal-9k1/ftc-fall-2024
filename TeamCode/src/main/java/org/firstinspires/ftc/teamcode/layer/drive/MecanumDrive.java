@@ -8,11 +8,11 @@ import java.util.function.Function;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-//import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 import org.firstinspires.ftc.teamcode.Units;
 import org.firstinspires.ftc.teamcode.layer.Layer;
 import org.firstinspires.ftc.teamcode.layer.LayerSetupInfo;
+import org.firstinspires.ftc.teamcode.logging.Logger;
 import org.firstinspires.ftc.teamcode.mechanism.Wheel;
 import org.firstinspires.ftc.teamcode.task.AxialMovementTask;
 import org.firstinspires.ftc.teamcode.task.HolonomicDriveTask;
@@ -90,7 +90,10 @@ public final class MecanumDrive implements Layer {
      */
     private boolean currentTaskDone;
 
-    //private Telemetry telemetry;
+    /**
+     * The logger.
+     */
+    private Logger logger;
 
     /**
      * Constructs a MecanumDrive layer.
@@ -99,7 +102,7 @@ public final class MecanumDrive implements Layer {
 
     @Override
     public void setup(LayerSetupInfo initInfo) {
-        //telemetry = initInfo.getTelemetry();
+        logger = initInfo.getLogger("MecanumDrive");
         wheels = DRIVE_MOTOR_NAMES.map((key, motorName) -> {
             DcMotor motor = initInfo.getHardwareMap().get(DcMotor.class, motorName);
             if (key == WheelProperty.WheelKey.LEFT_BACK) {
@@ -137,9 +140,9 @@ public final class MecanumDrive implements Layer {
             (deltaSignsMatch.get(key) && goalDeltaExceeded.get(key))
             || wheelGoalDeltas.get(key) == 0
         );
-        //telemetry.addData("deltas", deltas);
-        //telemetry.addData("wheelGoalDeltas", wheelGoalDeltas);
-        //telemetry.addData("wheelDone", wheelDone);
+        logger.update("deltas", deltas);
+        logger.update("wheelGoalDeltas", wheelGoalDeltas);
+        logger.update("wheelDone", wheelDone);
 
         boolean isTeleopTask = wheelGoalDeltas.all((_key, goalDelta) -> goalDelta == 0);
         currentTaskDone = wheelDone.all((_key, done) -> done);

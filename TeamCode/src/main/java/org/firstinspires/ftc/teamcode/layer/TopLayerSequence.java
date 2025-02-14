@@ -2,9 +2,9 @@ package org.firstinspires.ftc.teamcode.layer;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
-//import org.firstinspires.ftc.robotcore.external.Telemetry;
-
+import org.firstinspires.ftc.teamcode.logging.Logger;
 import org.firstinspires.ftc.teamcode.task.Task;
 import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
 
@@ -33,7 +33,10 @@ public final class TopLayerSequence implements Layer {
      */
     private Layer layer;
 
-    //private Telemetry telemetry;
+    /**
+     * The logger.
+     */
+    private Logger logger;
 
     /**
      * Constructs a TopLayerSequence.
@@ -51,7 +54,11 @@ public final class TopLayerSequence implements Layer {
 
     @Override
     public void setup(LayerSetupInfo setupInfo) {
-        //telemetry = setupInfo.getTelemetry();
+        String name = "TopLayerSequence[" + layers.stream()
+            .map(Object::getClass)
+            .map(Class<?>::getName)
+            .collect(Collectors.joining()) + "]";
+        logger = setupInfo.getLogger(name);
         for (Layer l : layers) {
             l.setup(setupInfo);
         }

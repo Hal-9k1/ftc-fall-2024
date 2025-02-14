@@ -2,10 +2,10 @@ package org.firstinspires.ftc.teamcode.layer;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-//import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 import org.firstinspires.ftc.teamcode.RobotController;
 import org.firstinspires.ftc.teamcode.localization.RobotLocalizer;
+import org.firstinspires.ftc.teamcode.logging.Logger;
 import org.firstinspires.ftc.teamcode.logging.LoggerProvider;
 
 /**
@@ -120,6 +120,16 @@ public final class LayerSetupInfo {
      */
     public LoggerProvider getLoggerProvider() {
         return loggerProvider.clone();
+    }
+
+    /**
+     * Returns a Logger created by the base LoggerProvider.
+     *
+     * @param label the label of the Logger to create.
+     * @return The created logger.
+     */
+    public Logger getLogger(String label) {
+        return loggerProvider.getLogger(label);
     }
 
     /**
