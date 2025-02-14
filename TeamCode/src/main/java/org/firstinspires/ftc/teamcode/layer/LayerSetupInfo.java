@@ -5,11 +5,13 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 import org.firstinspires.ftc.teamcode.RobotController;
+import org.firstinspires.ftc.teamcode.localization.RobotLocalizer;
+import org.firstinspires.ftc.teamcode.logging.LoggerProvider;
 
 /**
  * Contains the information needed to initialize a layer.
  */
-public class LayerSetupInfo {
+public final class LayerSetupInfo {
     /**
      * The HardwareMap for the robot, where peripheral interfaces can be retrieved.
      */
@@ -19,6 +21,11 @@ public class LayerSetupInfo {
      * The RobotController setting up the layer.
      */
     private final RobotController robotController;
+
+    /**
+     * The RobotLocalizer keeping track of the robot's field space transform.
+     */
+    private final RobotLocalizer robotLocalizer;
 
     /**
      * The gamepad connected to the first port.
@@ -33,30 +40,38 @@ public class LayerSetupInfo {
     private final Gamepad gamepad1;
 
     /**
-     * Telemetry.
+     * The base LoggerProvider whose clones are used by layers.
      */
-    private final Telemetry telemetry;
+    private final LoggerProvider loggerProvider;
 
     /**
      * Creates a LayerSetupInfo.
      *
      * @param hardwareMap - the source of peripheral interfaces the layer may use to communicate with
      * hardware.
-     * @param robotController - the RobotController that will run the layer.
-     * @param telemetry - Telemetry used to report debugging info.
-     * @param gamepad0 - the Gamepad connected to the first slot, or null if no such gamepad is
+     * @param robotController the RobotController that will run the layer.
+     * @param robotLocalizer the RobotLocalizer to get robot transformation info from during the
+     * execution.
+     * @param gamepad0 the Gamepad connected to the first slot, or null if no such gamepad is
      * available or connected.
      * @param gamepad1 - the Gamepad connected to the second slot, or null if no such gamepad is
      * available or connected.
+     * @param loggerProvider the base LoggerProvider whose clones should be passed to the layers.
      */
-    public LayerSetupInfo(HardwareMap hardwareMap, RobotController robotController,
-        Telemetry telemetry, Gamepad gamepad0, Gamepad gamepad1
+    public LayerSetupInfo(
+        HardwareMap hardwareMap,
+        RobotController robotController,
+        RobotLocalizer robotLocalizer,
+        Gamepad gamepad0,
+        Gamepad gamepad1,
+        LoggerProvider loggerProvider
     ) {
         this.hardwareMap = hardwareMap;
         this.robotController = robotController;
-        this.telemetry = telemetry;
+        this.robotLocalizer = robotLocalizer;
         this.gamepad0 = gamepad0;
         this.gamepad1 = gamepad1;
+        this.loggerProvider = loggerProvider;
     }
 
     /**
@@ -70,12 +85,12 @@ public class LayerSetupInfo {
     }
 
     /**
-     * Gets the Telemetry.
+     * Returns the RobotLocalizer.
      *
-     * @return the Telemetry.
+     * @return A RobotLocalizer keeping track of the robot's field space transform.
      */
-    public Telemetry getTelemetry() {
-        return telemetry;
+    public RobotLocalizer getLocalizer() {
+        return robotLocalizer;
     }
 
     /**
@@ -96,6 +111,15 @@ public class LayerSetupInfo {
      */
     public Gamepad getGamepad1() {
         return gamepad1;
+    }
+
+    /**
+     * Returns a LoggerProvider cloned from the base one given to the RobotController.
+     *
+     * @return A new LoggerProvider with the same configuration as the base one.
+     */
+    public LoggerProvider getLoggerProvider() {
+        return loggerProvider.clone();
     }
 
     /**

@@ -75,10 +75,8 @@
     <module name="MissingCtor" />
     <module name="MissingSwitchDefault" />
     <module name="ModifiedControlVariable" />
-    <module name="MultipleStringLiterals" />
     <module name="MultipleVariableDeclarations" />
     <module name="NoArrayTrailingComma" />
-    <module name="NoClone" />
     <module name="NoEnumTrailingComma" />
     <module name="NoFinalizer" />
     <module name="OneStatementPerLine" />
@@ -240,6 +238,17 @@
       <property name="tokens" value="STAR_ASSIGN" />
       <property name="tokens" value="LITERAL_ASSERT" />
       <property name="tokens" value="TYPE_EXTENSION_AND" />
+    </module>
+    <!-- Filters -->
+    <module name="SuppressionCommentFilter">
+      <property name="offCommentFormat" value="CSOFF type:(\w+)" />
+      <property name="onCommentFormat" value="CSON type:(\w+)" />
+      <property name="checkFormat" value="$1" />
+    </module>
+    <module name="SuppressionCommentFilter">
+      <property name="offCommentFormat" value="CSOFF id:(\w+)" />
+      <property name="onCommentFormat" value="CSON id:(\w+)" />
+      <property name="idFormat" value="$1" />
     </module>
   </module>
 </module>
