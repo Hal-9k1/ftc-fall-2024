@@ -41,7 +41,7 @@ public final class MultiplexLayer implements Layer {
     public void setup(LayerSetupInfo setupInfo) {
         String name = "MultiplexLayer[" + layers.stream()
             .map(Object::getClass)
-            .map(Class<?>::getName)
+            .map(Class<?>::getSimpleName)
             .collect(Collectors.joining()) + "]";
         logger = setupInfo.getLogger(name);
         for (Layer layer : layers) {
@@ -62,7 +62,7 @@ public final class MultiplexLayer implements Layer {
                 throw new NullPointerException(
                     String.format(
                         "Tasks from layer '%s' is null.",
-                        layer.getClass().getName()
+                        layer.getClass().getSimpleName()
                     )
                 );
             }
@@ -74,7 +74,7 @@ public final class MultiplexLayer implements Layer {
                 throw new NullPointerException(
                     String.format(
                         "Tasks from layer '%s' contains null.",
-                        layer.getClass().getName()
+                        layer.getClass().getSimpleName()
                     )
                 );
             }

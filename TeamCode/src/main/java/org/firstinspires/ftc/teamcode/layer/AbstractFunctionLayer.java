@@ -39,7 +39,7 @@ public abstract class AbstractFunctionLayer implements Layer {
             throw new IllegalStateException(
                 String.format(
                     "FunctionLayer '%s' updated without new subtask.",
-                    getClass().getName()
+                    getClass().getSimpleName()
                 )
             );
         }
@@ -54,7 +54,7 @@ public abstract class AbstractFunctionLayer implements Layer {
             throw new NullPointerException(
                 String.format(
                     "FunctionLayer '%s' returned null from mapping function.",
-                    getClass().getName()
+                    getClass().getSimpleName()
                 )
             );
         }

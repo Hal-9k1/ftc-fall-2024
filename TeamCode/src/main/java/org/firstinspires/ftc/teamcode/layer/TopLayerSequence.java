@@ -56,7 +56,7 @@ public final class TopLayerSequence implements Layer {
     public void setup(LayerSetupInfo setupInfo) {
         String name = "TopLayerSequence[" + layers.stream()
             .map(Object::getClass)
-            .map(Class<?>::getName)
+            .map(Class<?>::getSimpleName)
             .collect(Collectors.joining()) + "]";
         logger = setupInfo.getLogger(name);
         for (Layer l : layers) {

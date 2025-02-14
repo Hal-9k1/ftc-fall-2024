@@ -131,7 +131,7 @@ public class RobotController {
         while (true) {
             layer = layerIter.next();
             if (!layer.isTaskDone()) {
-                logger.update("Highest updated layer", layer.getName());
+                logger.update("Highest updated layer", layer.getSimpleName());
                 break;
             }
             if (!layerIter.hasNext()) {
@@ -159,7 +159,7 @@ public class RobotController {
                 throw new NullPointerException(
                     String.format(
                         "Layer '%s' returned null from update.",
-                        oldLayer.getName()
+                        oldLayer.getSimpleName()
                     )
                 );
             }
@@ -172,7 +172,7 @@ public class RobotController {
                     throw new NullPointerException(
                         String.format(
                             "Layer '%s' returned null as a subtask.",
-                            oldLayer.getName()
+                            oldLayer.getSimpleName()
                         )
                     );
                 }
@@ -182,7 +182,7 @@ public class RobotController {
                 String errMsg = "Layer '" + layer.getName() + "' did not consume all"
                     + " tasks from upper layer. Remaining tasks: ";
                 for (int i = 0; i < MAX_UNCONSUMED_REPORT_TASKS && tasks.hasNext(); ++i) {
-                    errMsg += tasks.next().getClass().getName() + (tasks.hasNext() ? ", " : "");
+                    errMsg += tasks.next().getClass().getSimpleName() + (tasks.hasNext() ? ", " : "");
                 }
                 if (tasks.hasNext()) {
                     errMsg += " (and more)";
@@ -252,7 +252,7 @@ public class RobotController {
          * @return the contained Layer's concrete class name.
          */
         public String getName() {
-            return layer.getClass().getName();
+            return layer.getClass().getSimpleName();
         }
 
         /**
