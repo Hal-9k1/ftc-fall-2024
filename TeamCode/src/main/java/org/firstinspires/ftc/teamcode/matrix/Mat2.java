@@ -1,22 +1,24 @@
-package org.firstinspires.ftc.teamcode.localization;
+package org.firstinspires.ftc.teamcode.matrix;
+
+// CSOFF type:MagicNumber
 
 /**
- * Represents a 2x2 matrix.
+ * Represents an immutable 2x2 matrix of double-precision floating point numbers.
  * Commonly used to express 2D rotations.
  */
 public final class Mat2 {
     /**
-     * The contents of the matrix.
+     * The underlying array storing matrix elements.
      */
     private final double[] mat;
 
     /**
      * Constructs a Mat2.
      *
-     * @param m00 the top-left element of the matrix.
-     * @param m10 the top-right element of the matrix.
-     * @param m01 the bottom-left element of the matrix.
-     * @param m11 the bottom-right element of the matrix.
+     * @param m00 - the element in the 0th row and 0th column
+     * @param m10 - the element in the 1st row and 0th column
+     * @param m01 - the element in the 0th row and 1st column
+     * @param m11 - the element in the 1st row and 1st column
      */
     public Mat2(double m00, double m10, double m01, double m11) {
         mat = new double[] {m00, m10, m01, m11};
@@ -33,8 +35,9 @@ public final class Mat2 {
     }
 
     /**
-     * Returns the product of this matrix and the given matrix.
-     * If both are rotation matrices, has the effect of composing the two rotations.
+     * Returns a matrix which is the product of this and the given matrix.
+     * If the matrices represent transformations, their product is the transformation matrix
+     * equivalent to applying the first factor's transformation and then the second one's.
      *
      * @param other the matrix to postmultiply by.
      * @return A new matrix that is the product of the multiplication.
@@ -50,7 +53,9 @@ public final class Mat2 {
 
     /**
      * Returns the product of this matrix and the given vector.
-     * The product is not meaningful in terms of transformations.
+     * If the matrix represents a rotation, their product is the vector rotated about the origin by
+     * this rotation. This product could also represent the transformation of a 1D point, but this
+     * has no obvious use on our robot.
      *
      * @param other the vector factor.
      * @return A new vector that is the product of the multiplication.
@@ -63,7 +68,7 @@ public final class Mat2 {
     }
 
     /**
-     * Returns the scalar multiple of this matrix with a number.
+     * Returns a matrix which is the elementwise product of this matrix and a scalar.
      *
      * @param other the scalar factor.
      * @return A new matrix that is the product of the multiplication.
@@ -87,10 +92,10 @@ public final class Mat2 {
     }
 
     /**
-     * Calculates the inverse of the matrix.
+     * Computes the inverse of the matrix.
      *
-     * @return The matrix's inverse. If the matrix is non-invertable, the elements of the resulting
-     * matrix will be NaN.
+     * @return the inverse of this matrix. If {@link #det} returns 0, this may return a matrix where
+     * {@link #isFinite} is false.
      */
     public Mat2 inv() {
         double d = det();
@@ -100,6 +105,18 @@ public final class Mat2 {
             -mat[1] / d,
             mat[0] / d
         );
+    }
+
+    /**
+     * Returns whether all matrix elements {@link Double#isFinite are finite}.
+     *
+     * @return whether all matrix elements are a valid, real, nonexceptional number.
+     */
+    public boolean isFinite() {
+        return Double.isFinite(mat[0])
+            && Double.isFinite(mat[1])
+            && Double.isFinite(mat[2])
+            && Double.isFinite(mat[3]);
     }
 
     /**

@@ -2,96 +2,113 @@ package org.firstinspires.ftc.teamcode.localization;
 
 import java.util.List;
 
+import org.firstinspires.ftc.teamcode.matrix.Vec2;
+
 /**
- * Represents an uncertain clue about the robot's position, rotation, or both, collected from a
- * {@link LocalizationSource}.
+ * Data suggesting the robot's position and/or rotation collected from a {@link LocalizationSource}.
  */
 public interface LocalizationData {
     /**
-     * Gets the probability according to this datum of the robot being at the given field position.
+     * Gets the relative probability of the robot being located at the given field position.
      *
-     * @param pos a field position in meters.
-     * @return The probability of the robot being at the given position.
+     * @param pos - the field position to test
+     * @return the relative probability of the robot being located at the given position. See the
+     * package summary for the significance of this value.
      */
     double getPositionProbability(Vec2 pos);
 
     /**
-     * Returns the partial derivative of the position probability with respect to x.
+     * Gets or approximates the partial derivative with respect to x of
+     * {@link #getPositionProbability} at the given field position.
      *
-     * @param pos the position at which to get the partial derivative of the position probability.
-     * @param ignoreRoots a list of already known point roots of the derivative to divide out. This
-     * affects the behavior of the derivative around these roots and creates points of discontinuity
-     * at the roots.
-     * @return The partial derivative of the position probability with respect to x at the given
-     * position. This is guarenteed to be finite.
+     * @param pos the field position to compute the derivative at.
+     * @param ignoreRoots a list of roots of this derivative to exclude. This makes the graph of
+     * the partial derivative neither approach nor reach zero due to these roots alone.
+     * @return the partial derivative wrt x of the probability at the given field position. This is
+     * guarenteed to be finite.
      */
     double getPositionProbabilityDx(Vec2 pos, List<Vec2> ignoreRoots);
 
     /**
-     * Returns the partial derivative of the position probability with respect to y.
+     * Gets or approximates the partial derivative with respect to y of
+     * {@link #getPositionProbability} at the given field position.
      *
-     * @param pos the position at which to get the partial derivative of the position probability.
-     * @param ignoreRoots a list of already known point roots of the derivative to divide out. This
-     * affects the behavior of the derivative around these roots and creates points of discontinuity
-     * at the roots.
-     * @return The partial derivative of the position probability with respect to y at the given
-     * position. This is guarenteed to be finite.
+     * @param pos the field position to compute the derivative at.
+     * @param ignoreRoots a list of roots of this derivative to exclude. This makes the graph of
+     * the partial derivative neither approach nor reach zero due to these roots alone.
+     * @return the partial derivative wrt y of the probability at the given field position. This is
+     * guarenteed to be finite.
      */
     double getPositionProbabilityDy(Vec2 pos, List<Vec2> ignoreRoots);
 
     /**
-     * Returns the gradient of the partial derivative of the position probability with respect to x.
+     * Gets or approximates the gradient of the partial derivative with respect to x of
+     * {@link #getPositionProbability} at the given field position.
      *
-     * @param pos the position at which to get the gradient of the partial derivative of the
-     * position probability.
-     * @param ignoreRoots a list of already known point roots of the original partial derivative to
-     * divide out. The gradient will reflect the removal of these roots.
-     * @return The gradient of the partial derivative of the position probability with respect to x
-     * at the given position. This is guarenteed to be finite.
+     * @param pos the field position to compute the derivative at.
+     * @param ignoreRoots a list of roots of {@link #getPositionProbabilityDx} to exclude. The
+     * computed gradient does not suggest the existance of roots in that function at any of these
+     * points.
+     * @return the gradient of the partial derivative wrt x of the probability at the given field
+     * position, returned as a vector: &lt;<code>getPositionProbability</code><sub>xx</sub>(
+     * <code>pos.getX()</code>, <code>pos.getY()</code>),
+     * <code>getPositionProbabilty</code><sub>xy</sub>(<code>pos.getX()</code>,
+     * <code>pos.getY()</code>)&gt;
+     * This is guarenteed to be finite.
      */
     Vec2 getPositionProbabilityDxGradient(Vec2 pos, List<Vec2> ignoreRoots);
 
     /**
-     * Returns the gradient of the partial derivative of the position probability with respect to y.
+     * Gets or approximates the gradient of the partial derivative with respect to x of
+     * {@link #getPositionProbability} at the given field position.
      *
-     * @param pos the position at which to get the gradient of the partial derivative of the
-     * position probability.
-     * @param ignoreRoots a list of already known point roots of the original partial derivative to
-     * divide out. The gradient will reflect the removal of these roots.
-     * @return The gradient of the partial derivative of the position probability with respect to y
-     * at the given position. This is guarenteed to be finite.
+     * @param pos the field position to compute the derivative at.
+     * @param ignoreRoots a list of roots of {@link #getPositionProbabilityDy} to exclude. The
+     * computed gradient does not suggest the existance of roots in that function at any of these
+     * points.
+     * @return the gradient of the partial derivative wrt y of the probability at the given field
+     * position, returned as a vector: &lt;<code>getPositionProbability</code><sub>yx</sub>(
+     * <code>pos.getX()</code>, <code>pos.getY()</code>),
+     * <code>getPositionProbabilty</code><sub>yy</sub>(<code>pos.getX()</code>,
+     * <code>pos.getY()</code>)&gt;
+     * This is guarenteed to be finite.
      */
     Vec2 getPositionProbabilityDyGradient(Vec2 pos, List<Vec2> ignoreRoots);
 
     /**
-     * Gets the probability of the robot having the given rotation.
+     * Gets the relative probability of the robot bearing the given field orientation.
      *
-     * @param rot a rotation in radians. Zero indicates the positive x direction, and increasing
-     * values are counterclockwise.
-     * @return The probability of the robot having the given rotation. This is guarenteed to be
-     * finite.
+     * @param rot the field orientation to test in radians. Zero indicates the positive x
+     * direction, and increasing values are counterclockwise.
+     * @return the relative probability of the robot bearing the given field orientation. See the
+     * package summary for the significance of this value. The probability of the robot having the
+     * given rotation. This is guarenteed to be finite.
      */
     double getRotationProbability(double rot);
 
     /**
-     * Evaluates the first derivative of the rotation probability.
+     * Gets or approximates the derivative of {@link #getPositionProbability} at the given field
+     * orientation.
      *
-     * @param rot the rotation to evaluate the derivative at.
-     * @param ignoreRoots a list of already known roots of the derivative to divide out. This
-     * affects the behavior of the derivative around these roots and creates points of discontinuity
-     * at the roots.
-     * @return The first derivative of the rotation probability at the given rotation. This is
-     * guarenteed to be finite.
+     * @param rot the field orientation to compute the derivative at in radians. Zero indicates
+     * the positive x direction, and increasing values are counterclockwise.
+     * @param ignoreRoots a list of roots of this derivative to exclude. This makes the graph of
+     * the derivative neither approach nor reach zero due to these roots alone.
+     * @return the derivative of the probability at the given field orientation. This is guarenteed
+     * to be finite.
      */
     double getRotationProbabilityDx(double rot, List<Double> ignoreRoots);
 
     /**
-     * Gets the second derivative of the rotation probability.
+     * Gets or approximates the second derivative of {@link #getPositionProbability} at the given
+     * field orientation.
      *
-     * @param rot the rotation to evaluate the derivative at.
-     * @param ignoreRoots a list of already known roots of the first derivative to divide out. The
-     * second derivative will reflect the removal of these roots.
-     * @return The second derivative of the rotation probability at the given rotation.
+     * @param rot the field orientation to compute the derivative at in radians. Zero indicates
+     * the positive x direction, and increasing values are counterclockwise.
+     * @param ignoreRoots a list of roots of the rotation probability derivative to exclude. The
+     * computed second derivative does not suggest the existance of roots in that function at any of
+     * these points.
+     * @return The second derivative of the probability at the given field orientation.
      */
     double getRotationProbabilityDx2(double rot, List<Double> ignoreRoots);
 }

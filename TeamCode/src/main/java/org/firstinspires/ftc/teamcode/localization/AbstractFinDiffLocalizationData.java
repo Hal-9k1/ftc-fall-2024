@@ -2,20 +2,24 @@ package org.firstinspires.ftc.teamcode.localization;
 
 import java.util.List;
 
+import org.firstinspires.ftc.teamcode.matrix.Vec2;
+
 /**
- * Implements the derivative and gradient calculation methods of LocalizationData by using finite
- * differences on the implemented probability functions.
+ * Abstract LocalizationData that computes probability derivatives using finite differences of the
+ * implemented probabiltiy function.
  */
 public abstract class AbstractFinDiffLocalizationData implements LocalizationData {
     /**
-     * A tiny number used as dx when calculating finite differences.
+     * The finite input difference to use when computing derivatives.
      */
     private final double epsilon;
 
     /**
      * Constructs an AbstractFinDiffLocalizationData.
      *
-     * @param epsilon A tiny number used as dx when calculating finite differences.
+     * @param epsilon the finite input difference to use when computing differences. Smaller
+     * values will produce more accurate derivatives until running into floating point precision
+     * errors, so test which value of epsilon produces the best results.
      */
     public AbstractFinDiffLocalizationData(double epsilon) {
         this.epsilon = epsilon;

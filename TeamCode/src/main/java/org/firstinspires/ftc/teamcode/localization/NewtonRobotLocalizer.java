@@ -7,6 +7,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.firstinspires.ftc.teamcode.matrix.Mat2;
+import org.firstinspires.ftc.teamcode.matrix.Mat3;
+import org.firstinspires.ftc.teamcode.matrix.Vec2;
+
 /**
  * Combines localization data by using Newton's method to numerically approximate the transform with
  * highest probability.
@@ -123,7 +127,9 @@ public final class NewtonRobotLocalizer implements RobotLocalizer {
                     Vec2 curXy = xy;
                     double err = posSources
                         .stream()
-                        .mapToDouble(src -> getData(src).getPositionProbabilityDx(curXy, roots))
+                        .mapToDouble(src
+                            -> getData(src).getPositionProbabilityDx(curXy, roots)
+                            + getData(src).getPositionProbabilityDy(curXy, roots))
                         .sum();
                     if (err < minErr) {
                         xyMinErr = xy;
@@ -132,7 +138,9 @@ public final class NewtonRobotLocalizer implements RobotLocalizer {
                     if (j < MAX_NEWTON_STEPS) {
                         Vec2 grad = posSources
                             .stream()
-                            .map(src -> getData(src).getPositionProbabilityDxGradient(curXy, roots))
+                            .map(src
+                                -> getData(src).getPositionProbabilityDxGradient(curXy, roots)
+                                .add(getData(src).getPositionProbabilityDyGradient(curXy, roots)))
                             .reduce(new Vec2(0, 0), Vec2::add);
                         Vec2 delta = grad.mul(-err / grad.len());
                         if (!delta.isFinite()) {
@@ -189,7 +197,7 @@ public final class NewtonRobotLocalizer implements RobotLocalizer {
                         double delta = -err / slope;
                         if (!Double.isFinite(delta)) {
                             // Randomly disturb
-                            delta = Math.signum(Math.random() - 0.5) * NEWTON_DISTURBANCE_SIZE;
+                            delta = Math.signum(Math.random() - 1.0 / 2) * NEWTON_DISTURBANCE_SIZE;
                         }
                         x += delta;
                     }

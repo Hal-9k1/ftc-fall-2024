@@ -1,12 +1,14 @@
-package org.firstinspires.ftc.teamcode.localization;
+package org.firstinspires.ftc.teamcode.matrix;
+
+// CSOFF type:MagicNumber
 
 /**
- * Represents a 3x3 matrix.
+ * Represents an immutable 3x3 matrix of double-precision floating point numbers.
  * Commonly used to express 3D rotations or 2D transformations (combined translation and rotation).
  */
 public final class Mat3 {
     /**
-     * The contents of the matrix.
+     * The underlying array storing matrix elements.
      */
     private final double[] mat;
 
