@@ -144,13 +144,13 @@ public final class TestMotorOpMode extends LinearOpMode {
             }
             didChangeMode = shouldChangeMode;
 
-            //telemetry.addData("cmidx", "Current motor index: %d", currentMotorIdx);
-            //telemetry.addData("Current motor name", motorNames.get(currentMotorIdx));
-            //telemetry.addData("Zero power behavior", motors.get(currentMotorIdx).getZeroPowerBehavior());
-            //telemetry.addData("Run mode", motors.get(currentMotorIdx).getMode());
+            telemetry.addData("cmidx", "Current motor index: %d", currentMotorIdx);
+            telemetry.addData("Current motor name", motorNames.get(currentMotorIdx));
+            telemetry.addData("Zero power behavior", motors.get(currentMotorIdx).getZeroPowerBehavior());
+            telemetry.addData("Run mode", motors.get(currentMotorIdx).getMode());
             if (encoderTestMode) {
                 currentMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-                //telemetry.addData("Current motor encoder", currentMotor.getCurrentPosition());
+                telemetry.addData("Current motor encoder", currentMotor.getCurrentPosition());
             } else {
                 int encoderReading = currentMotor.getCurrentPosition();
                 long nanoTime = System.nanoTime();
@@ -169,10 +169,10 @@ public final class TestMotorOpMode extends LinearOpMode {
                     ? Math.signum(gamepad1.right_stick_y)
                     : 0.0f);
 
-                //telemetry.addData("Current motor speed", "%4.2f ticks/sec", computeMotorSpeed());
-                //telemetry.addData("Sampled encoder readings", "%d", recordedEncoderReadings);
+                telemetry.addData("Current motor speed", "%4.2f ticks/sec", computeMotorSpeed());
+                telemetry.addData("Sampled encoder readings", "%d", recordedEncoderReadings);
             }
-            //telemetry.update();
+            telemetry.update();
         }
     }
 
