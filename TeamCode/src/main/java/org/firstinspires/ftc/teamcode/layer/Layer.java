@@ -11,8 +11,8 @@ import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
  * the below layer. This represents the breaking down of a complex or abstract task into more simple
  * and concrete ones. (A task is an instruction passed from a layer to its subordinate. Tasks range
  * widely in their concreteness and can be as vague as
- * {@link org.firstinspires.ftc.teamcode.task.WinTask "win the game"} or as specific
- * as {@link org.firstinspires.ftc.teamcode.task.AxialMovementTask "move forward 2 meters."})
+ * {@link org.firstinspires.ftc.teamcode.task.WinTask "win the game"} or as specific as
+ * {@link org.firstinspires.ftc.teamcode.task.AxialMovementTask "move forward 2 meters."})
  *
  * <p>See {@link org.firstinspires.ftc.teamcode.RobotController} for detailed information about
  * layer processing.

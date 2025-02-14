@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.RobotController;
 import org.firstinspires.ftc.teamcode.layer.Layer;
+import org.firstinspires.ftc.teamcode.localization.RobotLocalizer;
 
 /**
  * Base class for opmodes that use a RobotController to execute Layers.
@@ -23,7 +24,7 @@ public abstract class AbstractLayerOpMode extends OpMode {
         telemetry.setAutoClear(true);
         controller = new RobotController();
         finished = false;
-        controller.setup(hardwareMap, getLayers(), telemetry, gamepad1, gamepad2);
+        controller.setup(hardwareMap, getLocalizer(), getLayers(), gamepad1, gamepad2);
     }
 
     @Override
@@ -44,4 +45,15 @@ public abstract class AbstractLayerOpMode extends OpMode {
      * @return The list of layers to execute, in order from lowest to highest.
      */
     protected abstract List<Layer> getLayers();
+
+    /**
+     * Gets the robot localizer to use for this opmode.
+     * The default implementation returns null. If an opmode's layers expect a localizer, override
+     * this method and return a RobotLocalizer implementation.
+     *
+     * @return The RobotLocalizer to use to determine the robot's transform during execution.
+     */
+    protected RobotLocalizer getLocalizer() {
+        return null;
+    }
 }

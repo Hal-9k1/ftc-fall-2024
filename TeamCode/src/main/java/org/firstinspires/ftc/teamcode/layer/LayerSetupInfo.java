@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 import org.firstinspires.ftc.teamcode.RobotController;
+import org.firstinspires.ftc.teamcode.localization.RobotLocalizer;
 
 /**
  * Contains the information needed to initialize a layer.
@@ -21,6 +22,11 @@ public class LayerSetupInfo {
     private final RobotController robotController;
 
     /**
+     * The RobotLocalizer keeping track of the robot's field space transform.
+     */
+    private final RobotLocalizer robotLocalizer;
+
+    /**
      * The gamepad connected to the first port.
      * Null if none is connected or available (e.g. we're in teleop).
      */
@@ -33,28 +39,28 @@ public class LayerSetupInfo {
     private final Gamepad gamepad1;
 
     /**
-     * Telemetry.
-     */
-    private final Telemetry telemetry;
-
-    /**
      * Creates a LayerSetupInfo.
      *
-     * @param hardwareMap - the source of peripheral interfaces the layer may use to communicate with
+     * @param hardwareMap the source of peripheral interfaces the layer may use to communicate with
      * hardware.
-     * @param robotController - the RobotController that will run the layer.
-     * @param telemetry - Telemetry used to report debugging info.
-     * @param gamepad0 - the Gamepad connected to the first slot, or null if no such gamepad is
+     * @param robotController the RobotController that will run the layer.
+     * @param robotLocalizer the RobotLocalizer to get robot transformation info from during the
+     * execution.
+     * @param gamepad0 the Gamepad connected to the first slot, or null if no such gamepad is
      * available or connected.
-     * @param gamepad1 - the Gamepad connected to the second slot, or null if no such gamepad is
+     * @param gamepad1 the Gamepad connected to the second slot, or null if no such gamepad is
      * available or connected.
      */
-    public LayerSetupInfo(HardwareMap hardwareMap, RobotController robotController,
-        Telemetry telemetry, Gamepad gamepad0, Gamepad gamepad1
+    public LayerSetupInfo(
+        HardwareMap hardwareMap,
+        RobotController robotController,
+        RobotLocalizer robotLocalizer,
+        Gamepad gamepad0,
+        Gamepad gamepad1
     ) {
         this.hardwareMap = hardwareMap;
         this.robotController = robotController;
-        this.telemetry = telemetry;
+        this.robotLocalizer = robotLocalizer;
         this.gamepad0 = gamepad0;
         this.gamepad1 = gamepad1;
     }
@@ -70,12 +76,12 @@ public class LayerSetupInfo {
     }
 
     /**
-     * Gets the Telemetry.
+     * Returns the RobotLocalizer.
      *
-     * @return the Telemetry.
+     * @return A RobotLocalizer keeping track of the robot's field space transform.
      */
-    public Telemetry getTelemetry() {
-        return telemetry;
+    public RobotLocalizer getLocalizer() {
+        return robotLocalizer;
     }
 
     /**
