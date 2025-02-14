@@ -260,8 +260,14 @@ public final class Mat3 {
         return new Vec2(mat[2], mat[5]);
     }
 
+    /**
+     * Gets a unit vector pointing in the direction of this transformation matrix.
+     *
+     * @return A unit vector pointing from the origin in the direction of this matrix, if it
+     * represents a transformation.
+     */
     public Vec2 getDirection() {
-        return Mat3.fromTransform(minor(2, 2), new Vec2(0, 0)).mul(new Vec2(1, 0));
+        return minor(2, 2).mul(new Vec2(1, 0));
     }
 
     /**

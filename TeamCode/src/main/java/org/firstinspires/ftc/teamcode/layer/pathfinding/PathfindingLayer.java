@@ -367,6 +367,8 @@ public final class PathfindingLayer implements Layer {
 
     /**
      * Gets the current field transform of the robot.
+     *
+     * @return The robot's current field space transform.
      */
     private Mat3 getTransform() {
         return localizer.resolveTransform();
@@ -374,6 +376,8 @@ public final class PathfindingLayer implements Layer {
 
     /**
      * Gets the current field space velocity of the robot.
+     *
+     * @return The robot's current field space velocity encoded as a transformation matrix.
      */
     private Mat3 getVelocity() {
         // TODO: implement
@@ -422,6 +426,8 @@ public final class PathfindingLayer implements Layer {
 
         /**
          * The axial acceleration to apply to the robot.
+         *
+         * @return The axial acceleration specified by this trajectory.
          */
         public double getAxial() {
             return axial;
@@ -429,6 +435,8 @@ public final class PathfindingLayer implements Layer {
 
         /**
          * The lateral acceleration to apply to the robot.
+         *
+         * @return The lateral acceleration specified by this trajectory.
          */
         public double getLateral() {
             return lateral;
@@ -436,6 +444,8 @@ public final class PathfindingLayer implements Layer {
 
         /**
          * The rotational acceleration to apply to the robot.
+         *
+         * @return The rotational acceleration specified by this trajectory.
          */
         public double getYaw() {
             return yaw;

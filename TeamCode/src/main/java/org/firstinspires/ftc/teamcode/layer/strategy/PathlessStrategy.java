@@ -56,10 +56,16 @@ public final class PathlessStrategy extends AbstractQueuedLayer {
      */
     private static final double FIRST_SHOVE_DIST = 0.2;
 
+    /**
+     * The angle in revolutions the robot should turn when "strafing" by turning and moving axially.
+     * The strafe replacement avoids problems with arcing when truly strafing, likely caused by
+     * uneven weight distribution.
+     */
     private static final double STRAFE_REPLACEMENT_TURN_ANGLE = 0.25;
 
     /**
-     * A list of actions to build.
+     * A list of actions built in {@link #acceptTask} that is eventually passed to
+     * {@link #setSubtasks}.
      */
     private ArrayList<Task> queue;
 
@@ -94,6 +100,10 @@ public final class PathlessStrategy extends AbstractQueuedLayer {
         }
     }
 
+    /**
+     * Makes a correction for scoring the first spike which would otherwise end outside the net
+     * zone.
+     */
     private void shoveFirstSpike() {
         queue.add(new LinearMovementTask(Units.convert(-RUSH_DIST + FIRST_SHORT_STOP, Units.Distance.TILE, Units.Distance.M), 0));
         queue.add(new TurnTask(Units.convert(-FIRST_TURN_ANGLE, Units.Angle.REV, Units.Angle.RAD)));
@@ -102,6 +112,9 @@ public final class PathlessStrategy extends AbstractQueuedLayer {
         queue.add(new TurnTask(Units.convert(FIRST_TURN_ANGLE, Units.Angle.REV, Units.Angle.RAD)));
     }
 
+    /**
+     * Moves the robot laterally into position for the next spike.
+     */
     private void strafeToNextSpike() {
         // Replaces code like:
         // queue.add(new LinearMovementTask(0, Units.convert(-STRAFE_DIST, Units.Distance.TILE, Units.Distance.M)));

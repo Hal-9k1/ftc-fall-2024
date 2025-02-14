@@ -131,7 +131,7 @@ public class RobotController {
         while (true) {
             layer = layerIter.next();
             if (!layer.isTaskDone()) {
-                logger.update("Highest updated layer", layer.getSimpleName());
+                logger.update("Highest updated layer", layer.getName());
                 break;
             }
             if (!layerIter.hasNext()) {
@@ -159,7 +159,7 @@ public class RobotController {
                 throw new NullPointerException(
                     String.format(
                         "Layer '%s' returned null from update.",
-                        oldLayer.getSimpleName()
+                        oldLayer.getName()
                     )
                 );
             }
@@ -172,7 +172,7 @@ public class RobotController {
                     throw new NullPointerException(
                         String.format(
                             "Layer '%s' returned null as a subtask.",
-                            oldLayer.getSimpleName()
+                            oldLayer.getName()
                         )
                     );
                 }
