@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.layer.manipulator;
 import java.util.Iterator;
 
 import com.qualcomm.robotcore.hardware.CRServo;
-//import com.qualcomm.robotcore.hardware.TouchSensor;
+//import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 import org.firstinspires.ftc.teamcode.Units;
 import org.firstinspires.ftc.teamcode.layer.Layer;
@@ -72,6 +72,11 @@ public final class IntakeLayer implements Layer {
     private long ejectStart;
 
     /**
+     * Telemetry.
+     */
+    //private Telemetry telemetry;
+
+    /**
      * Constructs an IntakeLayer.
      */
     public IntakeLayer() { }
@@ -81,6 +86,7 @@ public final class IntakeLayer implements Layer {
         intake = setupInfo.getHardwareMap().get(CRServo.class, "intake");
         state = State.IDLE;
         //TouchSensor loadSensor = setupInfo.getHardwareMap().get(TouchSensor.class, "intake_load_sensor");
+        //telemetry = setupInfo.getTelemetry();
         setupInfo.addUpdateListener(() -> {
             //boolean intakeDone = state == State.INTAKING && loadSensor.isPressed();
             boolean intakeDone = state == State.INTAKING && (System.nanoTime() - intakeStart) > INTAKE_DURATION;
@@ -90,6 +96,7 @@ public final class IntakeLayer implements Layer {
                 intake.setPower(0);
             }
         });
+        //telemetry = setupInfo.getTelemetry();
     }
 
     @Override
@@ -129,6 +136,7 @@ public final class IntakeLayer implements Layer {
                 state = State.IDLE;
                 intakeStart = 0;
                 ejectStart = 0;
+                //telemetry.addData("intake power", castedTask.getIntakePower());
                 intake.setPower(castedTask.getIntakePower());
             }
         } else {

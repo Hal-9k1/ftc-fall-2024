@@ -8,6 +8,7 @@ import java.util.function.Function;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+//import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 import org.firstinspires.ftc.teamcode.Units;
 import org.firstinspires.ftc.teamcode.layer.Layer;
@@ -54,7 +55,7 @@ public final class MecanumDrive implements Layer {
     /**
      * Half the distance between the driving wheels in meters.
      */
-    private static final double WHEEL_SPAN_RADIUS = Units.convert(15.0 / 2, Units.Distance.IN, Units.Distance.M);
+    private static final double WHEEL_SPAN_RADIUS = Units.convert(34.2 / 2, Units.Distance.CM, Units.Distance.M);
 
     /**
      * Unitless, experimentally determined constant (ew) measuring lack of friction.
@@ -90,15 +91,25 @@ public final class MecanumDrive implements Layer {
     private boolean currentTaskDone;
 
     /**
+     * Telemetry.
+     */
+    //private Telemetry telemetry;
+
+    /**
      * Constructs a MecanumDrive layer.
      */
     public MecanumDrive() { }
 
     @Override
     public void setup(LayerSetupInfo initInfo) {
+        //telemetry = initInfo.getTelemetry();
         wheels = DRIVE_MOTOR_NAMES.map((key, motorName) -> {
             DcMotor motor = initInfo.getHardwareMap().get(DcMotor.class, motorName);
-            motor.setDirection(DcMotorSimple.Direction.REVERSE);
+            if (key == WheelProperty.WheelKey.LEFT_BACK) {
+                motor.setDirection(DcMotorSimple.Direction.FORWARD);
+            } else {
+                motor.setDirection(DcMotorSimple.Direction.REVERSE);
+            }
             return new Wheel(
                 motor,
                 WHEEL_RADIUS
@@ -129,6 +140,9 @@ public final class MecanumDrive implements Layer {
             (deltaSignsMatch.get(key) && goalDeltaExceeded.get(key))
             || wheelGoalDeltas.get(key) == 0
         );
+        //telemetry.addData("deltas", deltas);
+        //telemetry.addData("wheelGoalDeltas", wheelGoalDeltas);
+        //telemetry.addData("wheelDone", wheelDone);
 
         boolean isTeleopTask = wheelGoalDeltas.all((_key, goalDelta) -> goalDelta == 0);
         currentTaskDone = wheelDone.all((_key, done) -> done);
@@ -140,8 +154,6 @@ public final class MecanumDrive implements Layer {
 
     @Override
     public void acceptTask(Task task) {
-        currentTaskDone = false;
-        wheelStartPos = wheels.map((_key, wheel) -> wheel.getDistance());
         boolean isAuto;
         if (task instanceof AxialMovementTask) {
             isAuto = true;
@@ -186,6 +198,8 @@ public final class MecanumDrive implements Layer {
         } else {
             throw new UnsupportedTaskException(this, task);
         }
+        currentTaskDone = false;
+        wheelStartPos = wheels.map((_key, wheel) -> wheel.getDistance());
         if (isAuto) {
             normalizeVelocities(wheelGoalDeltas, true)
                 .forEach((key, velocity) -> wheels.get(key).setVelocity(velocity * AUTO_SPEED_FAC));
@@ -451,6 +465,15 @@ public final class MecanumDrive implements Layer {
                 && predicate.test(WheelKey.RIGHT_FRONT, rightFront)
                 && predicate.test(WheelKey.LEFT_BACK, leftBack)
                 && predicate.test(WheelKey.RIGHT_BACK, rightBack);
+        }
+
+        @Override
+        public String toString() {
+            return "WheelProperty<lf: " + leftFront.toString()
+                + ", rf: " + rightFront.toString()
+                + ", lb: " + leftBack.toString()
+                + ", rb: " + rightBack.toString()
+                + ">";
         }
     }
 }

@@ -18,8 +18,11 @@ public abstract class AbstractLayerOpMode extends OpMode {
      */
     private RobotController controller;
 
+    private boolean finished;
+
     @Override
     public final void init() {
+        //telemetry.setAutoClear(true);
         controller = new RobotController();
         LoggerProvider loggerProvider = new LoggerProvider();
         controller.setup(hardwareMap, getLocalizer(), getLayers(), gamepad1, gamepad2, loggerProvider);
@@ -27,7 +30,14 @@ public abstract class AbstractLayerOpMode extends OpMode {
 
     @Override
     public final void loop() {
-        controller.update();
+        if (finished) {
+            return;
+        }
+        if (controller.update()) {
+            //telemetry.log().add("Finished!");
+            finished = true;
+        }
+        //telemetry.update();
     }
 
     /**

@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.layer.strategy;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 
 import org.firstinspires.ftc.teamcode.Units;
 import org.firstinspires.ftc.teamcode.layer.AbstractQueuedLayer;
@@ -35,7 +35,7 @@ public final class PathlessStrategy extends AbstractQueuedLayer {
      * The distance in tiles the robot must travel sideways to position itself in front of the next
      * preset sample.
      */
-    private static final double STRAFE_DIST = 0.25;
+    private static final double STRAFE_DIST = 0.20;
 
     /**
      * The distance in tiles the robot should stop short of RUSH_DIST because it will have to turn
@@ -54,12 +54,19 @@ public final class PathlessStrategy extends AbstractQueuedLayer {
      * The distance in tiles the robot should "shove" the first preset sample into the net zone at
      * an angle.
      */
-    private static final double FIRST_SHOVE_DIST = 0.4;
+    private static final double FIRST_SHOVE_DIST = 0.2;
+
+    /**
+     * A list of actions to build.
+     */
+    private ArrayList<Task> queue;
 
     /**
      * Constructs a PathlessStrategy.
      */
-    public PathlessStrategy() { }
+    public PathlessStrategy() {
+        queue = new ArrayList<>();
+    }
 
     @Override
     public void setup(LayerSetupInfo setupInfo) { }
@@ -67,26 +74,36 @@ public final class PathlessStrategy extends AbstractQueuedLayer {
     @Override
     public void acceptTask(Task task) {
         if (task instanceof WinTask) {
-            setSubtasks(Arrays.asList(
-                // Spike closest to submersible
-                new LinearMovementTask(Units.convert(FIRST_RUSH_DIST, Units.Distance.TILE, Units.Distance.M), 0),
-                new LinearMovementTask(0, Units.convert(-STRAFE_DIST, Units.Distance.TILE, Units.Distance.M)),
-                new LinearMovementTask(Units.convert(-RUSH_DIST + FIRST_SHORT_STOP, Units.Distance.TILE, Units.Distance.M), 0),
-                new TurnTask(Units.convert(-FIRST_TURN_ANGLE, Units.Angle.REV, Units.Angle.RAD)),
-                new LinearMovementTask(Units.convert(-FIRST_SHOVE_DIST, Units.Distance.TILE, Units.Distance.M), 0),
-                new LinearMovementTask(Units.convert(-FIRST_SHOVE_DIST, Units.Distance.TILE, Units.Distance.M), 0),
-                new TurnTask(Units.convert(FIRST_TURN_ANGLE, Units.Angle.REV, Units.Angle.RAD)),
-                // Second closest
-                new LinearMovementTask(Units.convert(RUSH_DIST - FIRST_SHORT_STOP, Units.Distance.TILE, Units.Distance.M), 0),
-                new LinearMovementTask(0, Units.convert(-STRAFE_DIST, Units.Distance.TILE, Units.Distance.M)),
-                new LinearMovementTask(Units.convert(-RUSH_DIST, Units.Distance.TILE, Units.Distance.M), 0),
-                // Third closest
-                new LinearMovementTask(Units.convert(RUSH_DIST, Units.Distance.TILE, Units.Distance.M), 0),
-                new LinearMovementTask(0, Units.convert(-STRAFE_DIST, Units.Distance.TILE, Units.Distance.M)),
-                new LinearMovementTask(Units.convert(-RUSH_DIST, Units.Distance.TILE, Units.Distance.M), 0)
-            ));
+            // Spike closest to submersible
+            queue.add(new LinearMovementTask(Units.convert(FIRST_RUSH_DIST, Units.Distance.TILE, Units.Distance.M), 0));
+            strafeToNextSpike();
+            shoveFirstSpike();
+            // Second closest
+            queue.add(new LinearMovementTask(Units.convert(RUSH_DIST - FIRST_SHORT_STOP, Units.Distance.TILE, Units.Distance.M), 0));
+            strafeToNextSpike();
+            queue.add(new LinearMovementTask(Units.convert(-RUSH_DIST, Units.Distance.TILE, Units.Distance.M), 0));
+            // Third closest
+            queue.add(new LinearMovementTask(Units.convert(RUSH_DIST, Units.Distance.TILE, Units.Distance.M), 0));
+            strafeToNextSpike();
+            queue.add(new LinearMovementTask(Units.convert(-RUSH_DIST, Units.Distance.TILE, Units.Distance.M), 0));
+            setSubtasks(queue);
         } else {
             throw new UnsupportedTaskException(this, task);
         }
+    }
+
+    private void shoveFirstSpike() {
+        queue.add(new LinearMovementTask(Units.convert(-RUSH_DIST + FIRST_SHORT_STOP, Units.Distance.TILE, Units.Distance.M), 0));
+        queue.add(new TurnTask(Units.convert(-FIRST_TURN_ANGLE, Units.Angle.REV, Units.Angle.RAD)));
+        queue.add(new LinearMovementTask(Units.convert(-FIRST_SHOVE_DIST, Units.Distance.TILE, Units.Distance.M), 0));
+        queue.add(new LinearMovementTask(Units.convert(FIRST_SHOVE_DIST, Units.Distance.TILE, Units.Distance.M), 0));
+        queue.add(new TurnTask(Units.convert(FIRST_TURN_ANGLE, Units.Angle.REV, Units.Angle.RAD)));
+    }
+
+    private void strafeToNextSpike() {
+        //queue.add(new LinearMovementTask(0, Units.convert(-STRAFE_DIST, Units.Distance.TILE, Units.Distance.M)));
+        queue.add(new TurnTask(Units.convert(-0.25, Units.Angle.REV, Units.Angle.RAD)));
+        queue.add(new LinearMovementTask(Units.convert(-STRAFE_DIST, Units.Distance.TILE, Units.Distance.M), 0));
+        queue.add(new TurnTask(Units.convert(0.25, Units.Angle.REV, Units.Angle.RAD)));
     }
 }

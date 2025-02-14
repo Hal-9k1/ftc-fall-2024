@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.layer;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+//import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 import org.firstinspires.ftc.teamcode.RobotController;
 import org.firstinspires.ftc.teamcode.localization.RobotLocalizer;
@@ -46,14 +47,14 @@ public final class LayerSetupInfo {
     /**
      * Creates a LayerSetupInfo.
      *
-     * @param hardwareMap the source of peripheral interfaces the layer may use to communicate with
+     * @param hardwareMap - the source of peripheral interfaces the layer may use to communicate with
      * hardware.
      * @param robotController the RobotController that will run the layer.
      * @param robotLocalizer the RobotLocalizer to get robot transformation info from during the
      * execution.
      * @param gamepad0 the Gamepad connected to the first slot, or null if no such gamepad is
      * available or connected.
-     * @param gamepad1 the Gamepad connected to the second slot, or null if no such gamepad is
+     * @param gamepad1 - the Gamepad connected to the second slot, or null if no such gamepad is
      * available or connected.
      * @param loggerProvider the base LoggerProvider whose clones should be passed to the layers.
      */

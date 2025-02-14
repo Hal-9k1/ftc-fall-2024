@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.layer.Layer;
 import org.firstinspires.ftc.teamcode.layer.WinLayer;
-import org.firstinspires.ftc.teamcode.layer.drive.TwoWheelDrive;
+import org.firstinspires.ftc.teamcode.layer.drive.MecanumDrive;
 import org.firstinspires.ftc.teamcode.layer.strategy.PathlessStrategy;
 
 /**
@@ -25,7 +25,7 @@ public final class RoombaAutonomous extends AbstractLayerOpMode {
     @Override
     protected List<Layer> getLayers() {
         return Arrays.asList(
-            new TwoWheelDrive(),
+            new MecanumDrive(),
             new PathlessStrategy(),
             new WinLayer()
         );
