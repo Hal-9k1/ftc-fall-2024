@@ -7,7 +7,7 @@ import java.util.Spliterators;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
+//import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 import org.firstinspires.ftc.teamcode.task.Task;
 import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
@@ -26,7 +26,7 @@ public final class MultiplexLayer implements Layer {
     /**
      * The telemetry used to report debugging info.
      */
-    private Telemetry telemetry;
+    //private Telemetry telemetry;
 
     /**
      * Constructs a MultiplexLayer.
@@ -42,7 +42,7 @@ public final class MultiplexLayer implements Layer {
         for (Layer layer : layers) {
             layer.setup(setupInfo);
         }
-        telemetry = setupInfo.getTelemetry();
+        //telemetry = setupInfo.getTelemetry();
     }
 
     @Override

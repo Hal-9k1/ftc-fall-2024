@@ -7,7 +7,7 @@ import java.util.Iterator;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
-import org.firstinspires.ftc.robotcore.external.Telemetry;
+//import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 import org.firstinspires.ftc.teamcode.CircularBuffer;
 import org.firstinspires.ftc.teamcode.Units;
@@ -156,7 +156,7 @@ public final class TowerLayer implements Layer {
     /**
      * Telemetry.
      */
-    private Telemetry telemetry;
+    //private Telemetry telemetry;
 
     /**
      * The recent history of tower goal deltas, used to control PID.
@@ -170,7 +170,7 @@ public final class TowerLayer implements Layer {
 
     @Override
     public void setup(LayerSetupInfo setupInfo) {
-        telemetry = setupInfo.getTelemetry();
+        //telemetry = setupInfo.getTelemetry();
         isInit = false;
         finishedInit = false;
         tower = setupInfo.getHardwareMap().get(DcMotor.class, "tower_swing");
@@ -192,9 +192,9 @@ public final class TowerLayer implements Layer {
                 isInit = false;
                 finishedInit = true;
                 forearm.setPower(0.0);
-                telemetry.log().add("Forearm done at angle " + getForearmAngle());
+                //telemetry.log().add("Forearm done at angle " + getForearmAngle());
             } else if (isInit) {
-                telemetry.addData("forearm angle", getForearmAngle());
+                //telemetry.addData("forearm angle", getForearmAngle());
             }
         });
     }
@@ -237,7 +237,7 @@ public final class TowerLayer implements Layer {
                 && castedTask.getTowerSwingPower() > 1;
             tower.setPower(isUnsafe ? 0 : castedTask.getTowerSwingPower());
             forearm.setPower(isUnsafe ? 0 : castedTask.getForearmSwingPower());
-            telemetry.addData("tower", castedTask.getTowerSwingPower());
+            //telemetry.addData("tower", castedTask.getTowerSwingPower());
         } else {
             throw new UnsupportedTaskException(this, task);
         }
