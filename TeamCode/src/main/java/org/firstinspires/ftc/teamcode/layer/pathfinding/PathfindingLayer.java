@@ -10,6 +10,7 @@ import org.firstinspires.ftc.teamcode.layer.Layer;
 import org.firstinspires.ftc.teamcode.layer.LayerSetupInfo;
 import org.firstinspires.ftc.teamcode.localization.Mat2;
 import org.firstinspires.ftc.teamcode.localization.Mat3;
+import org.firstinspires.ftc.teamcode.localization.RobotLocalizer;
 import org.firstinspires.ftc.teamcode.localization.Vec2;
 import org.firstinspires.ftc.teamcode.task.HolonomicDriveTask;
 import org.firstinspires.ftc.teamcode.task.MoveToFieldTask;
@@ -46,7 +47,7 @@ public final class PathfindingLayer implements Layer {
     private static final double SPEED_COEFF = 0.5;
 
     /**
-     * How often to recalculate the optimal trajectory.
+     * How often to recalculate the optimal trajectory in seconds.
      */
     private static final double CALCULATE_INTERVAL = 0.25;
 
@@ -102,6 +103,11 @@ public final class PathfindingLayer implements Layer {
     private Mat3 initialVelocity;
 
     /**
+     * The localizer used to determine the robot's current field-space transform.
+     */
+    private RobotLocalizer localizer;
+
+    /**
      * Constructs a PathfindingLayer.
      */
     public PathfindingLayer() { }
@@ -109,6 +115,7 @@ public final class PathfindingLayer implements Layer {
     @Override
     public void setup(LayerSetupInfo setupInfo) {
         obstacles = new ArrayList<>();
+        localizer = setupInfo.getLocalizer();
     }
 
     @Override
@@ -121,9 +128,8 @@ public final class PathfindingLayer implements Layer {
     @Override
     public Iterator<Task> update(Iterable<Task> completed) {
         long nowNano = System.nanoTime();
-        if (nowNano - lastCalcTime > Units.convert(CALCULATE_INTERVAL, Units.Time.SEC,
-            Units.Time.NANO))
-        {
+        if (nowNano - lastCalcTime > (long)Units.convert(CALCULATE_INTERVAL, Units.Time.SEC,
+            Units.Time.NANO)) {
             calculatePath();
             lastCalcTime = nowNano;
         }
@@ -139,8 +145,8 @@ public final class PathfindingLayer implements Layer {
         if (task instanceof MoveToFieldTask) {
             MoveToFieldTask castedTask = (MoveToFieldTask)task;
             goal = castedTask.getGoalTransform();
-            lastCalcTime = System.nanoTime() - Units.convert(CALCULATE_INTERVAL, Units.Time.SEC,
-                Units.Time.NANO);
+            lastCalcTime = System.nanoTime() - (long)Units.convert(CALCULATE_INTERVAL,
+                Units.Time.SEC, Units.Time.NANO);
         }
     }
 
@@ -215,7 +221,7 @@ public final class PathfindingLayer implements Layer {
      */
     private void calculatePath() {
         // Keeps track of the best-scored trajectory and the score it had.
-        Trajectory bestTrajectory;
+        Trajectory bestTrajectory = null;
         double bestScore = Double.NEGATIVE_INFINITY;
 
         // Represents bounds of the search space.
@@ -363,8 +369,7 @@ public final class PathfindingLayer implements Layer {
      * Gets the current field transform of the robot.
      */
     private Mat3 getTransform() {
-        // TODO: implement
-        return new Mat3();
+        return localizer.resolveTransform();
     }
 
     /**
@@ -372,7 +377,11 @@ public final class PathfindingLayer implements Layer {
      */
     private Mat3 getVelocity() {
         // TODO: implement
-        return new Mat3();
+        return new Mat3(
+            1, 0, 0,
+            0, 1, 0,
+            0, 0, 1
+        );
     }
 
     /**

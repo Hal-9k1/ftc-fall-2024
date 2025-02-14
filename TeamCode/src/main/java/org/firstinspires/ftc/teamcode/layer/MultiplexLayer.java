@@ -23,9 +23,6 @@ public final class MultiplexLayer implements Layer {
      */
     private final List<Layer> layers;
 
-    /**
-     * The telemetry used to report debugging info.
-     */
     //private Telemetry telemetry;
 
     /**

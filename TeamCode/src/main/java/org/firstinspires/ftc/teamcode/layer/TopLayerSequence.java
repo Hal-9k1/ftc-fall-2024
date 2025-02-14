@@ -33,9 +33,6 @@ public final class TopLayerSequence implements Layer {
      */
     private Layer layer;
 
-    /**
-     * The Telemetry used to report debugging info.
-     */
     //private Telemetry telemetry;
 
     /**

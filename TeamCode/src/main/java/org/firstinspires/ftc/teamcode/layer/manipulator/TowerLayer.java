@@ -153,9 +153,6 @@ public final class TowerLayer implements Layer {
      */
     private long clawStartTime;
 
-    /**
-     * Telemetry.
-     */
     //private Telemetry telemetry;
 
     /**
@@ -194,6 +191,7 @@ public final class TowerLayer implements Layer {
                 forearm.setPower(0.0);
                 //telemetry.log().add("Forearm done at angle " + getForearmAngle());
             } else if (isInit) {
+                ;
                 //telemetry.addData("forearm angle", getForearmAngle());
             }
         });

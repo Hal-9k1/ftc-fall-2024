@@ -71,9 +71,6 @@ public final class IntakeLayer implements Layer {
      */
     private long ejectStart;
 
-    /**
-     * Telemetry.
-     */
     //private Telemetry telemetry;
 
     /**

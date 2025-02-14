@@ -90,9 +90,6 @@ public final class MecanumDrive implements Layer {
      */
     private boolean currentTaskDone;
 
-    /**
-     * Telemetry.
-     */
     //private Telemetry telemetry;
 
     /**

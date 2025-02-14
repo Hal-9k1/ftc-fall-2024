@@ -60,9 +60,6 @@ public class RobotController {
      */
     private List<LayerInfo> layers;
 
-    /**
-     * The Telemetry used to report debugging info.
-     */
     //private Telemetry telem;
 
     /**
@@ -127,7 +124,7 @@ public class RobotController {
         while (true) {
             layer = layerIter.next();
             if (!layer.isTaskDone()) {
-                telem.addData("Highest updated layer", layer.getName());
+                //telem.addData("Highest updated layer", layer.getName());
                 break;
             }
             if (!layerIter.hasNext()) {
