@@ -1,12 +1,11 @@
 package org.firstinspires.ftc.teamcode.matrix;
 
-// CSOFF type:MagicNumber
-
 /**
  * Represents an immutable 3x3 matrix of double-precision floating point numbers.
  * Commonly used to express 3D rotations or 2D transformations (combined translation and rotation).
  */
 public final class Mat3 {
+    // CSOFF:MagicNumber
     /**
      * The underlying array storing matrix elements.
      */
@@ -259,6 +258,16 @@ public final class Mat3 {
      */
     public Vec2 getTranslation() {
         return new Vec2(mat[2], mat[5]);
+    }
+
+    /**
+     * Gets a unit vector pointing in the direction of this transformation matrix.
+     *
+     * @return A unit vector pointing from the origin in the direction of this matrix, if it
+     * represents a transformation.
+     */
+    public Vec2 getDirection() {
+        return minor(2, 2).mul(new Vec2(1, 0));
     }
 
     /**

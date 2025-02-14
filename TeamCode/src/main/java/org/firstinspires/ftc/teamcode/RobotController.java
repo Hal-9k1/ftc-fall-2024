@@ -9,11 +9,11 @@ import java.util.stream.Collectors;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-//import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 import org.firstinspires.ftc.teamcode.layer.Layer;
 import org.firstinspires.ftc.teamcode.layer.LayerSetupInfo;
 import org.firstinspires.ftc.teamcode.localization.RobotLocalizer;
+import org.firstinspires.ftc.teamcode.logging.Logger;
 import org.firstinspires.ftc.teamcode.logging.LoggerProvider;
 import org.firstinspires.ftc.teamcode.task.Task;
 import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
@@ -62,9 +62,9 @@ public class RobotController {
     private List<LayerInfo> layers;
 
     /**
-     * The Telemetry used to report debugging info.
+     * The logger.
      */
-    //private Telemetry telem;
+    private Logger logger;
 
     /**
      * Constructs a RobotController.
@@ -81,7 +81,6 @@ public class RobotController {
      * @param robotLocalizer - the RobotLocalizer to get robot transformation info from during the
      * execution.
      * @param layerStack - the layer stack to use.
-     * @param telemetry - Telemetry used to report debugging info.
      * @param gamepad0 - the first connected Gamepad, or null if none is connected or available.
      * @param gamepad1 - the second connected Gamepad, or null if none is connected or available.
      * @param loggerProvider - the base LoggerProvider whose clones should be passed to the layers.
@@ -94,6 +93,7 @@ public class RobotController {
         Gamepad gamepad1,
         LoggerProvider loggerProvider
     ) {
+        logger = loggerProvider.getLogger("RobotController");
         LayerSetupInfo setupInfo = new LayerSetupInfo(
             hardwareMap,
             this,
@@ -106,7 +106,6 @@ public class RobotController {
             layer.setup(setupInfo);
             return new LayerInfo(layer);
         }).collect(Collectors.toList());
-        //this.telem = telemetry;
     }
 
     /**
@@ -132,7 +131,7 @@ public class RobotController {
         while (true) {
             layer = layerIter.next();
             if (!layer.isTaskDone()) {
-                telem.addData("Highest updated layer", layer.getName());
+                logger.update("Highest updated layer", layer.getName());
                 break;
             }
             if (!layerIter.hasNext()) {
@@ -183,7 +182,7 @@ public class RobotController {
                 String errMsg = "Layer '" + layer.getName() + "' did not consume all"
                     + " tasks from upper layer. Remaining tasks: ";
                 for (int i = 0; i < MAX_UNCONSUMED_REPORT_TASKS && tasks.hasNext(); ++i) {
-                    errMsg += tasks.next().getClass().getName() + (tasks.hasNext() ? ", " : "");
+                    errMsg += tasks.next().getClass().getSimpleName() + (tasks.hasNext() ? ", " : "");
                 }
                 if (tasks.hasNext()) {
                     errMsg += " (and more)";
@@ -253,7 +252,7 @@ public class RobotController {
          * @return the contained Layer's concrete class name.
          */
         public String getName() {
-            return layer.getClass().getName();
+            return layer.getClass().getSimpleName();
         }
 
         /**

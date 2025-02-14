@@ -237,6 +237,7 @@ public final class LoggerProvider {
 
     /**
      * Whether built loggers may only log using the default severity.
+     * If enabled, only {@link Logger#log} may be used to submit log messages.
      *
      * @param enable whether calling {@link Logger#error}, {@link Logger#warn}, {@link Logger#info},
      * {@link Logger#trace}, or {@link Logger#logSeverity} should result in an error.

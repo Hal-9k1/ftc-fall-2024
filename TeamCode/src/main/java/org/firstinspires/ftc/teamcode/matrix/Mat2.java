@@ -1,12 +1,11 @@
 package org.firstinspires.ftc.teamcode.matrix;
 
-// CSOFF type:MagicNumber
-
 /**
  * Represents an immutable 2x2 matrix of double-precision floating point numbers.
  * Commonly used to express 2D rotations.
  */
 public final class Mat2 {
+    // CSOFF:MagicNumber
     /**
      * The underlying array storing matrix elements.
      */

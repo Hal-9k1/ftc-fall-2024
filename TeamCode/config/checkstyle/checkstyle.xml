@@ -61,7 +61,6 @@
     <module name="CovariantEquals" />
     <module name="DeclarationOrder" />
     <module name="DefaultComesLast" />
-    <module name="EmptyStatement" />
     <module name="EqualsAvoidNull" />
     <module name="EqualsHashCode" />
     <module name="FallThrough" />
@@ -241,15 +240,9 @@
     </module>
     <!-- Filters -->
     <module name="SuppressionCommentFilter">
-      <property name="offCommentFormat" value="CSOFF type:(\w+)" />
-      <property name="onCommentFormat" value="CSON type:(\w+)" />
-      <property name="checkFormat" value="$1" />
-    </module>
-    <module name="SuppressionCommentFilter">
-      <property name="offCommentFormat" value="CSOFF id:(\w+)" />
-      <property name="onCommentFormat" value="CSON id:(\w+)" />
-      <property name="idFormat" value="$1" />
+      <property name="offCommentFormat" value="CSOFF\:([\w\|]+)"/>
+      <property name="onCommentFormat" value="CSON\:([\w\|]+)"/>
+      <property name="checkFormat" value="$1"/>
     </module>
   </module>
 </module>
-

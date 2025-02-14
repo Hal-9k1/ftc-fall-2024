@@ -7,12 +7,12 @@ import java.util.Iterator;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
-//import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 import org.firstinspires.ftc.teamcode.CircularBuffer;
 import org.firstinspires.ftc.teamcode.Units;
 import org.firstinspires.ftc.teamcode.layer.Layer;
 import org.firstinspires.ftc.teamcode.layer.LayerSetupInfo;
+import org.firstinspires.ftc.teamcode.logging.Logger;
 import org.firstinspires.ftc.teamcode.task.Task;
 import org.firstinspires.ftc.teamcode.task.TowerForearmTask;
 import org.firstinspires.ftc.teamcode.task.TowerTask;
@@ -154,9 +154,9 @@ public final class TowerLayer implements Layer {
     private long clawStartTime;
 
     /**
-     * Telemetry.
+     * The logger.
      */
-    //private Telemetry telemetry;
+    private Logger logger;
 
     /**
      * The recent history of tower goal deltas, used to control PID.
@@ -170,7 +170,7 @@ public final class TowerLayer implements Layer {
 
     @Override
     public void setup(LayerSetupInfo setupInfo) {
-        //telemetry = setupInfo.getTelemetry();
+        logger = setupInfo.getLogger("TowerLayer");
         isInit = false;
         finishedInit = false;
         tower = setupInfo.getHardwareMap().get(DcMotor.class, "tower_swing");
@@ -192,9 +192,9 @@ public final class TowerLayer implements Layer {
                 isInit = false;
                 finishedInit = true;
                 forearm.setPower(0.0);
-                //telemetry.log().add("Forearm done at angle " + getForearmAngle());
+                logger.log("Forearm done at angle " + getForearmAngle());
             } else if (isInit) {
-                //telemetry.addData("forearm angle", getForearmAngle());
+                logger.update("forearm angle", getForearmAngle());
             }
         });
     }
@@ -237,7 +237,7 @@ public final class TowerLayer implements Layer {
                 && castedTask.getTowerSwingPower() > 1;
             tower.setPower(isUnsafe ? 0 : castedTask.getTowerSwingPower());
             forearm.setPower(isUnsafe ? 0 : castedTask.getForearmSwingPower());
-            //telemetry.addData("tower", castedTask.getTowerSwingPower());
+            logger.update("tower swing power", castedTask.getTowerSwingPower());
         } else {
             throw new UnsupportedTaskException(this, task);
         }

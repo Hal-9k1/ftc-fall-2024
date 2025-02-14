@@ -14,8 +14,8 @@ public class UnsupportedTaskException extends IllegalArgumentException {
      * @param task - the Task that the layer rejected.
      */
     public UnsupportedTaskException(Layer layer, Task task) {
-        super("Layer '" + layer.getClass().getName() + "' does not support task of type '"
-            + task.getClass().getName() + "'.");
+        super("Layer '" + layer.getClass().getSimpleName() + "' does not support task of type '"
+            + task.getClass().getSimpleName() + "'.");
     }
 
     /**
