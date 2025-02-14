@@ -64,7 +64,10 @@ public final class SqFalloffLocalizationData extends AbstractFinDiffLocalization
 
     @Override
     public double getRotationProbability(double rot) {
-        double diff = rot - transform.getDirection().getAngle();
+        // TODO: implement getDirection somehow
+        // CSOFF type:MagicNumber
+        //double diff = rot - transform.getDirection().getAngle();
+        double diff = 1000;
         return accuracy / (diff * diff * rotationPrecision + 1);
     }
 }
