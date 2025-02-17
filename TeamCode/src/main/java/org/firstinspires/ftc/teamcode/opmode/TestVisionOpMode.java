@@ -10,11 +10,15 @@ import org.firstinspires.ftc.teamcode.layer.Layer;
 import org.firstinspires.ftc.teamcode.layer.input.AbstractInputGenerator;
 
 @TeleOp(name="Vision Test")
-public final class VisionTest extends AbstractVisionLayerOpMode {
+public final class VisionTest extends AbstractLayerOpMode {
+    private AprilTagLocalizationSource aprilTagLocalization;
+
     /**
      * Constructs a VisionTest.
      */
-    public VisionTest() { }
+    public VisionTest() {
+        aprilTagLocalization = new AprilTagLocalizationSource();
+    }
 
     @Override
     protected List<Layer> getLayers() {
@@ -40,11 +44,15 @@ public final class VisionTest extends AbstractVisionLayerOpMode {
 
     @Override
     protected RobotLocalizer getLocalizer() {
-        createVisionPortal();
+        RobotLocalizer localizer = new NewtonRobotLocalizer();
+        localizer.registerSource(aprilTagLocalization);
+        return localizer;
     }
 
     @Override
-    protected void configureVisionPortal(VisionPortal.Builder builder) {
-        AprilTagVisionProessorbuilder.addProcessor(
+    protected List<CameraModule> getCameraModules() {
+        return Arrays.asList(
+            aprilTagLocalization
+        );
     }
 }

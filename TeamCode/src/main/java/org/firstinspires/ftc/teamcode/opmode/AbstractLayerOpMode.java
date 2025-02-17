@@ -123,7 +123,7 @@ public abstract class AbstractLayerOpMode extends OpMode {
         // Do nothing
     }
 
-    protected abstract List<CameraModule> getCameraModules() {
+    protected List<CameraModule> getCameraModules() {
         return new ArrayList<>();
     }
 
