@@ -51,6 +51,33 @@ public final class Mat3 {
     }
 
     /**
+     * Creates a Mat3 representing a 3D rotation from yaw, pitch, and roll angles.
+     * Multiplying by this matrix applies the given yaw, then pitch, then roll.
+     *
+     * @param yaw the yaw angle in radians.
+     * @param pitch the pitch angle in radians.
+     * @param roll the roll angle in radians.
+     */
+    public static Mat3 fromYawPitchRoll(double yaw, double pitch, double roll) {
+        Mat3 yawMat = new Mat3(
+            Math.cos(yaw), -Math.sin(yaw), 0,
+            Math.sin(yaw), Math.cos(yaw), 0,
+            0, 0, 1
+        );
+        Mat3 pitchMat = new Mat3(
+            Math.cos(pitch), 0, Math.sin(pitch),
+            0, 1, 0,
+            -Math.sin(pitch), 0, Math.cos(pitch)
+        );
+        Mat3 rollMat = new Mat3(
+            1, 0, 0,
+            0, Math.cos(roll), -Math.sin(roll),
+            0, Math.sin(roll), Math.cos(roll)
+        );
+        return yawMat.mul(pitchMat).mul(rollMat);
+    }
+
+    /**
      * Returns the product of this matrix and the given matrix.
      * If both are transformation matrices, has the effect of composing the two rotations.
      * Pre- or postmultiplying by the resulting matrix will have the same effect as multiplying by

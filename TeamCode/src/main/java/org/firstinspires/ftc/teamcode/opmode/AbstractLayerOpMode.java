@@ -20,6 +20,12 @@ public abstract class AbstractLayerOpMode extends OpMode {
     private RobotController controller;
 
     /**
+     * The RobotLocalizer passed to the layer stack during setup.
+     * May be null if implementing classes do not override {@link getLocalizer}.
+     */
+    private RobotLocalizer localizer;
+
+    /**
      * Whether the layer stack is finished processing.
      */
     private boolean finished;
@@ -35,15 +41,21 @@ public abstract class AbstractLayerOpMode extends OpMode {
         finished = false;
         LoggerProvider loggerProvider = new LoggerProvider();
         configureLogger(loggerProvider);
+        localizer = getLocalizer();
         logger = loggerProvider.getLogger("AbstractLayerOpMode");
-        controller.setup(hardwareMap, getLocalizer(), getLayers(), gamepad1, gamepad2, loggerProvider);
+        controller.setup(hardwareMap, localizer, getLayers(), gamepad1, gamepad2, loggerProvider);
     }
 
     @Override
     public final void loop() {
-        if (!finished && controller.update()) {
-            logger.log("Finished!");
-            finished = true;
+        if (!finished) {
+            if (localizer != null) {
+                localizer.invalidateCache();
+            }
+            if (controller.update()) {
+                logger.log("Finished processing layer stack!");
+                finished = true;
+            }
         }
     }
 
