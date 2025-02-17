@@ -70,12 +70,12 @@ public class RobotController {
      * Constructs a RobotController.
      */
     public RobotController() {
-        updateListeners = new ArrayList<>();
         layers = null;
     }
 
     /**
      * Initializes the controller with the given layers.
+     * Additionally clears update and teardown listeners.
      *
      * @param hardwareMap - HardwareMap used to retrieve interfaces for robot hardware.
      * @param robotLocalizer - the RobotLocalizer to get robot transformation info from during the
@@ -106,6 +106,8 @@ public class RobotController {
             layer.setup(setupInfo);
             return new LayerInfo(layer);
         }).collect(Collectors.toList());
+        updateListeners = new ArrayList<>();
+        teardownListeners = new ArrayList<>();
     }
 
     /**
