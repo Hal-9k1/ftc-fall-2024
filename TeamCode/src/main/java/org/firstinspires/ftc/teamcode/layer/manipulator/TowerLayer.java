@@ -292,8 +292,6 @@ public final class TowerLayer implements Layer {
 
     /**
      * A top-level layer that emits a TowerForearmTask, needed to prepare the tower for operation.
-     * TODO: should be static. The tight connection between InitLayer and TowerLayer is a hacky fix
-     * only.
      */
     public final class InitLayer implements Layer {
         /**

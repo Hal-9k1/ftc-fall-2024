@@ -57,31 +57,9 @@ public final class MultiplexLayer implements Layer {
             if (layer.isTaskDone()) {
                 return Stream.of();
             }
-            Iterator<Task> tasks = layer.update(completed);
-            if (tasks == null) {
-                throw new NullPointerException(
-                    String.format(
-                        "Tasks from layer '%s' is null.",
-                        layer.getClass().getSimpleName()
-                    )
-                );
-            }
-            // TODO: revert this after debugging; stuffing the tasks into an ArrayList defeats the
-            // purpose of returning an iterator
-            List<Task> taskList = new ArrayList<>();
-            tasks.forEachRemaining(taskList::add);
-            if (taskList.contains(null)) {
-                throw new NullPointerException(
-                    String.format(
-                        "Tasks from layer '%s' contains null.",
-                        layer.getClass().getSimpleName()
-                    )
-                );
-            }
-
             return StreamSupport.stream(
                 Spliterators.spliteratorUnknownSize(
-                    taskList.iterator(), // layer.update(completed),
+                    layer.update(completed),
                     0
                 ),
                 false
