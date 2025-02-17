@@ -1,6 +1,26 @@
 package org.firstinspires.ftc.teamcode.vision;
 
+import java.util.List;
+
+import org.firstinspires.ftc.robotcore.external.matrices.MatrixF;
+import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
+import org.firstinspires.ftc.robotcore.external.navigation.Quaternion;
+import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
+import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
+import org.firstinspires.ftc.vision.apriltag.AprilTagGameDatabase;
+import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
+
+import org.firstinspires.ftc.teamcode.localization.LocalizationData;
 import org.firstinspires.ftc.teamcode.localization.LocalizationSource;
+import org.firstinspires.ftc.teamcode.localization.SqFalloffLocalizationData;
+import org.firstinspires.ftc.teamcode.matrix.Mat2;
+import org.firstinspires.ftc.teamcode.matrix.Mat3;
+import org.firstinspires.ftc.teamcode.matrix.Mat4;
+import org.firstinspires.ftc.teamcode.matrix.Vec2;
+import org.firstinspires.ftc.teamcode.matrix.Vec3;
 
 public class AprilTagLocalizationSource extends CameraModule implements LocalizationSource {
     /**
@@ -23,7 +43,7 @@ public class AprilTagLocalizationSource extends CameraModule implements Localiza
         Vec2 positionSum = new Vec2(0, 0);
         double rotationSum = 0;
         double weightSum = 0;
-        List<AprilTagDetection> detetcions = processor.getDetections();
+        List<AprilTagDetection> detections = processor.getDetections();
         for (AprilTagDetection detection : detections) {
             // Get the tag's transform in robot space from pose data in meters and radians as a Mat4
             Position tagPosCameraSpace = detection.robotPose.getPosition();
@@ -39,7 +59,7 @@ public class AprilTagLocalizationSource extends CameraModule implements Localiza
                 tagRotCameraSpace.getRoll(AngleUnit.RADIANS)
             );
             Mat4 tagTfmRobotSpace = cameraToRobotSpace(
-                Mat4.fromTransform(tagRotRSConv, tagPosRSConv)
+                Mat4.fromTransform(tagRotCSConv, tagPosCSConv)
             );
             // Get the tag's transform in field space from tag library metadata in meters and
             // radians as a Mat4
@@ -53,7 +73,7 @@ public class AprilTagLocalizationSource extends CameraModule implements Localiza
             Mat3 tagRotFSConv = new Mat3(
                 tagRotFieldSpace.get(0, 0),tagRotFieldSpace.get(1, 0),  tagRotFieldSpace.get(2, 0),
                 tagRotFieldSpace.get(0, 1),tagRotFieldSpace.get(1, 1),  tagRotFieldSpace.get(2, 1),
-                tagRotFieldSpace.get(0, 2),tagRotFieldSpace.get(1, 2),  tagRotFieldSpace.get(2, 2),
+                tagRotFieldSpace.get(0, 2),tagRotFieldSpace.get(1, 2),  tagRotFieldSpace.get(2, 2)
             );
             Mat4 tagTfmFieldSpace = Mat4.fromTransform(tagRotFSConv, tagPosFSConv);
 

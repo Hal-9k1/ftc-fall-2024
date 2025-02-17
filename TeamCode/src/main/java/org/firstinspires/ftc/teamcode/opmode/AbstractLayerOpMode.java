@@ -1,14 +1,17 @@
 package org.firstinspires.ftc.teamcode.opmode;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import org.firstinspires.ftc.vision.VisionPortal;
 
 import org.firstinspires.ftc.teamcode.RobotController;
 import org.firstinspires.ftc.teamcode.layer.Layer;
 import org.firstinspires.ftc.teamcode.localization.RobotLocalizer;
 import org.firstinspires.ftc.teamcode.logging.Logger;
 import org.firstinspires.ftc.teamcode.logging.LoggerProvider;
+import org.firstinspires.ftc.teamcode.vision.CameraModule;
 
 /**
  * Base class for opmodes that use a RobotController to execute Layers.
@@ -56,7 +59,7 @@ public abstract class AbstractLayerOpMode extends OpMode {
             for (CameraModule module : cameraModules) {
                 module.createVisionProcessor(visionBuilder);
             }
-            visionPortal = builder.build();
+            visionPortal = visionBuilder.build();
         } else {
             visionPortal = null;
         }

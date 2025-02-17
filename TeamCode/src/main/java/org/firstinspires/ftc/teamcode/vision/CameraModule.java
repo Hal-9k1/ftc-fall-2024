@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.vision;
 
+import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.teamcode.matrix.Mat4;
+
 /**
  * Base class for VisionProcessor users that must compensate for a camera not being located at the
  * origin of robot space.
