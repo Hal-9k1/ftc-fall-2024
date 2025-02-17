@@ -6,7 +6,7 @@ package org.firstinspires.ftc.teamcode.vision;
  * The origin of robot space lies on the ground at the center of the robot's horizontal bounds
  * facing the robot's front side.
  */
-public abstract class CameraProcessor {
+public abstract class CameraModule {
     /**
      * The robot space transform of the camera.
      */
@@ -22,7 +22,7 @@ public abstract class CameraProcessor {
     }
 
     /**
-     * Creates the VisionProcessor interpreting image data for this CameraProcessor and attaches it
+     * Creates the VisionProcessor interpreting image data for this CameraModule and attaches it
      * to the VisionPortal builder.
      *
      * @param portalBuilder the builder of the VisionPortal to attach the VisionProcessor to.

@@ -26,6 +26,12 @@ public abstract class AbstractLayerOpMode extends OpMode {
     private RobotLocalizer localizer;
 
     /**
+     * The VisionPortal created by {@link #createVisionPortal}.
+     * A reference to it is stored so it may be started later after initialization ends.
+     */
+    private VisionPortal visionPortal;
+
+    /**
      * Whether the layer stack is finished processing.
      */
     private boolean finished;
@@ -39,11 +45,32 @@ public abstract class AbstractLayerOpMode extends OpMode {
     public final void init() {
         controller = new RobotController();
         finished = false;
+
         LoggerProvider loggerProvider = new LoggerProvider();
         configureLogger(loggerProvider);
-        localizer = getLocalizer();
         logger = loggerProvider.getLogger("AbstractLayerOpMode");
+
+        List<CameraModule> cameraModules = getCameraModules();
+        if (cameraModules.size() != 0) {
+            VisionPortal.Builder visionBuilder = setupVisionPortal();
+            for (CameraModule module : cameraModules) {
+                module.createVisionProcessor(visionBuilder);
+            }
+            visionPortal = builder.build();
+        } else {
+            visionPortal = null;
+        }
+
+        localizer = getLocalizer();
+
         controller.setup(hardwareMap, localizer, getLayers(), gamepad1, gamepad2, loggerProvider);
+    }
+
+    @Override
+    public final void start() {
+        if (visionPortal != null) {
+            visionPortal.resumeStreaming();
+        }
     }
 
     @Override
@@ -57,6 +84,15 @@ public abstract class AbstractLayerOpMode extends OpMode {
                 finished = true;
             }
         }
+    }
+
+    protected final void logVisionFps(Logger logger) {
+        if (visionPortal == null) {
+            throw new IllegalStateException(
+                "Attempt to log vision FPS when no portal is constructed."
+            );
+        }
+        logger.update("VisionPortal FPS", visionPortal.getFps());
     }
 
     /**
@@ -85,5 +121,15 @@ public abstract class AbstractLayerOpMode extends OpMode {
      */
     protected void configureLogger(LoggerProvider loggerProvider) {
         // Do nothing
+    }
+
+    protected abstract List<CameraModule> getCameraModules() {
+        return new ArrayList<>();
+    }
+
+    private VisionPortal.Builder setupVisionPortal() {
+        return new VisionPortal.Builder()
+            .setCamera("WEBCAM_NAME_HERE")
+            .enableLiveView(true);
     }
 }

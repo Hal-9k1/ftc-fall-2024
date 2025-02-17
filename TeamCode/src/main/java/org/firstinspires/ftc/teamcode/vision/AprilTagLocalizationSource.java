@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.vision;
 
 import org.firstinspires.ftc.teamcode.localization.LocalizationSource;
 
-public class AprilTagLocalizationSource extends CameraProcessor implements LocalizationSource {
+public class AprilTagLocalizationSource extends CameraModule implements LocalizationSource {
     /**
      * The VisionProcessor AprilTag detections will be read from.
      */
