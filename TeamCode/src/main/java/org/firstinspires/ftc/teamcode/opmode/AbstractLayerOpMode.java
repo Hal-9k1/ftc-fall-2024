@@ -12,6 +12,7 @@ import org.firstinspires.ftc.teamcode.layer.Layer;
 import org.firstinspires.ftc.teamcode.localization.RobotLocalizer;
 import org.firstinspires.ftc.teamcode.logging.Logger;
 import org.firstinspires.ftc.teamcode.logging.LoggerProvider;
+import org.firstinspires.ftc.teamcode.matrix.Mat4;
 import org.firstinspires.ftc.teamcode.vision.AbstractCameraModule;
 
 /**
@@ -36,6 +37,12 @@ public abstract class AbstractLayerOpMode extends OpMode {
     private VisionPortal visionPortal;
 
     /**
+     * The camera modules used by this opmode.
+     * May be an empty list if none are used.
+     */
+    private List<AbstractCameraModule> cameraModules;
+
+    /**
      * Whether the layer stack is finished processing.
      */
     private boolean finished;
@@ -54,7 +61,7 @@ public abstract class AbstractLayerOpMode extends OpMode {
         configureLogger(loggerProvider);
         logger = loggerProvider.getLogger("AbstractLayerOpMode");
 
-        List<AbstractCameraModule> cameraModules = getCameraModules();
+        cameraModules = getCameraModules();
         if (cameraModules.size() != 0) {
             VisionPortal.Builder visionBuilder = setupVisionPortal();
             for (AbstractCameraModule module : cameraModules) {
@@ -68,6 +75,7 @@ public abstract class AbstractLayerOpMode extends OpMode {
         localizer = getLocalizer();
 
         controller.setup(hardwareMap, localizer, getLayers(), gamepad1, gamepad2, loggerProvider);
+        postSetup();
     }
 
     @Override
@@ -104,11 +112,29 @@ public abstract class AbstractLayerOpMode extends OpMode {
     }
 
     /**
+     * Sends an updated robot space transform of the camera to all camera modules.
+     *
+     * @param transform the new robot space transform of the camera. The origin of robot space is
+     * flat on the ground, centered in the robot's horizontal bounds, and facing the same direction
+     * as the robot.
+     */
+    protected final void updateCameraTransform(Mat4 transform) {
+        for (AbstractCameraModule module : cameraModules) {
+            module.setCameraTransform(transform);
+        }
+    }
+
+    /**
      * Gets the list of layers to execute for this opmode.
      *
      * @return The list of layers to execute, in order from lowest to highest.
      */
     protected abstract List<Layer> getLayers();
+
+    /**
+     * Called after the layer stack is initialized.
+     */
+    protected void postSetup() { }
 
     /**
      * Gets the robot localizer to use for this opmode.
@@ -127,9 +153,7 @@ public abstract class AbstractLayerOpMode extends OpMode {
      *
      * @param loggerProvider the LoggerProvider to configure.
      */
-    protected void configureLogger(LoggerProvider loggerProvider) {
-        // Do nothing
-    }
+    protected void configureLogger(LoggerProvider loggerProvider) { }
 
     /**
      * Retrieves the camera identifier used when creating a VisionPortal.

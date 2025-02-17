@@ -220,6 +220,8 @@ public final class PathfindingLayer implements Layer {
      * objective function.
      */
     private void calculatePath() {
+        initialVelocity = getVelocity();
+        initialTransform = getTransform();
         // Keeps track of the best-scored trajectory and the score it had.
         Trajectory bestTrajectory = null;
         double bestScore = Double.NEGATIVE_INFINITY;
@@ -292,7 +294,8 @@ public final class PathfindingLayer implements Layer {
      * \(\vec{z}=\langle z_a,z_l,z_\theta\rangle\) where the components represent constant axial,
      * lateral, and rotational accelerations), and duration spent on the trajectory:
      * \[\vec{v}(\vec{z} ,t_f) = \vec{v}(0, 0) + t_f\vec{z}\]
-     * Adding the initial angle and integrating the \(\theta\) component with respect to \(t\) gives:
+     * Adding the initial angle and integrating the \(\theta\) component with respect to \(t\)
+     * gives:
      * \[\theta(\vec{z}, t_f) = \theta(0,0) + v_\theta(0, 0) t_f + \frac{z_\theta t_f^2}{2}\]
      * which is reminiscient of a motion equation with constant acceleration. This result is
      * directly used to find the rotation component of the transform.
@@ -304,8 +307,8 @@ public final class PathfindingLayer implements Layer {
      * Now the field space coordinates of the robot may be found given using the initial position,
      * velocity, and integrating the corrosponding field axis accelerations:
      * \[x(\vec{z},t_f)=x(0,0)+\int_0^{t_f}\left(v_x(0,0)+\int_0^{t_f}z_xdt\right)dt\]
-     * which, after substituting above values (\(\theta(\vec{z}, t)\) left unsubstituted for brevity)
-     * and evaluating the definite integrals, yields:
+     * which, after substituting above values (\(\theta(\vec{z}, t)\) left unsubstituted for
+     * brevity) and evaluating the definite integrals, yields:
      * \[x(\vec{z},t_f)=x(0,0)+v_x(0,0)t_f+t_f\frac{z_a(\sin(\theta(\vec{z},t_f))-\sin(\theta(0,0)))
      * +z_l(\cos(\theta(\vec{z},t_f))-\cos(\theta(0,0)))}{\sqrt{v_\theta^2(0,0)-2z_\theta\theta(0,0)
      * }}\]
