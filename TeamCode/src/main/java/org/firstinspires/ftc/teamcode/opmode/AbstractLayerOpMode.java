@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraName;
 import org.firstinspires.ftc.vision.VisionPortal;
 
 import org.firstinspires.ftc.teamcode.RobotController;
@@ -11,7 +12,7 @@ import org.firstinspires.ftc.teamcode.layer.Layer;
 import org.firstinspires.ftc.teamcode.localization.RobotLocalizer;
 import org.firstinspires.ftc.teamcode.logging.Logger;
 import org.firstinspires.ftc.teamcode.logging.LoggerProvider;
-import org.firstinspires.ftc.teamcode.vision.CameraModule;
+import org.firstinspires.ftc.teamcode.vision.AbstractCameraModule;
 
 /**
  * Base class for opmodes that use a RobotController to execute Layers.
@@ -29,7 +30,7 @@ public abstract class AbstractLayerOpMode extends OpMode {
     private RobotLocalizer localizer;
 
     /**
-     * The VisionPortal created by {@link #createVisionPortal}.
+     * The VisionPortal created by {@link #setupVisionPortal}, if one is needed.
      * A reference to it is stored so it may be started later after initialization ends.
      */
     private VisionPortal visionPortal;
@@ -53,10 +54,10 @@ public abstract class AbstractLayerOpMode extends OpMode {
         configureLogger(loggerProvider);
         logger = loggerProvider.getLogger("AbstractLayerOpMode");
 
-        List<CameraModule> cameraModules = getCameraModules();
+        List<AbstractCameraModule> cameraModules = getCameraModules();
         if (cameraModules.size() != 0) {
             VisionPortal.Builder visionBuilder = setupVisionPortal();
-            for (CameraModule module : cameraModules) {
+            for (AbstractCameraModule module : cameraModules) {
                 module.createVisionProcessor(visionBuilder);
             }
             visionPortal = visionBuilder.build();
@@ -89,7 +90,11 @@ public abstract class AbstractLayerOpMode extends OpMode {
         }
     }
 
-    protected final void logVisionFps(Logger logger) {
+    /**
+     * Updates the AbstractLayerOpMode's internal logger with the frame processing rate of the
+     * vision system.
+     */
+    protected final void logVisionFps() {
         if (visionPortal == null) {
             throw new IllegalStateException(
                 "Attempt to log vision FPS when no portal is constructed."
@@ -126,13 +131,40 @@ public abstract class AbstractLayerOpMode extends OpMode {
         // Do nothing
     }
 
-    protected List<CameraModule> getCameraModules() {
+    /**
+     * Retrieves the camera identifier used when creating a VisionPortal.
+     * Subclasses only need to override this if also overriding {@link #getCameraModules}.
+     *
+     * @return The identifier of the camera to connect to the vision system.
+     */
+    protected CameraName getCameraName() {
+        return null;
+    }
+
+    /**
+     * Gets the list of camera modules to process for this opmode.
+     * The default implementation returns an empty list. If a subclass opmode doesn't use vision, it
+     * shouldn't override this method.
+     *
+     * @return The list of camera modules to use.
+     */
+    protected List<AbstractCameraModule> getCameraModules() {
         return new ArrayList<>();
     }
 
+    /**
+     * Creates and configures a vision portal with default settings.
+     *
+     * @return The configured vision portal.
+     */
     private VisionPortal.Builder setupVisionPortal() {
+        CameraName name = getCameraName();
+        if (name == null) {
+            throw new UnsupportedOperationException("If an opmode uses CameraModules, it must"
+                + " override getCameraName to return a valid camera identifier.");
+        }
         return new VisionPortal.Builder()
-            .setCamera("WEBCAM_NAME_HERE")
+            .setCamera(getCameraName())
             .enableLiveView(true);
     }
 }

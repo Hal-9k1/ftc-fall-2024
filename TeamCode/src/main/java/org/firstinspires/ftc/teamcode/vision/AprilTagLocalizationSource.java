@@ -6,7 +6,6 @@ import org.firstinspires.ftc.robotcore.external.matrices.MatrixF;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
-import org.firstinspires.ftc.robotcore.external.navigation.Quaternion;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
@@ -22,11 +21,20 @@ import org.firstinspires.ftc.teamcode.matrix.Mat4;
 import org.firstinspires.ftc.teamcode.matrix.Vec2;
 import org.firstinspires.ftc.teamcode.matrix.Vec3;
 
-public class AprilTagLocalizationSource extends CameraModule implements LocalizationSource {
+/**
+ * Provides localization data from a camera's AprilTag detections.
+ */
+public final class AprilTagLocalizationSource extends AbstractCameraModule
+    implements LocalizationSource {
     /**
      * The VisionProcessor AprilTag detections will be read from.
      */
     private AprilTagProcessor processor;
+
+    /**
+     * Constructs an AprilTagLocalizationSource.
+     */
+    public AprilTagLocalizationSource() { }
 
     @Override
     public boolean canLocalizePosition() {
@@ -52,7 +60,7 @@ public class AprilTagLocalizationSource extends CameraModule implements Localiza
                 tagPosCameraSpace.unit.toMeters(tagPosCameraSpace.y),
                 tagPosCameraSpace.unit.toMeters(tagPosCameraSpace.z)
             );
-            YawPitchRollAngles tagRotCameraSpace = detection.getOrientation();
+            YawPitchRollAngles tagRotCameraSpace = detection.robotPose.getOrientation();
             Mat3 tagRotCSConv = Mat3.fromYawPitchRoll(
                 tagRotCameraSpace.getYaw(AngleUnit.RADIANS),
                 tagRotCameraSpace.getPitch(AngleUnit.RADIANS),
@@ -71,9 +79,9 @@ public class AprilTagLocalizationSource extends CameraModule implements Localiza
             );
             MatrixF tagRotFieldSpace = detection.metadata.fieldOrientation.toMatrix();
             Mat3 tagRotFSConv = new Mat3(
-                tagRotFieldSpace.get(0, 0),tagRotFieldSpace.get(1, 0),  tagRotFieldSpace.get(2, 0),
-                tagRotFieldSpace.get(0, 1),tagRotFieldSpace.get(1, 1),  tagRotFieldSpace.get(2, 1),
-                tagRotFieldSpace.get(0, 2),tagRotFieldSpace.get(1, 2),  tagRotFieldSpace.get(2, 2)
+                tagRotFieldSpace.get(0, 0), tagRotFieldSpace.get(1, 0), tagRotFieldSpace.get(2, 0),
+                tagRotFieldSpace.get(0, 1), tagRotFieldSpace.get(1, 1), tagRotFieldSpace.get(2, 1),
+                tagRotFieldSpace.get(0, 2), tagRotFieldSpace.get(1, 2), tagRotFieldSpace.get(2, 2)
             );
             Mat4 tagTfmFieldSpace = Mat4.fromTransform(tagRotFSConv, tagPosFSConv);
 
@@ -112,14 +120,14 @@ public class AprilTagLocalizationSource extends CameraModule implements Localiza
 
     @Override
     public void createVisionProcessor(VisionPortal.Builder portalBuilder) {
-        processor = AprilTagProcessor.Builder()
+        processor = new AprilTagProcessor.Builder()
             .setTagLibrary(AprilTagGameDatabase.getIntoTheDeepTagLibrary())
             .build();
         portalBuilder.addProcessor(processor);
     }
 
     /**
-     * Uses a simple formula to get a "confidence" in the range (0, 1) from a "deviance."
+     * Uses a simple formula to get a "confidence" in the range (0, 1) from a "deviance".
      *
      * @param deviance the "deviance," a value that is 0 under ideal conditions.
      * @return A confidence that is higher the closer the deviance is to 0.

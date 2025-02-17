@@ -37,7 +37,7 @@ public final class Mat4 {
         double m00, double m10, double m20, double m30,
         double m01, double m11, double m21, double m31,
         double m02, double m12, double m22, double m32,
-        double m03, double m13, double m23, double m33,
+        double m03, double m13, double m23, double m33
     ) {
         mat = new double[] {m00, m10, m20, m01, m11, m21, m02, m12, m22, m03, m13, m23, m33};
     }
@@ -45,12 +45,12 @@ public final class Mat4 {
     /**
      * Creates a Mat4 representing a transformation from a 3D rotation matrix and 3D translation.
      *
-     * @param rot a 3D rotation matrix like those returned by {@link Mat2#fromYawPitchRoll}.
+     * @param rot a 3D rotation matrix like those returned by {@link Mat3#fromYawPitchRoll}.
      * @param pos a 3D translation or position.
      * @return A new transformation matrix simultaneously encoding the given rotation and
      * translation.
      */
-    public static Mat4 fromTransform(Mat2 rot, Vec2 pos) {
+    public static Mat4 fromTransform(Mat3 rot, Vec3 pos) {
         return new Mat4(
             rot.elem(0, 0), rot.elem(1, 0), rot.elem(2, 0), pos.getX(),
             rot.elem(0, 1), rot.elem(1, 1), rot.elem(2, 1), pos.getY(),
@@ -98,8 +98,8 @@ public final class Mat4 {
      * @param other the vector factor.
      * @return A new vector that is the product of the multiplication.
      */
-    public Vec3 mul(Vec2 other) {
-        Vec3 extended = new Vec3(other.getX(), other.getY(), other.getZ(), 1.0);
+    public Vec3 mul(Vec3 other) {
+        Vec4 extended = new Vec4(other.getX(), other.getY(), other.getZ(), 1.0);
         return new Vec3(
             row(0).dot(extended),
             row(1).dot(extended),

@@ -4,6 +4,8 @@ package org.firstinspires.ftc.teamcode.matrix;
  * Represents a 4D vector.
  */
 public final class Vec4 {
+    // CSOFF:MagicNumber
+
     /**
      * An array holding the components of the vector.
      */

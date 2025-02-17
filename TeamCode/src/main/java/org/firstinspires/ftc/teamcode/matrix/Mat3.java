@@ -57,6 +57,7 @@ public final class Mat3 {
      * @param yaw the yaw angle in radians.
      * @param pitch the pitch angle in radians.
      * @param roll the roll angle in radians.
+     * @return A rotation matrix encoding the given angles.
      */
     public static Mat3 fromYawPitchRoll(double yaw, double pitch, double roll) {
         Mat3 yawMat = new Mat3(
