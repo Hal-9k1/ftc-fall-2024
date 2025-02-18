@@ -116,6 +116,7 @@ public final class PathfindingLayer implements Layer {
     public void setup(LayerSetupInfo setupInfo) {
         obstacles = new ArrayList<>();
         localizer = setupInfo.getLocalizer();
+        initialTransform = null;
     }
 
     @Override
@@ -220,8 +221,18 @@ public final class PathfindingLayer implements Layer {
      * objective function.
      */
     private void calculatePath() {
-        initialVelocity = getVelocity();
-        initialTransform = getTransform();
+        if (initialTransform == null) {
+            initialVelocity = Mat3.identity();
+            initialTransform = getTransform();
+        } else {
+            Mat3 newTransform = getTransform();
+            Mat3 delta = initialTransform.inv().mul(newTransform);
+            initialVelocity = Mat3.fromTransform(
+                Mat2.fromAngle(delta.getDirection().getAngle() / CALCULATE_INTERVAL),
+                delta.getTranslation().mul(1 / CALCULATE_INTERVAL)
+            );
+            initialTransform = newTransform;
+        }
         // Keeps track of the best-scored trajectory and the score it had.
         Trajectory bestTrajectory = null;
         double bestScore = Double.NEGATIVE_INFINITY;
@@ -375,20 +386,6 @@ public final class PathfindingLayer implements Layer {
      */
     private Mat3 getTransform() {
         return localizer.resolveTransform();
-    }
-
-    /**
-     * Gets the current field space velocity of the robot.
-     *
-     * @return The robot's current field space velocity encoded as a transformation matrix.
-     */
-    private Mat3 getVelocity() {
-        // TODO: implement
-        return new Mat3(
-            1, 0, 0,
-            0, 1, 0,
-            0, 0, 1
-        );
     }
 
     /**

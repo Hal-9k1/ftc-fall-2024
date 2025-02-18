@@ -24,6 +24,26 @@ public final class Mat2 {
     }
 
     /**
+     * Creates a zero matrix.
+     * Pre- or postmultiplying by a zero matrix results in another zero matrix.
+     *
+     * @return A new Mat2 populated with zeroes.
+     */
+    public static Mat2 zero() {
+        return new Mat2(0, 0, 0, 0);
+    }
+
+    /**
+     * Creates an identity matrix.
+     * Pre- or postmultiplying by an identity matrix results in the original matrix.
+     *
+     * @return A new Mat2 populated with ones along the diagonal and zeroes everywhere else.
+     */
+    public static Mat2 identity() {
+        return new Mat2(1, 0, 0, 1);
+    }
+
+    /**
      * Creates a 2D rotation matrix for a given angle.
      *
      * @param angle an angle in radians. Positive values indicates counterclockwise rotation.

@@ -35,6 +35,34 @@ public final class Mat3 {
     }
 
     /**
+     * Creates a zero matrix.
+     * Pre- or postmultiplying by a zero matrix results in another zero matrix.
+     *
+     * @return A new Mat3 populated with zeroes.
+     */
+    public static Mat3 zero() {
+        return new Mat3(
+            0, 0, 0,
+            0, 0, 0,
+            0, 0, 0
+        );
+    }
+
+    /**
+     * Creates an identity matrix.
+     * Pre- or postmultiplying by an identity matrix results in the original matrix.
+     *
+     * @return A new Mat3 populated with ones along the diagonal and zeroes everywhere else.
+     */
+    public static Mat3 identity() {
+        return new Mat3(
+            1, 0, 0,
+            0, 1, 0,
+            0, 0, 1
+        );
+    }
+
+    /**
      * Creates a Mat3 representing a transformation from a 2D rotation matrix and 2D translation.
      *
      * @param rot a 2D rotation matrix like those returned by {@link Mat2#fromAngle}.
@@ -180,6 +208,20 @@ public final class Mat3 {
      */
     public Mat3 inv() {
         return cofactor().transpose().mul(1 / det());
+    }
+
+    /**
+     * Returns whether all matrix elements {@link Double#isFinite are finite}.
+     *
+     * @return whether all matrix elements are a valid, real, nonexceptional number.
+     */
+    public boolean isFinite() {
+        for (int i = 0; i < 9; i++) {
+            if (!Double.isFinite(mat[i])) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**

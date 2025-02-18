@@ -43,6 +43,36 @@ public final class Mat4 {
     }
 
     /**
+     * Creates a zero matrix.
+     * Pre- or postmultiplying by a zero matrix results in another zero matrix.
+     *
+     * @return A new Mat4 populated with zeroes.
+     */
+    public static Mat4 zero() {
+        return new Mat4(
+            0, 0, 0, 0,
+            0, 0, 0, 0,
+            0, 0, 0, 0,
+            0, 0, 0, 0
+        );
+    }
+
+    /**
+     * Creates an identity matrix.
+     * Pre- or postmultiplying by an identity matrix results in the original matrix.
+     *
+     * @return A new Mat4 populated with ones along the diagonal and zeroes everywhere else.
+     */
+    public static Mat4 identity() {
+        return new Mat4(
+            1, 0, 0, 0,
+            0, 1, 0, 0,
+            0, 0, 1, 0,
+            0, 0, 0, 1
+        );
+    }
+
+    /**
      * Creates a Mat4 representing a transformation from a 3D rotation matrix and 3D translation.
      *
      * @param rot a 3D rotation matrix like those returned by {@link Mat3#fromYawPitchRoll}.
@@ -175,6 +205,20 @@ public final class Mat4 {
      */
     public Mat4 inv() {
         return cofactor().transpose().mul(1 / det());
+    }
+
+    /**
+     * Returns whether all matrix elements {@link Double#isFinite are finite}.
+     *
+     * @return whether all matrix elements are a valid, real, nonexceptional number.
+     */
+    public boolean isFinite() {
+        for (int i = 0; i < 16; i++) {
+            if (!Double.isFinite(mat[i])) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
