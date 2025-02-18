@@ -45,11 +45,13 @@ def resolveJavadocConfig() {
       classpath = (classpath
         + zipTree(path).matching(new PatternSet().include('classes.jar')))
     } else if (path.endsWith('jar')) {
-      classpath = classpath + files(it)
+      classpath += files(it)
     } else {
       throw new RuntimeException("Can't handle artifact type: '" + path + "'")
     }
   }
+  // This little line links in ALL android class files, which don't exist anywhere obvious in the
+  // build tree or anywhere accessible online. This took 45 minutes to figure out.
   classpath += files(android.getBootClasspath())
   return classpath
 }
