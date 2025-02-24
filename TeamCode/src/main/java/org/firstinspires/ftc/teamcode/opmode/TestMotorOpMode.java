@@ -33,7 +33,9 @@ public final class TestMotorOpMode extends LinearOpMode {
         "left_front_drive",
         "left_back_drive",
         "right_front_drive",
-        "right_back_drive"
+        "right_back_drive",
+        "forearm_swing",
+        "tower_swing"
     );
 
     /**
@@ -127,7 +129,8 @@ public final class TestMotorOpMode extends LinearOpMode {
         while (opModeIsActive()) {
             boolean shouldChangeMotor = Math.abs(gamepad1.left_stick_y) > EPSILON;
             if (shouldChangeMotor && !didChangeMotor) {
-                currentMotorIdx = (currentMotorIdx + 1) % motors.size();
+                currentMotorIdx = (motors.size() + currentMotorIdx
+                    - (int)Math.signum(gamepad1.left_stick_y)) % motors.size();
                 currentMotor.setPower(0.0f);
                 updateCurrentMotor();
                 resetEncoderReadings();
@@ -162,7 +165,9 @@ public final class TestMotorOpMode extends LinearOpMode {
                 lastEncoderReading = encoderReading;
                 lastNanoTime = nanoTime;
                 didResetEncReads = false;
-                currentMotor.setPower(Math.abs(gamepad1.right_stick_y) > EPSILON ? 1.0f : 0.0f);
+                currentMotor.setPower(Math.abs(gamepad1.right_stick_y) > EPSILON
+                    ? Math.signum(gamepad1.right_stick_y)
+                    : 0.0f);
 
                 telemetry.addData("Current motor speed", "%4.2f ticks/sec", computeMotorSpeed());
                 telemetry.addData("Sampled encoder readings", "%d", recordedEncoderReadings);

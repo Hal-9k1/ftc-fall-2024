@@ -3,11 +3,11 @@ package org.firstinspires.ftc.teamcode.layer.manipulator;
 import java.util.Iterator;
 
 import com.qualcomm.robotcore.hardware.CRServo;
-//import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.teamcode.Units;
 import org.firstinspires.ftc.teamcode.layer.Layer;
 import org.firstinspires.ftc.teamcode.layer.LayerSetupInfo;
+import org.firstinspires.ftc.teamcode.logging.Logger;
 import org.firstinspires.ftc.teamcode.task.IntakeTask;
 import org.firstinspires.ftc.teamcode.task.IntakeTeleopTask;
 import org.firstinspires.ftc.teamcode.task.Task;
@@ -72,12 +72,18 @@ public final class IntakeLayer implements Layer {
     private long ejectStart;
 
     /**
+     * The logger.
+     */
+    private Logger logger;
+
+    /**
      * Constructs an IntakeLayer.
      */
     public IntakeLayer() { }
 
     @Override
     public void setup(LayerSetupInfo setupInfo) {
+        logger = setupInfo.getLogger("IntakeLayer");
         intake = setupInfo.getHardwareMap().get(CRServo.class, "intake");
         state = State.IDLE;
         //TouchSensor loadSensor = setupInfo.getHardwareMap().get(TouchSensor.class, "intake_load_sensor");
@@ -129,6 +135,7 @@ public final class IntakeLayer implements Layer {
                 state = State.IDLE;
                 intakeStart = 0;
                 ejectStart = 0;
+                logger.update("intake power", castedTask.getIntakePower());
                 intake.setPower(castedTask.getIntakePower());
             }
         } else {

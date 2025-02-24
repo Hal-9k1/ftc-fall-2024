@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.task;
 
 /**
- * extends or retracts the lift.
+ * Extends or retracts the lift.
  */
 public class LiftTask implements Task {
     /**

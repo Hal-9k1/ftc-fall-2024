@@ -12,6 +12,9 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.layer.Layer;
 import org.firstinspires.ftc.teamcode.layer.LayerSetupInfo;
+import org.firstinspires.ftc.teamcode.localization.RobotLocalizer;
+import org.firstinspires.ftc.teamcode.logging.Logger;
+import org.firstinspires.ftc.teamcode.logging.LoggerProvider;
 import org.firstinspires.ftc.teamcode.task.Task;
 import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
 
@@ -59,6 +62,11 @@ public class RobotController {
     private List<LayerInfo> layers;
 
     /**
+     * The logger.
+     */
+    private Logger logger;
+
+    /**
      * Constructs a RobotController.
      */
     public RobotController() {
@@ -70,14 +78,30 @@ public class RobotController {
      * Initializes the controller with the given layers.
      *
      * @param hardwareMap - HardwareMap used to retrieve interfaces for robot hardware.
+     * @param robotLocalizer - the RobotLocalizer to get robot transformation info from during the
+     * execution.
      * @param layerStack - the layer stack to use.
      * @param gamepad0 - the first connected Gamepad, or null if none is connected or available.
      * @param gamepad1 - the second connected Gamepad, or null if none is connected or available.
+     * @param loggerProvider - the base LoggerProvider whose clones should be passed to the layers.
      */
-    public void setup(HardwareMap hardwareMap, List<Layer> layerStack, Gamepad gamepad0,
-        Gamepad gamepad1
+    public void setup(
+        HardwareMap hardwareMap,
+        RobotLocalizer robotLocalizer,
+        List<Layer> layerStack,
+        Gamepad gamepad0,
+        Gamepad gamepad1,
+        LoggerProvider loggerProvider
     ) {
-        LayerSetupInfo setupInfo = new LayerSetupInfo(hardwareMap, this, gamepad0, gamepad1);
+        logger = loggerProvider.getLogger("RobotController");
+        LayerSetupInfo setupInfo = new LayerSetupInfo(
+            hardwareMap,
+            this,
+            robotLocalizer,
+            gamepad0,
+            gamepad1,
+            loggerProvider
+        );
         this.layers = layerStack.stream().map(layer -> {
             layer.setup(setupInfo);
             return new LayerInfo(layer);
@@ -107,6 +131,7 @@ public class RobotController {
         while (true) {
             layer = layerIter.next();
             if (!layer.isTaskDone()) {
+                logger.update("Highest updated layer", layer.getName());
                 break;
             }
             if (!layerIter.hasNext()) {
@@ -134,18 +159,30 @@ public class RobotController {
                 throw new NullPointerException(
                     String.format(
                         "Layer '%s' returned null from update.",
-                        layer.getName()
+                        oldLayer.getName()
                     )
                 );
             }
+            if (!tasks.hasNext()) {
+                break; // Nothing to do for now. TODO: hacky fix
+            }
             while (tasks.hasNext() && layer.isTaskDone()) {
-                layer.acceptTask(tasks.next());
+                Task task = tasks.next();
+                if (task == null) {
+                    throw new NullPointerException(
+                        String.format(
+                            "Layer '%s' returned null as a subtask.",
+                            oldLayer.getName()
+                        )
+                    );
+                }
+                layer.acceptTask(task);
             }
             if (tasks.hasNext()) {
                 String errMsg = "Layer '" + layer.getName() + "' did not consume all"
                     + " tasks from upper layer. Remaining tasks: ";
                 for (int i = 0; i < MAX_UNCONSUMED_REPORT_TASKS && tasks.hasNext(); ++i) {
-                    errMsg += tasks.next().getClass().getName() + (tasks.hasNext() ? ", " : "");
+                    errMsg += tasks.next().getClass().getSimpleName() + (tasks.hasNext() ? ", " : "");
                 }
                 if (tasks.hasNext()) {
                     errMsg += " (and more)";
@@ -215,7 +252,7 @@ public class RobotController {
          * @return the contained Layer's concrete class name.
          */
         public String getName() {
-            return layer.getClass().getName();
+            return layer.getClass().getSimpleName();
         }
 
         /**
