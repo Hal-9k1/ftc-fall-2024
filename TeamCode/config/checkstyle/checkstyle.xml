@@ -95,7 +95,7 @@
     <module name="ImportOrder">
       <property name="separated" value="true" />
       <property name="groups" value="java" />
-      <property name="groups" value="/robotcore|vision/" />
+      <property name="groups" value="/robotcore|vision|qualcomm/" />
       <property name="groups" value="org.firstinspires.ftc.teamcode" />
     </module>
     <module name="RedundantImport" />

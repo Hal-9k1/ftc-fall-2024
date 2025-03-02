@@ -1,6 +1,13 @@
 package org.firstinspires.ftc.teamcode.localization;
 
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+
+import org.firstinspires.ftc.teamcode.matrix.Mat2;
+import org.firstinspires.ftc.teamcode.matrix.Mat3;
+import org.firstinspires.ftc.teamcode.matrix.Vec2;
 
 /**
  * Uses the inertial measurement unit (IMU) embedded in the Control Hub to estimate the robot's
@@ -8,7 +15,7 @@ import com.qualcomm.robotcore.hardware.IMU;
  * Yaw drift inherent to using an IMU without an absolute reference (e.g. a magnet) is reflected in
  * the decaying reported accuracy of the localization data produced by this source.
  */
-public class ImuLocalizationSource implements LocalizationSource {
+public final class ImuLocalizationSource implements LocalizationSource {
     /**
      * The hardware identifier of the IMU as given in the robot configuration menu.
      */
@@ -21,7 +28,7 @@ public class ImuLocalizationSource implements LocalizationSource {
      * This weight is the reciprocal of the number of nanoseconds after initialization the reported
      * accuracy should drop to 1/e (about %40). In other words, higher value = faster decay.
      */
-    private double K = 1 / 10000;
+    private static final double K = 0.00001;
 
     /**
      * The interface used to communicate with the IMU.
@@ -40,7 +47,7 @@ public class ImuLocalizationSource implements LocalizationSource {
 
     /**
      * Constructs an ImuLocalizationSource.
-     * 
+     *
      * @param hardwareMap the hardware map to retrieve the IMU interface from.
      */
     public ImuLocalizationSource(HardwareMap hardwareMap) {
@@ -54,9 +61,9 @@ public class ImuLocalizationSource implements LocalizationSource {
     /**
      * Asserts that the robot currently has the given rotation and resets the accuracy decay.
      *
-     * @param initalYaw the robot's current field space rotation in radians.
+     * @param yaw the robot's current field space rotation in radians.
      */
-    public void reset(double initialYaw) {
+    public void reset(double yaw) {
         initialYaw = initialYaw;
         lastResetTime = System.nanoTime();
         imu.resetYaw();
