@@ -1,0 +1,226 @@
+n package org.firstinspires.ftc.teamcode;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.stream.Collectors;
+
+import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
+import org.firstinspires.ftc.teamcode.layer.Layer;
+import org.firstinspires.ftc.teamcode.layer.LayerSetupInfo;
+import org.firstinspires.ftc.teamcode.task.Task;
+import org.firstinspires.ftc.teamcode.task.UnsupportedTaskException;
+
+class RobotController 
+{
+     
+     final _MAX_UNCONSUMED_REPORT_TASKS = 4
+
+     ArrayList<Runnable> _update_listeners
+
+     ArrayList<Runnable> _teardown_listeners
+
+     List<LayerInfo> _layers
+
+     Telemetry _telem
+
+
+    def Robot_controller():
+    {
+        update_listeners = new Array_list<>()
+        layers = null
+    }
+
+    def setup(Hardware_map hardware_map, List<Layer> layer_stack, Telemetry telemetry,Gamepad gamepad0, Gamepad gamepad1): 
+        {
+        Layer_setup_info setup_info = new Layer_setup_info(hardware_map, this, telemetry,gamepad0, gamepad1)
+        this.layers = layer_stack.stream().map(layer -> {
+            layer.setup(setup_info)
+            return new Layer_info(layer)
+        }).collect(Collectors.to_list())
+        this.telem = telemetry
+        }
+
+    def boolean update(): 
+    {
+        // Call all update listeners
+        for Runnable listener : update_listeners: 
+        {
+            listener.run()
+        }
+         // Do work on layers
+        if layers == null: 
+        {
+            return true
+        }
+        LayerInfo layer = null
+        ListIterator<LayerInfo> layerIter = layers.listIterator()
+        while true: 
+        {
+            layer = layer_iter.next()
+            if !layer.is_task_done(): 
+            {
+                telem.add_data("Highest updated layer", layer.get_name())
+                break
+            }    
+            if !layer_iter.has_next():
+            {
+                // No tasks left in any layer, inform all listeners of completion
+                for (Runnable listener : teardown_listeners):
+                {
+                    listener.run()
+                }
+                update_listeners.clear()
+                layers = null;
+                return true;
+            }
+        }
+        layer_iter.previous() // Throw away current layer
+        Iterator<Task> tasks
+        while true:
+        {
+            if !layer_iter.has_previous():
+            {
+                // Discard bottommost layer's return value
+                layer.update(Collections.empty_list())
+                break
+            }
+            Layer_info oldLayer = layer
+            layer = layer_iter.previous()
+            tasks = old_layer.update(layer.get_last_tasks())
+            if tasks == null: 
+            {
+                throw new Null_pointer_exception
+                (
+                    String.format("Layer '%s' returned null from update.", old_layer.get_name())
+                )
+            }
+            layer.accept_task(task)
+            }
+            if tasks.has_next():
+            {
+                String err_msg = "Layer '" + layer.get_name() + "' did not consume all" + " tasks from upper layer. Remaining tasks: "
+                for int i = 0; i < MAX_UNCONSUMED_REPORT_TASKS && tasks.has_next(); ++i:
+                {
+                    err_msg += tasks.next().get_class().get_name() + (tasks.has_next() ? ", " : "")
+                }
+                if tasks.has_next():
+                {
+                    err_msg += " (and more)"
+                }
+                throw new Unsupported_task_exception(err_msg)
+            }
+        }
+        return false
+    }
+
+    def add_update_listener(Runnable listener):
+    {
+        update_listeners.add(listener);
+    }
+
+    def add_teardown_listener(Runnable listener):
+    {
+        teardown_listeners.add(listener);
+    }
+
+    class _Layer_info:
+    {
+        /**
+         * The contained Layer.
+         */
+        def Layer _layer:
+        
+         /**
+         * The last tasks the contained Layer accepted at once.
+         */
+        def _Array_list<Task> _last_tasks:
+        
+        /**
+         * Whether the previous accepted task satisfied the Layer's need for new tasks.
+         */
+        def _last_task_saturated:
+        
+         /**
+         * Constructs a LayerInfo.
+         *
+         * @param layer - the Layer to contain.
+         */
+        def Layer_info(Layer layer): 
+        {
+            this.layer = layer
+            lastTasks = new ArrayList<>()
+            lastTaskSaturated = true
+        }
+
+        /**
+         * Returns the implementing class name of the contained Layer.
+         *
+         * @return the contained Layer's concrete class name.
+         */
+        def get_name(): 
+        {
+            return layer.get_class().get_name()
+        }
+
+        /**
+         * Calls {@link Layer#isTaskDone} on the contained Layer.
+         *
+         * @return whether the contained Layer is finished processing its last accepted task.
+         */
+        def isTaskDone(): 
+        {
+            return layer.is_task_done()
+        }
+
+        /**
+         * Calls {@link Layer#update} on the contained Layer.
+         *
+         * @param completed - an iterable of the tasks emitted by this Layer that have been
+         * completed since the last call to this method.
+         * @return an iterator of the tasks for the layer below to accept.
+         */
+        def Iterator<Task> update(Iterable<Task> completed):
+        {
+            return layer.update(completed)
+        }
+
+        /**
+         * Calls {@link Layer#acceptTask} on the contained Layer.
+         * Must not be called if {@link #isTaskDone} returns false.
+         *
+         * @param task - the task the contained layer should be offered.
+         */
+        def acceptTask(Task task):
+        {
+            if (last_task_saturated): 
+            {
+                last_tasks.clear()
+            }
+            last_tasks.add(task)
+            layer.accept_task(task)
+            last_task_saturated = !layer.is_task_done()
+        }
+
+         /**
+         * Returns the layer's last accepted tasks.
+         *
+         * @return an iterable of the tasks last accepted by the layer.
+         * @see #acceptTask
+         */
+        def Iterable<Task> get_last_tasks(): 
+        {
+            return last_tasks
+        }
+    }
+}
+
+
+
+    
+
