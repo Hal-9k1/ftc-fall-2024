@@ -8,6 +8,7 @@ import java.util.List;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraName;
 
+import org.firstinspires.ftc.teamcode.dusk.DuskClient;
 import org.firstinspires.ftc.teamcode.layer.Layer;
 import org.firstinspires.ftc.teamcode.layer.LayerSetupInfo;
 import org.firstinspires.ftc.teamcode.layer.input.AbstractInputGenerator;
@@ -88,6 +89,11 @@ public final class VisionTest extends AbstractLayerOpMode {
         return Arrays.asList(
             aprilTagLocalization
         );
+    }
+
+    @Override
+    protected void configureLogger(LoggerProvider loggerProvider) {
+        loggerProvider.addBackend(new DuskClient());
     }
 
     @Override
